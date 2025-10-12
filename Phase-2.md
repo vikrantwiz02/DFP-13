@@ -51,37 +51,37 @@ The system will generate the following key environmental indicators:
 
 ```mermaid
 graph TB
-    subgraph SL ["SENSOR LAYER"]
-        RGB[RGB Camera]
-        TEMP[Temperature Sensor]
-        TURB[Turbidity Sensor]
-        GPS[GPS Module]
+    subgraph SL ["🔬 SENSOR LAYER"]
+        RGB["📷 RGB Camera"]
+        TEMP["🌡️ Temperature Sensor"]
+        TURB["💧 Turbidity Sensor"]
+        GPS["📍 GPS Module"]
     end
     
-    subgraph DPL ["DATA PROCESSING LAYER"]
-        BUFFER["Raw Data Buffer<br/>RGB Values 0-255<br/>Temperature in Celsius<br/>Turbidity NTU<br/>Timestamp"]
-        FEATURE["Feature Engineering<br/>RGB Ratios R/G B/G<br/>HSV Conversion<br/>Temperature Gradients<br/>Turbidity Delta<br/>Normalized Values"]
+    subgraph DPL ["⚙️ DATA PROCESSING LAYER"]
+        BUFFER["📊 Raw Data Buffer<br/>• RGB Values (0-255)<br/>• Temperature (°C)<br/>• Turbidity (NTU)<br/>• Timestamp"]
+        FEATURE["🛠️ Feature Engineering<br/>• RGB Ratios (R/G, B/G)<br/>• HSV Conversion<br/>• Temperature Gradients<br/>• Turbidity Delta<br/>• Normalized Values"]
         
-        subgraph FA ["FUSION ALGORITHM"]
-            WEIGHTED[Weighted Averaging]
-            SVM[SVM Classifier]
-            TREE[Decision Trees]
+        subgraph FA ["🧠 FUSION ALGORITHM"]
+            WEIGHTED["⚖️ Weighted Averaging"]
+            SVM["🎯 SVM Classifier"]
+            TREE["🌳 Decision Trees"]
         end
         
-        INDICATORS["Environmental Indicators<br/>Chlorophyll-A Index<br/>Pollution Risk Score<br/>Marine Health Index<br/>Water Clarity Index"]
+        INDICATORS["📈 Environmental Indicators<br/>• Chlorophyll-A Index<br/>• Pollution Risk Score<br/>• Marine Health Index<br/>• Water Clarity Index"]
     end
     
-    subgraph ALL ["ALERT LOGIC LAYER"]
-        THRESHOLD["Threshold Evaluation<br/>Chlorophyll-A greater than 75<br/>Pollution Risk greater than 7<br/>Marine Health less than 30"]
-        MESSAGE["Message Generation<br/>Alert Type and Severity<br/>GPS Coordinates<br/>Timestamp<br/>Confidence Level"]
+    subgraph ALL ["🚨 ALERT LOGIC LAYER"]
+        THRESHOLD["⚠️ Threshold Evaluation<br/>• Chlorophyll-A > 75<br/>• Pollution Risk > 7<br/>• Marine Health < 30"]
+        MESSAGE["📢 Message Generation<br/>• Alert Type & Severity<br/>• GPS Coordinates<br/>• Timestamp<br/>• Confidence Level"]
     end
     
-    subgraph PM ["POWER MANAGEMENT"]
-        POWER[Sleep/Wake Logic]
+    subgraph PM ["🔋 POWER MANAGEMENT"]
+        POWER["⚡ Sleep/Wake Logic"]
     end
     
-    subgraph CL ["COMMUNICATION LAYER"]
-        COMM[GSM/LoRa Transmitter]
+    subgraph CL ["📡 COMMUNICATION LAYER"]
+        COMM["📶 GSM/LoRa Transmitter"]
     end
     
     RGB --> BUFFER
@@ -105,14 +105,22 @@ graph TB
     POWER -.-> FEATURE
     POWER -.-> INDICATORS
     
-    classDef sensorStyle fill:#e1f5fe
-    classDef processStyle fill:#f3e5f5
-    classDef alertStyle fill:#fff3e0
-    classDef powerStyle fill:#e8f5e8
-    classDef commStyle fill:#fce4ec
+    %% Enhanced color scheme with better contrast
+    classDef sensorStyle fill:#4fc3f7,stroke:#0277bd,stroke-width:3px,color:#000
+    classDef bufferStyle fill:#81c784,stroke:#388e3c,stroke-width:3px,color:#000
+    classDef featureStyle fill:#ffb74d,stroke:#f57c00,stroke-width:3px,color:#000
+    classDef algoStyle fill:#e57373,stroke:#d32f2f,stroke-width:3px,color:#fff
+    classDef indicatorStyle fill:#ba68c8,stroke:#7b1fa2,stroke-width:3px,color:#fff
+    classDef alertStyle fill:#ff8a65,stroke:#e64a19,stroke-width:3px,color:#000
+    classDef powerStyle fill:#aed581,stroke:#689f38,stroke-width:3px,color:#000
+    classDef commStyle fill:#64b5f6,stroke:#1976d2,stroke-width:3px,color:#000
+    classDef subgraphStyle fill:#f5f5f5,stroke:#424242,stroke-width:2px
     
     class RGB,TEMP,TURB,GPS sensorStyle
-    class BUFFER,FEATURE,WEIGHTED,SVM,TREE,INDICATORS processStyle
+    class BUFFER bufferStyle
+    class FEATURE featureStyle
+    class WEIGHTED,SVM,TREE algoStyle
+    class INDICATORS indicatorStyle
     class THRESHOLD,MESSAGE alertStyle
     class POWER powerStyle
     class COMM commStyle
