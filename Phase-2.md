@@ -51,36 +51,36 @@ The system will generate the following key environmental indicators:
 
 ```mermaid
 graph TB
-    subgraph "SENSOR LAYER"
+    subgraph SL ["SENSOR LAYER"]
         RGB[RGB Camera]
         TEMP[Temperature Sensor]
         TURB[Turbidity Sensor]
         GPS[GPS Module]
     end
     
-    subgraph "DATA PROCESSING LAYER"
-        BUFFER[Raw Data Buffer<br/>• R, G, B Values (0-255)<br/>• Temperature (°C)<br/>• Turbidity (NTU)<br/>• Timestamp]
-        FEATURE[Feature Engineering<br/>• RGB Ratios (R/G, B/G, (R+B)/G)<br/>• HSV Conversion<br/>• Temperature Gradients<br/>• Turbidity Delta<br/>• Normalized Values]
+    subgraph DPL ["DATA PROCESSING LAYER"]
+        BUFFER["Raw Data Buffer<br/>RGB Values 0-255<br/>Temperature in Celsius<br/>Turbidity NTU<br/>Timestamp"]
+        FEATURE["Feature Engineering<br/>RGB Ratios R/G B/G<br/>HSV Conversion<br/>Temperature Gradients<br/>Turbidity Delta<br/>Normalized Values"]
         
-        subgraph "FUSION ALGORITHM"
+        subgraph FA ["FUSION ALGORITHM"]
             WEIGHTED[Weighted Averaging]
             SVM[SVM Classifier]
             TREE[Decision Trees]
         end
         
-        INDICATORS[Environmental Indicators<br/>• Chlorophyll-A Index<br/>• Pollution Risk Score<br/>• Marine Health Index<br/>• Water Clarity Index]
+        INDICATORS["Environmental Indicators<br/>Chlorophyll-A Index<br/>Pollution Risk Score<br/>Marine Health Index<br/>Water Clarity Index"]
     end
     
-    subgraph "ALERT LOGIC LAYER"
-        THRESHOLD[Threshold Evaluation<br/>• Chlorophyll-A > 75 → Algae Bloom Alert<br/>• Pollution Risk > 7 → Contamination Alert<br/>• Marine Health < 30 → Ecosystem Alert]
-        MESSAGE[Message Generation<br/>• Alert Type & Severity<br/>• GPS Coordinates<br/>• Timestamp<br/>• Confidence Level]
+    subgraph ALL ["ALERT LOGIC LAYER"]
+        THRESHOLD["Threshold Evaluation<br/>Chlorophyll-A greater than 75<br/>Pollution Risk greater than 7<br/>Marine Health less than 30"]
+        MESSAGE["Message Generation<br/>Alert Type and Severity<br/>GPS Coordinates<br/>Timestamp<br/>Confidence Level"]
     end
     
-    subgraph "POWER MANAGEMENT"
+    subgraph PM ["POWER MANAGEMENT"]
         POWER[Sleep/Wake Logic]
     end
     
-    subgraph "COMMUNICATION LAYER"
+    subgraph CL ["COMMUNICATION LAYER"]
         COMM[GSM/LoRa Transmitter]
     end
     
@@ -104,6 +104,18 @@ graph TB
     
     POWER -.-> FEATURE
     POWER -.-> INDICATORS
+    
+    classDef sensorStyle fill:#e1f5fe
+    classDef processStyle fill:#f3e5f5
+    classDef alertStyle fill:#fff3e0
+    classDef powerStyle fill:#e8f5e8
+    classDef commStyle fill:#fce4ec
+    
+    class RGB,TEMP,TURB,GPS sensorStyle
+    class BUFFER,FEATURE,WEIGHTED,SVM,TREE,INDICATORS processStyle
+    class THRESHOLD,MESSAGE alertStyle
+    class POWER powerStyle
+    class COMM commStyle
 ```
 
 This diagram illustrates the flow of data and processing on the buoy during Phase 2. Raw sensor inputs feed into the proprietary Data Fusion Algorithm, which then outputs derived indicators. These indicators drive alert logic and are prepared for transmission, all while interacting with power management for efficiency.
@@ -120,26 +132,28 @@ This diagram illustrates the flow of data and processing on the buoy during Phas
 
 ```mermaid
 graph TD
-    subgraph "WATER TANK FACILITY"
-        CLEAR[Clear Water Tank<br/>Known: Clean H2O, Baseline]
-        POLLUTED[Polluted Water Tank<br/>Known: Oil Sheen, Detergent]
-        ALGAE[Algae Bloom Tank<br/>Known: Spirulina, Chlorella]
-        MIXED[Mixed Conditions Tank<br/>Known: Temp. Gradients, Mixed Pollutants]
+    subgraph WTF ["WATER TANK FACILITY"]
+        CLEAR["Clear Water Tank<br/>Clean H2O Baseline"]
+        POLLUTED["Polluted Water Tank<br/>Oil Sheen Detergent"]
+        ALGAE["Algae Bloom Tank<br/>Spirulina Chlorella"]
+        MIXED["Mixed Conditions Tank<br/>Temperature Gradients<br/>Mixed Pollutants"]
     end
     
-    subgraph "BUOY SENSORS"
-        BUOY1[Buoy Sensors]
-        BUOY2[Buoy Sensors]
-        BUOY3[Buoy Sensors]
-        BUOY4[Buoy Sensors]
+    subgraph BS ["BUOY SENSORS"]
+        BUOY1["Buoy Sensors 1"]
+        BUOY2["Buoy Sensors 2"]
+        BUOY3["Buoy Sensors 3"]
+        BUOY4["Buoy Sensors 4"]
     end
     
-    subgraph "GROUND TRUTH MEASUREMENTS"
-        SPECTRO[Spectrophotometer]
-        CHEMICAL[Chemical Sensors]
-        VISUAL[Visual Inspection]
-        LAB[Lab Analysis]
+    subgraph GTM ["GROUND TRUTH MEASUREMENTS"]
+        SPECTRO["Spectrophotometer"]
+        CHEMICAL["Chemical Sensors"]
+        VISUAL["Visual Inspection"]
+        LAB["Lab Analysis"]
     end
+    
+    VALIDATION["Validation Dataset"]
     
     CLEAR --> BUOY1
     POLLUTED --> BUOY2
@@ -151,10 +165,20 @@ graph TD
     BUOY3 --> VISUAL
     BUOY4 --> LAB
     
-    SPECTRO --> VALIDATION[Validation Dataset]
+    SPECTRO --> VALIDATION
     CHEMICAL --> VALIDATION
     VISUAL --> VALIDATION
     LAB --> VALIDATION
+    
+    classDef tankStyle fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef sensorStyle fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef measureStyle fill:#fff3e0,stroke:#f57c00,color:#000
+    classDef validationStyle fill:#e8f5e8,stroke:#388e3c,color:#000
+    
+    class CLEAR,POLLUTED,ALGAE,MIXED tankStyle
+    class BUOY1,BUOY2,BUOY3,BUOY4 sensorStyle
+    class SPECTRO,CHEMICAL,VISUAL,LAB measureStyle
+    class VALIDATION validationStyle
 ```
 
 #### 🔬 Testing Protocol
@@ -209,28 +233,35 @@ def extract_features(raw_data):
 #### 🧠 Fusion Methodology Selection
 
 ```mermaid
-graph LR
-    subgraph "ALGORITHM COMPARISON"
-        WA[Weighted Averaging<br/>Accuracy: 75%<br/>Memory: <2KB<br/>CPU: <5%<br/>Interpretability: 9/10<br/>ESP32 Fit: ✓]
+graph TB
+    subgraph AC ["ALGORITHM COMPARISON"]
+        WA["Weighted Averaging<br/>Accuracy: 75%<br/>Memory: 2KB<br/>CPU: 5%<br/>Interpretability: 9/10<br/>ESP32 Compatible"]
         
-        SVM[Linear SVM<br/>Accuracy: 85%<br/>Memory: <5KB<br/>CPU: <10%<br/>Interpretability: 7/10<br/>ESP32 Fit: ✓]
+        SVM["Linear SVM<br/>Accuracy: 85%<br/>Memory: 5KB<br/>CPU: 10%<br/>Interpretability: 7/10<br/>ESP32 Compatible"]
         
-        DT[Decision Tree<br/>Accuracy: 82%<br/>Memory: <8KB<br/>CPU: <15%<br/>Interpretability: 10/10<br/>ESP32 Fit: ✓]
+        DT["Decision Tree<br/>Accuracy: 82%<br/>Memory: 8KB<br/>CPU: 15%<br/>Interpretability: 10/10<br/>ESP32 Compatible"]
         
-        RF[Random Forest<br/>Accuracy: 88%<br/>Memory: 15KB<br/>CPU: 25%<br/>Interpretability: 6/10<br/>ESP32 Fit: ?]
+        RF["Random Forest<br/>Accuracy: 88%<br/>Memory: 15KB<br/>CPU: 25%<br/>Interpretability: 6/10<br/>ESP32 Questionable"]
         
-        NN[Small Neural Net<br/>Accuracy: 90%<br/>Memory: 10KB<br/>CPU: 20%<br/>Interpretability: 3/10<br/>ESP32 Fit: ?]
+        NN["Small Neural Net<br/>Accuracy: 90%<br/>Memory: 10KB<br/>CPU: 20%<br/>Interpretability: 3/10<br/>ESP32 Questionable"]
         
-        COMPLEX[Complex ML Model<br/>Accuracy: 95%<br/>Memory: 50+KB<br/>CPU: 60+%<br/>Interpretability: 2/10<br/>ESP32 Fit: ✗]
+        COMPLEX["Complex ML Model<br/>Accuracy: 95%<br/>Memory: 50KB+<br/>CPU: 60%+<br/>Interpretability: 2/10<br/>ESP32 Not Compatible"]
     end
     
-    HYBRID[RECOMMENDED:<br/>Hybrid Approach<br/>Weighted Averaging + SVM<br/>Best Balance of Performance & Efficiency]
+    HYBRID["RECOMMENDED<br/>Hybrid Approach<br/>Weighted Averaging + SVM<br/>Best Balance Performance Efficiency"]
     
     WA --> HYBRID
     SVM --> HYBRID
     
-    style HYBRID fill:#90EE90
-    style COMPLEX fill:#FFB6C1
+    classDef compatible fill:#d4edda,stroke:#28a745,color:#000
+    classDef questionable fill:#fff3cd,stroke:#ffc107,color:#000
+    classDef notCompatible fill:#f8d7da,stroke:#dc3545,color:#000
+    classDef recommended fill:#cce5ff,stroke:#007bff,color:#000
+    
+    class WA,SVM,DT compatible
+    class RF,NN questionable
+    class COMPLEX notCompatible
+    class HYBRID recommended
 ```
 
 #### 🔧 Feature Engineering for Fusion
@@ -267,17 +298,25 @@ class FeatureEngineer:
 1. **Model Architecture Design**
    ```mermaid
    graph TD
-       INPUT[Input Layer<br/>15 Features<br/>RGB, Temp, Turbidity, GPS]
+       INPUT["Input Layer<br/>15 Features<br/>RGB Temp Turbidity GPS"]
        
-       PREPROCESS[Preprocessing<br/>• Normalization<br/>• Outlier Detection<br/>• Data Validation]
+       PREPROCESS["Preprocessing<br/>Normalization<br/>Outlier Detection<br/>Data Validation"]
        
-       FUSION[Feature Fusion<br/>• Weighted Averaging<br/>• SVM Classification<br/>• Decision Tree Logic]
+       FUSION["Feature Fusion<br/>Weighted Averaging<br/>SVM Classification<br/>Decision Tree Logic"]
        
-       OUTPUT[Output Layer<br/>4 Environmental Indicators<br/>• Chlorophyll-A Index<br/>• Pollution Risk Score<br/>• Marine Health Index<br/>• Water Clarity Index]
+       OUTPUT["Output Layer<br/>4 Environmental Indicators<br/>Chlorophyll-A Index<br/>Pollution Risk Score<br/>Marine Health Index<br/>Water Clarity Index"]
        
        INPUT --> PREPROCESS
        PREPROCESS --> FUSION
        FUSION --> OUTPUT
+       
+       classDef inputStyle fill:#e3f2fd,stroke:#1976d2,color:#000
+       classDef processStyle fill:#f3e5f5,stroke:#7b1fa2,color:#000
+       classDef outputStyle fill:#e8f5e8,stroke:#388e3c,color:#000
+       
+       class INPUT inputStyle
+       class PREPROCESS,FUSION processStyle
+       class OUTPUT outputStyle
    ```
 
 2. **Training Pipeline**
@@ -427,39 +466,39 @@ public:
 
 ```mermaid
 graph LR
-    subgraph "Environmental Indicators"
-        CHLORO[Chlorophyll-A Index]
-        POLLUTION[Pollution Risk Score]
-        MARINE[Marine Health Index]
-        CLARITY[Water Clarity Index]
+    subgraph EI ["Environmental Indicators"]
+        CHLORO["Chlorophyll-A Index"]
+        POLLUTION["Pollution Risk Score"]
+        MARINE["Marine Health Index"]
+        CLARITY["Water Clarity Index"]
     end
     
-    subgraph "Threshold Evaluation"
-        T1[">= 75"]
-        T2[">= 7"]
-        T3["<= 30"]
-        T4["<= 25"]
+    subgraph TE ["Threshold Evaluation"]
+        T1["Greater than 75"]
+        T2["Greater than 7"]
+        T3["Less than 30"]
+        T4["Less than 25"]
     end
     
-    subgraph "Alert Classification"
-        ALGAE[ALGAE_BLOOM]
-        CONTAM[POLLUTION]
-        ECO[ECO_DEGRADED]
-        LOWCLARITY[LOW_CLARITY]
+    subgraph AC ["Alert Classification"]
+        ALGAE["ALGAE_BLOOM"]
+        CONTAM["POLLUTION"]
+        ECO["ECO_DEGRADED"]
+        LOWCLARITY["LOW_CLARITY"]
     end
     
-    subgraph "Severity Assignment"
-        HIGH[HIGH]
-        CRITICAL[CRITICAL]
-        MEDIUM[MEDIUM]
-        LOW[LOW]
+    subgraph SA ["Severity Assignment"]
+        HIGH["HIGH"]
+        CRITICAL["CRITICAL"]
+        MEDIUM["MEDIUM"]
+        LOW["LOW"]
     end
     
-    subgraph "Message Generation"
-        MSG1[Alert Message 1]
-        MSG2[Alert Message 2]
-        MSG3[Alert Message 3]
-        MSG4[Alert Message 4]
+    subgraph MG ["Message Generation"]
+        MSG1["Alert Message 1"]
+        MSG2["Alert Message 2"]
+        MSG3["Alert Message 3"]
+        MSG4["Alert Message 4"]
     end
     
     CHLORO --> T1 --> ALGAE --> HIGH --> MSG1
@@ -467,10 +506,23 @@ graph LR
     MARINE --> T3 --> ECO --> MEDIUM --> MSG3
     CLARITY --> T4 --> LOWCLARITY --> LOW --> MSG4
     
-    style CRITICAL fill:#FF6B6B
-    style HIGH fill:#FFA500
-    style MEDIUM fill:#FFD700
-    style LOW fill:#90EE90
+    classDef criticalStyle fill:#f8d7da,stroke:#dc3545,color:#000
+    classDef highStyle fill:#fff3cd,stroke:#ffc107,color:#000
+    classDef mediumStyle fill:#fff8dc,stroke:#fd7e14,color:#000
+    classDef lowStyle fill:#d4edda,stroke:#28a745,color:#000
+    classDef indicatorStyle fill:#e3f2fd,stroke:#1976d2,color:#000
+    classDef thresholdStyle fill:#f3e5f5,stroke:#7b1fa2,color:#000
+    classDef classifyStyle fill:#e8f5e8,stroke:#388e3c,color:#000
+    classDef messageStyle fill:#fff3e0,stroke:#f57c00,color:#000
+    
+    class CRITICAL criticalStyle
+    class HIGH highStyle
+    class MEDIUM mediumStyle
+    class LOW lowStyle
+    class CHLORO,POLLUTION,MARINE,CLARITY indicatorStyle
+    class T1,T2,T3,T4 thresholdStyle
+    class ALGAE,CONTAM,ECO,LOWCLARITY classifyStyle
+    class MSG1,MSG2,MSG3,MSG4 messageStyle
 ```
 
 #### ⚠️ Alert Categories & Thresholds
@@ -716,16 +768,16 @@ gantt
 
 ```mermaid
 graph TD
-    subgraph "Testing Pyramid"
-        SYSTEM[System Tests<br/>Full Buoy Deployment<br/>Field Testing]
-        INTEGRATION[Integration Tests<br/>Algorithm + Hardware<br/>Lab Environment]
-        UNIT[Unit Tests<br/>Individual Functions<br/>Automated Testing]
+    subgraph TP ["Testing Pyramid"]
+        SYSTEM["System Tests<br/>Full Buoy Deployment<br/>Field Testing"]
+        INTEGRATION["Integration Tests<br/>Algorithm + Hardware<br/>Lab Environment"]
+        UNIT["Unit Tests<br/>Individual Functions<br/>Automated Testing"]
     end
     
-    subgraph "Test Coverage"
-        FUNC[Functional Testing<br/>• Algorithm accuracy<br/>• Sensor integration<br/>• Alert generation]
-        PERF[Performance Testing<br/>• Processing latency<br/>• Memory usage<br/>• Power consumption]
-        STRESS[Stress Testing<br/>• Extreme conditions<br/>• Sensor failures<br/>• Communication loss]
+    subgraph TC ["Test Coverage"]
+        FUNC["Functional Testing<br/>Algorithm accuracy<br/>Sensor integration<br/>Alert generation"]
+        PERF["Performance Testing<br/>Processing latency<br/>Memory usage<br/>Power consumption"]
+        STRESS["Stress Testing<br/>Extreme conditions<br/>Sensor failures<br/>Communication loss"]
     end
     
     UNIT --> INTEGRATION
@@ -735,9 +787,15 @@ graph TD
     PERF --> INTEGRATION
     STRESS --> SYSTEM
     
-    style SYSTEM fill:#FF6B6B
-    style INTEGRATION fill:#FFA500
-    style UNIT fill:#90EE90
+    classDef unitStyle fill:#d4edda,stroke:#28a745,color:#000
+    classDef integrationStyle fill:#fff3cd,stroke:#ffc107,color:#000
+    classDef systemStyle fill:#f8d7da,stroke:#dc3545,color:#000
+    classDef testStyle fill:#e2e3f1,stroke:#6f42c1,color:#000
+    
+    class UNIT unitStyle
+    class INTEGRATION integrationStyle
+    class SYSTEM systemStyle
+    class FUNC,PERF,STRESS testStyle
 ```
 
 ---
@@ -1051,33 +1109,33 @@ public:
 
 ```mermaid
 graph TB
-    subgraph "SMART OCEAN MONITORING DASHBOARD"
-        subgraph "Real-Time Indicators"
-            CHLORO_DISPLAY[Chlorophyll: 45]
-            POLLUTION_DISPLAY[Pollution: 2.3]
-            HEALTH_DISPLAY[Marine Health: 85]
-            CLARITY_DISPLAY[Clarity: 78]
+    subgraph SOMD ["SMART OCEAN MONITORING DASHBOARD"]
+        subgraph RTI ["Real-Time Indicators"]
+            CHLORO_DISPLAY["Chlorophyll: 45"]
+            POLLUTION_DISPLAY["Pollution: 2.3"]
+            HEALTH_DISPLAY["Marine Health: 85"]
+            CLARITY_DISPLAY["Clarity: 78"]
         end
         
-        subgraph "Predictive Alerts"
-            ALGAE_PRED[Algae Bloom<br/>Expected in 3-5 days]
-            WEATHER_PRED[Weather Impact<br/>Storm approaching]
-            SEASONAL_PRED[Seasonal Trends<br/>Bloom season active]
+        subgraph PA ["Predictive Alerts"]
+            ALGAE_PRED["Algae Bloom<br/>Expected in 3-5 days"]
+            WEATHER_PRED["Weather Impact<br/>Storm approaching"]
+            SEASONAL_PRED["Seasonal Trends<br/>Bloom season active"]
         end
         
-        subgraph "Historical Trends"
-            TREND_CHART[📈 Trend Analysis<br/>30-day patterns<br/>Seasonal comparisons]
+        subgraph HT ["Historical Trends"]
+            TREND_CHART["Trend Analysis<br/>30-day patterns<br/>Seasonal comparisons"]
         end
         
-        subgraph "Interactive Map"
-            MAP_LEGEND[🌊 Buoy Locations<br/>🔴 Critical Alert<br/>🟡 Warning<br/>🟢 Normal Status<br/>⚪ Offline]
-            BUOY_STATUS[Real-time Buoy Status<br/>Geographic Distribution<br/>Alert Zones]
+        subgraph IM ["Interactive Map"]
+            MAP_LEGEND["Buoy Locations Status<br/>Critical Alert<br/>Warning<br/>Normal Status<br/>Offline"]
+            BUOY_STATUS["Real-time Buoy Status<br/>Geographic Distribution<br/>Alert Zones"]
         end
         
-        subgraph "Control Panel"
-            THRESHOLD_CONTROL[Threshold Adjustment]
-            ALERT_CONFIG[Alert Configuration]
-            SYSTEM_HEALTH[System Health Monitor]
+        subgraph CP ["Control Panel"]
+            THRESHOLD_CONTROL["Threshold Adjustment"]
+            ALERT_CONFIG["Alert Configuration"]
+            SYSTEM_HEALTH["System Health Monitor"]
         end
     end
     
@@ -1089,9 +1147,17 @@ graph TB
     THRESHOLD_CONTROL --> ALERT_CONFIG
     ALERT_CONFIG --> SYSTEM_HEALTH
     
-    style ALGAE_PRED fill:#FFA500
-    style TREND_CHART fill:#87CEEB
-    style BUOY_STATUS fill:#90EE90
+    classDef indicatorStyle fill:#e8f5e8,stroke:#4caf50,color:#000
+    classDef alertStyle fill:#fff3cd,stroke:#ffc107,color:#000
+    classDef trendStyle fill:#e3f2fd,stroke:#2196f3,color:#000
+    classDef mapStyle fill:#f3e5f5,stroke:#9c27b0,color:#000
+    classDef controlStyle fill:#fce4ec,stroke:#e91e63,color:#000
+    
+    class CHLORO_DISPLAY,POLLUTION_DISPLAY,HEALTH_DISPLAY,CLARITY_DISPLAY indicatorStyle
+    class ALGAE_PRED,WEATHER_PRED,SEASONAL_PRED alertStyle
+    class TREND_CHART trendStyle
+    class MAP_LEGEND,BUOY_STATUS mapStyle
+    class THRESHOLD_CONTROL,ALERT_CONFIG,SYSTEM_HEALTH controlStyle
 ```
 
 ### 🌐 Integration Possibilities
@@ -1182,12 +1248,9 @@ ALGORITHM_BENCHMARKS = {
 
 ## 📞 Contact & Support
 
-**Project Lead:** Marine Intelligence Team  
-**Email:** marine-ai@smartocean.com  
-**Documentation:** https://docs.smartocean.com/phase2  
-**Repository:** https://github.com/smartocean/phase2-algorithm  
-
-**Emergency Contact:** For critical system issues, contact the 24/7 support line at +1-800-OCEAN-AI
+**Project Lead:** DFP-13  
+**Email:** vikrantkrd@gmail.com    
+**Repository:** https://github.com/vikrantwiz02/DFP-13.git
 
 ---
 
@@ -1195,4 +1258,3 @@ ALGORITHM_BENCHMARKS = {
 
 **Document Version:** 1.0  
 **Last Updated:** October 12, 2025  
-**Next Review:** January 15, 2026
