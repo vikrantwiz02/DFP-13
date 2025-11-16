@@ -25,8 +25,7 @@ Globally, over 43 million people are blind and 295 million have moderate to seve
 2. **Lack of interactive learning tools** that provide real-time feedback and personalized instruction
 3. **Limited multi-language support** in affordable tactile printing devices
 4. **Absence of tactile graphics conversion** for educational diagrams and images
-5. **No integrated progress tracking** for educators and learners
-6. **Teacher shortage** in special education and braille literacy instruction
+5. **Teacher shortage** in special education and braille literacy instruction
 
 Traditional braille embossers are expensive, bulky, purely mechanical devices with no pedagogical features. Existing assistive technologies lack the integration of modern AI capabilities for personalized learning experiences.
 
@@ -35,14 +34,14 @@ Traditional braille embossers are expensive, bulky, purely mechanical devices wi
 We propose an **Arduino-based XY Braille Plotter** that replaces the traditional pen with a precision braille stylus actuator (servo motor) to create raised tactile dots on 140-160 GSM paper mounted on a slate backing. The system integrates:
 
 **Hardware Features:**
-- Low-cost XY plotting mechanism using NEMA 17 stepper motors
+- Low-cost XY plotting mechanism using Servo motors with Arduino
 - Servo-actuated braille stylus for precise dot embossing
 - Support for 140-160 GSM paper (standard braille thickness)
 - Integrated microphone and speaker for voice interaction
 - Bluetooth/Wi-Fi connectivity for app control
 
 **Software Features:**
-- **AI-powered language translation**: Any language → braille script using Liblouis + GPT
+- **AI-powered language translation**: Any language → braille script using Liblouis + Gemini
 - **Image-to-tactile conversion**: Photos/diagrams → raised dot representations
 - **Interactive AI tutor**: Personalized lessons from basics to advanced
 - **Multi-modal control**: Voice commands + React Native mobile app
@@ -60,10 +59,9 @@ We propose an **Arduino-based XY Braille Plotter** that replaces the traditional
 
 ### Expected Outcomes
 
-- **Educational impact**: Enable 10,000+ blind students to learn braille independently
-- **Cost reduction**: 85% lower than commercial braille embossers
-- **Learning efficiency**: 40% faster braille literacy through AI personalization
-- **Market potential**: $50M addressable market in education sector
+- **Educational impact**: Blind students can learn braille independently
+- **Cost reduction**: Lower cost than commercial braille embossers
+- **Learning efficiency**: Faster braille literacy through AI personalization
 - **Social impact**: Bridge accessibility gap in developing nations
 
 ### Target Market
@@ -77,7 +75,7 @@ We propose an **Arduino-based XY Braille Plotter** that replaces the traditional
 
 ### Project Timeline
 
-**Total Duration:** 9 months from concept to working prototype
+**Total Duration:** 6 months from concept to working prototype
 
 - **Phase 1 (Months 1-2):** Design finalization, BOM procurement, CAD modeling
 - **Phase 2 (Months 3-4):** Hardware assembly, firmware development, motion testing
