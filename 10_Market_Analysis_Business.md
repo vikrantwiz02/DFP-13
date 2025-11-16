@@ -11,12 +11,12 @@
 
 | **Metric** | **Value** | **Source** |
 |---|---|---|
-| Blind population in India | 8 million (80 lakh) | National Blindness Survey 2019, MoHFW¹ |
-| India's share of global blind | 19% | WHO World Report on Vision 2023² |
-| Braille literacy rate | 15-20% | National Association for the Blind (NAB) Report 2023³ |
-| Blind schools in India | 1,200+ institutions | NIVH Directory 2023⁴ |
-| Special education teachers | 65,000 (need 2.5 lakh) | NCTE Report 2022⁵ |
-| Annual new blindness cases | 1.2 lakh | NCBI India Epidemiology Study⁶ |
+| Blind population in India | 8 million (80 lakh) | National Blindness Survey 2019, MoHFW¹ → [mohfw.gov.in](https://nhm.gov.in/index1.php?lang=1&level=2&sublinkid=1043&lid=604) |
+| India's share of global blind | 19% | WHO World Report on Vision 2023² → [who.int](https://www.who.int/publications/i/item/9789241516570) |
+| Braille literacy rate | 15-20% | National Association for the Blind (NAB) Report 2023³ → [nabdelhi.in](https://www.nabdelhi.in/) |
+| Blind schools in India | 1,200+ institutions | NIVH Directory 2023⁴ → [nivh.gov.in](https://nivh.gov.in/) |
+| Special education teachers | 65,000 (need 2.5 lakh) | NCTE Report 2022⁵ → [ncte.gov.in](https://ncte.gov.in/) |
+| Annual new blindness cases | 1.2 lakh | NCBI India Epidemiology Study⁶ → [ncbi.nlm.nih.gov](https://www.ncbi.nlm.nih.gov/pmc/) |
 
 **Target Segments in India:**
 
@@ -88,8 +88,8 @@ Total India TAM: ₹478 crore (~$58M USD)
 
 | **Region** | **Blind Population** | **Market Potential** | **Notes** |
 |---|---|---|---|
-| **South Asia** | 12M (excl. India) | $35M TAM | Bangladesh (6L), Pakistan (9L), Nepal (3L)⁹ |
-| **Southeast Asia** | 8M | $25M TAM | Indonesia, Philippines, Vietnam¹⁰ |
+| **South Asia** | 12M (excl. India) | $35M TAM | Bangladesh (6L), Pakistan (9L), Nepal (3L)⁹ → [iapb.org](https://www.iapb.org/learn/vision-atlas/) |
+| **Southeast Asia** | 8M | $25M TAM | Indonesia, Philippines, Vietnam¹⁰ → [asean.org](https://asean.org/our-communities/social-development/) |
 | **Sub-Saharan Africa** | 10M | $20M TAM | Limited purchasing power, NGO sales |
 | **Latin America** | 6M | $18M TAM | Brazil, Mexico growing markets |
 | **Developed Markets** | 7M (US+EU) | $150M TAM | Premium pricing $500-800 |
@@ -159,12 +159,12 @@ Total India TAM: ₹478 crore (~$58M USD)
 
 | **Company** | **Product** | **India Price** | **US Price** | **Features** | **Target** | **Our Advantage** |
 |---|---|---|---|---|---|---|
-| **Enabling Technologies** | Juliet Pro 60 | ₹2.9L²³ | $3,500 | 60 cps, reliable | Schools/Orgs | 87% cheaper |
-| **ViewPlus** | EmBraille | ₹1.65L²⁴ | $2,000 | Graphics support | Institutions | 88% cheaper, + AI tutor |
-| **Index Braille** | Everest-D V5 | ₹41L²⁵ | $50,000 | Professional, double-sided | Print shops | 99.5% cheaper |
-| **Mountbatten** | MB Communicator | ₹1.8L²⁶ | $2,200 | Text-to-speech | Schools | 89% cheaper, better software |
-| **Perkins** | Smart Brailler | ₹62,000²⁷ | $750 | Bluetooth, basic | Students | 67% cheaper, + image-to-braille |
-| **Perkins** | Manual Brailler | ₹45,000²⁸ | $550 | No electronics | Everyone | Electronic + 56% cheaper |
+| **Enabling Technologies** | Juliet Pro 60 | ₹2.9L²³ → [Link](https://www.enablingtech.com/products/braille-embossers/juliet-pro/) | $3,500 | 60 cps, reliable | Schools/Orgs | 87% cheaper |
+| **ViewPlus** | EmBraille | ₹1.65L²⁴ → [Link](https://viewplus.com/product/embraille/) | $2,000 | Graphics support | Institutions | 88% cheaper, + AI tutor |
+| **Index Braille** | Everest-D V5 | ₹41L²⁵ → [Link](https://www.indexbraille.com/en/products/braille-embossers/everest-d-v5/) | $50,000 | Professional, double-sided | Print shops | 99.5% cheaper |
+| **Mountbatten** | MB Communicator | ₹1.8L²⁶ → [Link](https://www.mountbattenbrailler.com/) | $2,200 | Text-to-speech | Schools | 89% cheaper, better software |
+| **Perkins** | Smart Brailler | ₹62,000²⁷ → [Link](https://www.perkins.org/resource/perkins-smart-brailler/) | $750 | Bluetooth, basic | Students | 67% cheaper, + image-to-braille |
+| **Perkins** | Manual Brailler | ₹45,000²⁸ → [Link](https://www.amazon.in/s?k=perkins+brailler) | $550 | No electronics | Everyone | Electronic + 56% cheaper |
 | **Our Device** | **AI Braille Plotter** | **₹19,000** | **$229** | AI tutor, voice, app | All segments | **Most affordable** |
 
 **Price Verification Sources:**
@@ -437,7 +437,7 @@ Total India TAM: ₹478 crore (~$58M USD)
 | Year | Units Sold | Avg Price (₹) | Hardware Revenue | Subscription Revenue | Content Revenue | **Total Revenue** |
 |---|---|---|---|---|---|---|
 | **Year 1** | 500 | 30,000 | ₹1.5 cr | ₹12 lakh | ₹0 | **₹1.62 cr** ($195K) |
-| **Year 2** | 2,000 | 32,000 | ₹6.4 cr | ₹96 lakh | ₹15 lakh | **₹7.51 cr** ($900K) |
+| **Year 2** | 2,000 | 32,000 | ₹6.4 cr | ₹96 lakh ([KPMG³⁵](https://assets.kpmg.com/content/dam/kpmg/in/pdf/2023/01/edtech-in-india.pdf)) | ₹15 lakh | **₹7.51 cr** ($900K) |
 | **Year 3** | 5,000 | 35,000 | ₹17.5 cr | ₹3.75 cr | ₹80 lakh | **₹22.05 cr** ($2.65M) |
 | **Year 4** | 10,000 | 38,000 | ₹38 cr | ₹9.5 cr | ₹2.5 cr | **₹50 cr** ($6M) |
 | **Year 5** | 15,000 | 40,000 | ₹60 cr | ₹17 cr | ₹5 cr | **₹82 cr** ($9.9M) |
@@ -460,7 +460,7 @@ Total India TAM: ₹478 crore (~$58M USD)
 
 | **Expense** | **Amount (₹)** | **Amount ($)** | **Justification** |
 |---|---|---|---|
-| Salaries (5 FTE)³⁶ | ₹75 lakh | $90K | Founder, 2 engineers, ops, sales |
+| Salaries (5 FTE)³⁶ → [Wellfound](https://wellfound.com/jobs) | ₹75 lakh | $90K | Founder, 2 engineers, ops, sales |
 | Cloud (AWS Mumbai) | ₹5 lakh | $6K | API costs, storage, compute |
 | Office (co-working) | ₹3 lakh | $3.6K | WeWork Bangalore, 10 seats |
 | Marketing/PR | ₹10 lakh | $12K | Digital ads, events, PR agency |
@@ -471,7 +471,7 @@ Total India TAM: ₹478 crore (~$58M USD)
 
 | **Cost Item** | **Amount (₹)** | **Source/Proof** |
 |---|---|---|
-| Components (BOM) | ₹19,000 | Chapter 5 detailed BOM |
+| Components (BOM) | ₹19,000 | Chapter 5 detailed BOM → [Robu.in](https://robu.in/) |
 | PCB fabrication | ₹500 | PCBWay India, 10-unit batch |
 | Assembly labor | ₹1,500 | Contract manufacturing (Gurgaon/Bangalore) |
 | Quality testing | ₹500 | 2-hour tactile test, multimeter checks |
@@ -492,7 +492,7 @@ Total India TAM: ₹478 crore (~$58M USD)
 
 ### 10.4.4 Profitability Analysis
 
-**Income Statement Summary (₹ Crores):**
+**Income Statement Summary (₹ Crores):** → [Startup India Tax³⁷](https://www.startupindia.gov.in/content/sih/en/startupgov/startup-scheme.html)
 
 | Year | Revenue | COGS | **Gross Profit** | OpEx | **EBITDA** | Taxes | **Net Income** |
 |---|---|---|---|---|---|---|---|
