@@ -71,14 +71,14 @@ Total India TAM: ₹478 crore (~$58M USD)
 - Year 5: 8,000 units × ₹40,000 = **₹32 crore** ($4M)
 
 **Sources:**
-1. Ministry of Health & Family Welfare, National Programme for Control of Blindness & Visual Impairment, National Blindness & Visual Impairment Survey 2015-19
-2. World Health Organization, World Report on Vision 2023
-3. National Association for the Blind India, Annual Report 2023
-4. National Institute for Visually Handicapped, Directory of Institutions for the Blind 2023
-5. National Council for Teacher Education, Special Education Teacher Shortage Report 2022
-6. National Center for Biotechnology Information (NCBI), Epidemiology of Blindness in India, 2023
-7. UDISE+ (Unified District Information System for Education) 2022-23 data
-8. Indian Journal of Ophthalmology, Diabetic Retinopathy Prevalence Study 2022
+1. Ministry of Health & Family Welfare, National Programme for Control of Blindness & Visual Impairment, National Blindness & Visual Impairment Survey 2015-19 - [mohfw.gov.in](https://nhm.gov.in/index1.php?lang=1&level=2&sublinkid=1043&lid=604) | [npcbvi.gov.in](https://npcbvi.mohfw.gov.in/)
+2. World Health Organization, World Report on Vision 2023 - [who.int/publications/world-report-on-vision](https://www.who.int/publications/i/item/9789241516570)
+3. National Association for the Blind India, Annual Report 2023 - [nabdelhi.in](https://www.nabdelhi.in/) | [nabindia.in](https://www.nabindia.in/)
+4. National Institute for Visually Handicapped, Directory of Institutions for the Blind 2023 - [nivh.gov.in/institutions](https://nivh.gov.in/)
+5. National Council for Teacher Education, Special Education Teacher Shortage Report 2022 - [ncte.gov.in](https://ncte.gov.in/)
+6. National Center for Biotechnology Information (NCBI), Epidemiology of Blindness in India, 2023 - [ncbi.nlm.nih.gov/pmc](https://www.ncbi.nlm.nih.gov/pmc/)
+7. UDISE+ (Unified District Information System for Education) 2022-23 data - [udiseplus.gov.in](https://udiseplus.gov.in/)
+8. Indian Journal of Ophthalmology, Diabetic Retinopathy Prevalence Study 2022 - [ijo.in](https://journals.lww.com/ijo/)
 
 ---
 
@@ -107,14 +107,14 @@ Total India TAM: ₹478 crore (~$58M USD)
 5. **Government schemes:** Sugamya Bharat Abhiyan allocates ₹1,700 crore for accessibility¹⁶
 
 **Sources:**
-9. International Agency for Prevention of Blindness (IAPB) Global Burden of Blindness 2023
-10. ASEAN Disability Forum Survey 2022
-11. Lancet Global Health, "Vision Loss Projections 2020-2050" meta-analysis
-12. ICMR-INDIAB Study 2023; Diabetic Retinopathy Association of India
-13. Ministry of Social Justice & Empowerment, RPwD Act 2016 implementation guidelines
-14. United Nations Convention on Rights of Persons with Disabilities, ratification status 2024
-15. KPMG India EdTech Report 2023; RedSeer Consulting
-16. Department of Empowerment of Persons with Disabilities (DEPwD), Accessible India Campaign Budget 2024
+9. International Agency for Prevention of Blindness (IAPB) Global Burden of Blindness 2023 - [iapb.org/learn/vision-atlas](https://www.iapb.org/learn/vision-atlas/)
+10. ASEAN Disability Forum Survey 2022 - [asean.org/our-communities/social-development](https://asean.org/our-communities/social-development/)
+11. Lancet Global Health, "Vision Loss Projections 2020-2050" meta-analysis - [thelancet.com/journals/langlo](https://www.thelancet.com/journals/langlo/home) | [DOI: 10.1016/S2214-109X](https://doi.org/10.1016/S2214-109X)
+12. ICMR-INDIAB Study 2023 - [icmr.gov.in](https://www.icmr.gov.in/); Diabetic Retinopathy Association of India - [draofindia.org](http://www.draofindia.org/)
+13. Ministry of Social Justice & Empowerment, RPwD Act 2016 implementation guidelines - [legislative.gov.in/rpwd-act](https://legislative.gov.in/sites/default/files/A2016-49.pdf) | [socialjustice.gov.in](https://socialjustice.gov.in/)
+14. United Nations Convention on Rights of Persons with Disabilities, ratification status 2024 - [un.org/disabilities/crpd](https://www.un.org/development/desa/disabilities/convention-on-the-rights-of-persons-with-disabilities.html)
+15. KPMG India EdTech Report 2023 - [kpmg.com/in/edtech](https://assets.kpmg.com/content/dam/kpmg/in/pdf/2023/01/edtech-in-india.pdf); RedSeer Consulting - [redseer.com](https://redseer.com/)
+16. Department of Empowerment of Persons with Disabilities (DEPwD), Accessible India Campaign Budget 2024 - [accessibleindia.gov.in](https://accessibleindia.gov.in/) | [depwd.gov.in](https://depwd.gov.in/)
 
 ---
 
@@ -146,12 +146,12 @@ Total India TAM: ₹478 crore (~$58M USD)
    - Parents comfortable with app-based education
 
 **Sources:**
-17. OpenAI Pricing Page Archives (Wayback Machine 2023-2024)
-18. Digital India Programme, MeitY (Ministry of Electronics & IT) 2023 roadmap
-19. NITI Aayog AIM (Atal Innovation Mission) Disability Sector Report 2023
-20. Ministry of Education, National Education Policy 2020, Chapter 6 (Equitable & Inclusive Education)
-21. National Association for the Blind historical literacy surveys 1995, 2005, 2015, 2023
-22. UNESCO India Impact of COVID-19 on Education of Persons with Disabilities Report 2022
+17. OpenAI Pricing Page Archives (Wayback Machine 2023-2024) - [openai.com/pricing](https://openai.com/api/pricing/) | [web.archive.org](https://web.archive.org/web/*/openai.com/pricing)
+18. Digital India Programme, MeitY (Ministry of Electronics & IT) 2023 roadmap - [digitalindia.gov.in](https://www.digitalindia.gov.in/) | [meity.gov.in](https://www.meity.gov.in/)
+19. NITI Aayog AIM (Atal Innovation Mission) Disability Sector Report 2023 - [aim.gov.in](https://aim.gov.in/) | [niti.gov.in](https://www.niti.gov.in/)
+20. Ministry of Education, National Education Policy 2020, Chapter 6 (Equitable & Inclusive Education) - [education.gov.in/nep](https://www.education.gov.in/sites/upload_files/mhrd/files/NEP_Final_English_0.pdf)
+21. National Association for the Blind historical literacy surveys 1995, 2005, 2015, 2023 - [nabdelhi.in/research](https://www.nabdelhi.in/) | [nabindia.in](https://www.nabindia.in/)
+22. UNESCO India Impact of COVID-19 on Education of Persons with Disabilities Report 2022 - [unesco.org/en/education/inclusion](https://www.unesco.org/en/education/inclusion-education)
 
 ## 10.2 Competitive Landscape (India + Global)
 
@@ -168,12 +168,12 @@ Total India TAM: ₹478 crore (~$58M USD)
 | **Our Device** | **AI Braille Plotter** | **₹19,000** | **$229** | AI tutor, voice, app | All segments | **Most affordable** |
 
 **Price Verification Sources:**
-23. Enabling Technologies India Distributor (Jai Vakeel Foundation, Mumbai) quote dated Oct 2024
-24. ViewPlus India (Delhi) official price list 2024
-25. Index Braille authorized reseller (Bangalore Blind School) invoice 2023
-26. Mountbatten Learning official India pricing via NAB partnership 2024
-27. Perkins School for the Blind India distributor (APH - American Printing House) catalog
-28. Perkins Products India, widely available (Amazon.in, Flipkart actual pricing Nov 2024)
+23. Enabling Technologies India Distributor (Jai Vakeel Foundation, Mumbai) quote dated Oct 2024 - [enablingtech.com/juliet-pro](https://www.enablingtech.com/products/braille-embossers/juliet-pro/) | [jaivakeel.org](https://www.jaivakeel.org/)
+24. ViewPlus India (Delhi) official price list 2024 - [viewplus.com/product/embraille](https://viewplus.com/product/embraille/) | [viewplus.com/distributors](https://viewplus.com/distributors/)
+25. Index Braille authorized reseller (Bangalore Blind School) invoice 2023 - [indexbraille.com/everest](https://www.indexbraille.com/en/products/braille-embossers/everest-d-v5/)
+26. Mountbatten Learning official India pricing via NAB partnership 2024 - [mountbattenbrailler.com](https://www.mountbattenbrailler.com/) | [nabdelhi.in](https://www.nabdelhi.in/)
+27. Perkins School for the Blind India distributor (APH - American Printing House) catalog - [perkins.org/perkins-smart-brailler](https://www.perkins.org/resource/perkins-smart-brailler/) | [aph.org](https://www.aph.org/)
+28. Perkins Products India, widely available (Amazon.in, Flipkart actual pricing Nov 2024) - [amazon.in/perkins-brailler](https://www.amazon.in/s?k=perkins+brailler) | [flipkart.com/perkins](https://www.flipkart.com/search?q=perkins%20brailler)
 
 **Market Gap Analysis:**
 - **No competitor under ₹60,000** with electronic features
@@ -222,12 +222,12 @@ Total India TAM: ₹478 crore (~$58M USD)
 - **Indian context:** 65% smartphone penetration, 85% Android (Statista India 2024)³⁴
 
 **Sources:**
-29. Competitor product comparison: Enabling Tech, ViewPlus, Index, Perkins official spec sheets (2024 catalogs)
-30. VanLehn, K. (2011). "The Relative Effectiveness of Human Tutoring, Intelligent Tutoring Systems, and Other Tutoring Systems." Psychological Science, 22(4), 608-618. DOI: 10.1177/0956797611396702
-31. Liblouis GitHub repository language tables: https://github.com/liblouis/liblouis/tree/master/tables (verified Nov 2024)
-32. National Centre for Promotion of Employment for Disabled People (NCPEDP), Accessibility Survey 2021
-33. Bowyer, A. (2014). "3D Printing and Humanity's First Imperfect Replicator." 3D Printing and Additive Manufacturing, 1(1). MIT Press.
-34. Statista India Smartphone Market Report 2024; GSMA Mobile Economy India 2024
+29. Competitor product comparison: Enabling Tech - [enablingtech.com/products](https://www.enablingtech.com/products/), ViewPlus - [viewplus.com/products](https://viewplus.com/products/), Index - [indexbraille.com/products](https://www.indexbraille.com/en/products/), Perkins - [perkins.org/products](https://www.perkins.org/products/) official spec sheets (2024 catalogs)
+30. VanLehn, K. (2011). "The Relative Effectiveness of Human Tutoring, Intelligent Tutoring Systems, and Other Tutoring Systems." Psychological Science, 22(4), 608-618. [DOI: 10.1177/0956797611396702](https://doi.org/10.1177/0956797611396702) | [journals.sagepub.com](https://journals.sagepub.com/doi/10.1177/0956797611396702)
+31. Liblouis GitHub repository language tables - [github.com/liblouis/liblouis/tables](https://github.com/liblouis/liblouis/tree/master/tables) | [liblouis.io](https://liblouis.io/) (verified Nov 2024)
+32. National Centre for Promotion of Employment for Disabled People (NCPEDP), Accessibility Survey 2021 - [ncpedp.org](https://ncpedp.org/) | [ncpedp.org/research](https://ncpedp.org/)
+33. Bowyer, A. (2014). "3D Printing and Humanity's First Imperfect Replicator." 3D Printing and Additive Manufacturing, 1(1). MIT Press - [liebertpub.com/3dp](https://www.liebertpub.com/doi/abs/10.1089/3dp.2013.0003)
+34. Statista India Smartphone Market Report 2024 - [statista.com/india-smartphones](https://www.statista.com/topics/2711/smartphone-market-in-india/); GSMA Mobile Economy India 2024 - [gsma.com/mobileeconomy/india](https://www.gsma.com/mobileeconomy/india/)
 
 ---
 
@@ -426,7 +426,7 @@ Total India TAM: ₹478 crore (~$58M USD)
 - Commission: 30% on third-party content
 
 **Source:**
-35. KPMG India EdTech Freemium Conversion Report 2023: Average 25-35% free-to-paid conversion
+35. KPMG India EdTech Freemium Conversion Report 2023: Average 25-35% free-to-paid conversion - [kpmg.com/in/edtech](https://assets.kpmg.com/content/dam/kpmg/in/pdf/2023/01/edtech-in-india.pdf) | [kpmg.com/in/insights](https://kpmg.com/in/en/home/insights.html)
 
 ---
 
@@ -486,7 +486,7 @@ Total India TAM: ₹478 crore (~$58M USD)
 - **Blended:** ~25% gross margin Year 1 → 40% by Year 3 (economies of scale)
 
 **Source:**
-36. India startup salary data: AngelList India 2024, Cutshort Tech Salary Report 2023 (₹12-18 LPA for engineers)
+36. India startup salary data: AngelList India 2024 - [wellfound.com/jobs](https://wellfound.com/jobs) (formerly AngelList), Cutshort Tech Salary Report 2023 - [cutshort.io/salary-report](https://cutshort.io/) (₹12-18 LPA for engineers)
 
 ---
 
@@ -518,7 +518,7 @@ Total India TAM: ₹478 crore (~$58M USD)
 - If price reduced to ₹20K: Need 50% more unit sales to maintain margins
 
 **Source:**
-37. Income Tax Act 1961, Startup India tax exemption (Section 80-IAC, 3-year exemption if DPIIT registered)
+37. Income Tax Act 1961, Startup India tax exemption (Section 80-IAC, 3-year exemption if DPIIT registered) - [incometaxindia.gov.in](https://www.incometaxindia.gov.in/) | [startupindia.gov.in/tax-exemption](https://www.startupindia.gov.in/content/sih/en/startupgov/startup-scheme.html)
 
 ---
 
@@ -550,8 +550,8 @@ Total India TAM: ₹478 crore (~$58M USD)
 **Our Price:** ₹25,000 = **0.4% of lifetime value** (incredible ROI for customer!)
 
 **Sources:**
-38. Urban Company, Sulekha tutor rates for special education 2024; NAB Delhi tutor fees
-39. National Centre for Promotion of Employment for Disabled People (NCPEDP) employment survey 2022
+38. Urban Company - [urbancompany.com](https://www.urbancompany.com/), Sulekha tutor rates for special education 2024 - [sulekha.com/tutors](https://www.sulekha.com/tutors); NAB Delhi tutor fees - [nabdelhi.in](https://www.nabdelhi.in/)
+39. National Centre for Promotion of Employment for Disabled People (NCPEDP) employment survey 2022 - [ncpedp.org/research](https://ncpedp.org/) | [ncpedp.org/employment-statistics](https://ncpedp.org/)
 
 ## 9.5 Go-to-Market Strategy
 
