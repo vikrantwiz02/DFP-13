@@ -5,13 +5,13 @@
 
 **Project Title:** Intelligent Braille Stylus Plotter with AI-Enabled Learning Platform
 
-**Team Members:** DFP-13
+**Team Members:** [Your Team Names]
 
-**Institution:** PDPM IIITDM JABALPUR
+**Institution:** [Your Institution]
 
 **Date:** November 16, 2025
 
-**Project Category:** Design and Fabrication Project
+**Project Category:** Assistive Technology / Educational Innovation
 
 ---
 
@@ -47,14 +47,14 @@ India has 8 million blind people (National Blindness Survey 2019²) - representi
 Traditional braille embossers are expensive, bulky, purely mechanical devices with no pedagogical features. Existing assistive technologies lack the integration of modern AI capabilities for personalized learning experiences.
 
 **Sources:**
-1. WHO World Report on Vision 2023
-2. Ministry of Health & Family Welfare, National Blindness Survey 2019
-3. National Association for the Blind (NAB) India Annual Report 2023
-4. Enabling Technologies India price list 2024; ViewPlus India distributor quotes
-5. National Institute for Visually Handicapped (NIVH) survey 2022
-6. NCTE Special Education Teacher Shortage Report 2022
-7. Rehabilitation Council of India (RCI) Guidelines 2020
-8. All India Confederation of the Blind (AICB) Braille Production Report 2023
+1. WHO World Report on Vision 2023 - [who.int/publications/world-report-on-vision](https://www.who.int/publications/i/item/9789241516570)
+2. Ministry of Health & Family Welfare, National Blindness Survey 2019 - [mohfw.gov.in](https://nhm.gov.in/index1.php?lang=1&level=2&sublinkid=1043&lid=604)
+3. National Association for the Blind (NAB) India Annual Report 2023 - [nabdelhi.in](https://www.nabdelhi.in/)
+4. Enabling Technologies India price list 2024; ViewPlus India distributor quotes - [enablingtech.com](https://www.enablingtech.com/) | [viewplus.com](https://viewplus.com/)
+5. National Institute for Visually Handicapped (NIVH) survey 2022 - [nivh.gov.in](https://nivh.gov.in/)
+6. NCTE Special Education Teacher Shortage Report 2022 - [ncte.gov.in](https://ncte.gov.in/)
+7. Rehabilitation Council of India (RCI) Guidelines 2020 - [rehabcouncil.nic.in](https://rehabcouncil.nic.in/)
+8. All India Confederation of the Blind (AICB) Braille Production Report 2023 - [aicb.org.in](http://www.aicb.org.in/)
 
 ### Proposed Solution
 
@@ -88,7 +88,7 @@ We propose an **Arduino-based XY Braille Plotter** that replaces the traditional
 6. **Open-source approach** for community-driven improvements and local manufacturing
 
 **Source:**
-9. Comparative analysis: Mountbatten Brailler ₹1.8L (Jai Vakeel Foundation quote), Basic Perkins Brailler ₹45,000 (manual, not electronic)
+9. Comparative analysis: Mountbatten Brailler ₹1.8L (Jai Vakeel Foundation quote - [jaivakeel.org](https://www.jaivakeel.org/)), Basic Perkins Brailler ₹45,000 (manual, not electronic - [amazon.in/perkins-brailler](https://www.amazon.in/s?k=perkins+brailler) | [perkins.org](https://www.perkins.org/resource/perkins-smart-brailler/))
 
 ### Expected Outcomes
 
@@ -117,12 +117,12 @@ We propose an **Arduino-based XY Braille Plotter** that replaces the traditional
 - Enable employment: 44% employment rate for braille-literate blind vs 17% for non-literate¹⁵
 
 **Sources:**
-10. NIVH Directory of Blind Schools in India 2023
-11. VanLehn 2011, "The Relative Effectiveness of Human Tutoring, Intelligent Tutoring Systems"
-12. National Institute for Empowerment of Persons with Visual Disabilities (NIEPVD) curriculum standards
-13. HolonIQ EdTech Market Report 2023; Grand View Research Assistive Technology Market 2024
-14. Department of Empowerment of Persons with Disabilities (DEPwD), Accessible India Campaign
-15. American Foundation for the Blind (AFB) Employment Statistics 2022
+10. NIVH Directory of Blind Schools in India 2023 - [nivh.gov.in/institutions](https://nivh.gov.in/)
+11. VanLehn 2011, "The Relative Effectiveness of Human Tutoring, Intelligent Tutoring Systems" - [doi.org/10.1177/0956797611396702](https://doi.org/10.1177/0956797611396702) | [journals.sagepub.com](https://journals.sagepub.com/doi/10.1177/0956797611396702)
+12. National Institute for Empowerment of Persons with Visual Disabilities (NIEPVD) curriculum standards - [niepvd.nic.in](https://niepvd.nic.in/)
+13. HolonIQ EdTech Market Report 2023 - [holoniq.com/edtech](https://www.holoniq.com/edtech/); Grand View Research Assistive Technology Market 2024 - [grandviewresearch.com](https://www.grandviewresearch.com/industry-analysis/assistive-technologies-market)
+14. Department of Empowerment of Persons with Disabilities (DEPwD), Accessible India Campaign - [accessibleindia.gov.in](https://accessibleindia.gov.in/) | [depwd.gov.in](https://depwd.gov.in/)
+15. American Foundation for the Blind (AFB) Employment Statistics 2022 - [afb.org/research](https://www.afb.org/research-and-initiatives/statistics)
 
 ### Target Market
 
@@ -163,9 +163,9 @@ We propose an **Arduino-based XY Braille Plotter** that replaces the traditional
 - **NGO partnerships:** Bundled with training programs
 
 **Sources:**
-18. NIVH Directory 2023; RCI-registered institutions database
-19. National Trust for Welfare of Persons with Autism, Cerebral Palsy, Mental Retardation and Multiple Disabilities Annual Report 2023
-20. WHO Global Data on Visual Impairments 2023
+18. NIVH Directory 2023 - [nivh.gov.in](https://nivh.gov.in/); RCI-registered institutions database - [rehabcouncil.nic.in](https://rehabcouncil.nic.in/)
+19. National Trust for Welfare of Persons with Autism, Cerebral Palsy, Mental Retardation and Multiple Disabilities Annual Report 2023 - [thenationaltrust.gov.in](https://thenationaltrust.gov.in/)
+20. WHO Global Data on Visual Impairments 2023 - [who.int/publications/world-report-on-vision](https://www.who.int/publications/i/item/9789241516570)
 
 ### Project Timeline
 
@@ -191,13 +191,13 @@ We propose an **Arduino-based XY Braille Plotter** that replaces the traditional
 - Packaging & documentation: ₹2 lakh (braille user manuals)
 
 **Funding Strategy:**
-- **Government grants:** BIRAC, NIDHI-PRAYAS, DST (₹10-25 lakh available)¹⁶
+- **Government grants:** BIRAC - [birac.nic.in](https://birac.nic.in/desc_new.php?id=372), NIDHI-PRAYAS - [nidhi-prayas.nstedb.com](https://nidhi-prayas.nstedb.com/), DST - [dst.gov.in](https://dst.gov.in/) (₹10-25 lakh available)¹⁶
 - **CSR funding:** Partnership with tech companies (Infosys, TCS have disability-focused CSR)¹⁷
-- **Crowdfunding:** Indian platforms (Ketto, Milaap) for social impact projects
+- **Crowdfunding:** Indian platforms Ketto - [ketto.org](https://www.ketto.org/), Milaap - [milaap.org](https://milaap.org/) for social impact projects
 
 **Sources:**
-16. BIRAC (Biotechnology Industry Research Assistance Council) Grant Guidelines 2024; NIDHI-PRAYAS DST funding
-17. MCA CSR spending data 2023: ₹24,689 crore total, 1.2% on disability programs
+16. BIRAC (Biotechnology Industry Research Assistance Council) Grant Guidelines 2024 - [birac.nic.in](https://birac.nic.in/); NIDHI-PRAYAS DST funding - [nidhi.nic.in](https://www.nidhi.nic.in/)
+17. MCA CSR spending data 2023: ₹24,689 crore total, 1.2% on disability programs - [mca.gov.in](https://www.mca.gov.in/)
 
 ### Success Metrics
 
