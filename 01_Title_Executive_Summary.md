@@ -5,13 +5,13 @@
 
 **Project Title:** Intelligent Braille Stylus Plotter with AI-Enabled Learning Platform
 
-**Team Members:** [Your Team Names]
+**Team Members:** DFP-13
 
-**Institution:** [Your Institution]
+**Institution:** PDPM IIITDM JABALPUR
 
 **Date:** November 16, 2025
 
-**Project Category:** Assistive Technology / Educational Innovation
+**Project Category:** Design and Fabrication Project
 
 ---
 
@@ -35,11 +35,11 @@ Traditional braille embossers are expensive, bulky, purely mechanical devices wi
 We propose an **Arduino-based XY Braille Plotter** that replaces the traditional pen with a precision braille stylus actuator (servo motor) to create raised tactile dots on 140-160 GSM paper mounted on a slate backing. The system integrates:
 
 **Hardware Features:**
-- Low-cost XY plotting mechanism using NEMA 17 stepper motors
-- Servo-actuated braille stylus for precise dot embossing
+- Low-cost XY plotting mechanism using 3 servo motors (X-axis, Y-axis, Stylus)
+- Direct servo positioning for precise braille dot embossing
 - Support for 140-160 GSM paper (standard braille thickness)
 - Integrated microphone and speaker for voice interaction
-- Bluetooth/Wi-Fi connectivity for app control
+- Bluetooth connectivity for app control (via HC-05/HC-06 module)
 
 **Software Features:**
 - **AI-powered language translation**: Any language → braille script using Liblouis + GPT
