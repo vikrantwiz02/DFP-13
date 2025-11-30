@@ -575,9 +575,8 @@ Math: Vout = 5V × (2kΩ / 3kΩ) = 3.33V ✓ (safe for HC-05 3.3V logic)
 | Core Electronics | ₹4,482 |
 | Mechanical Components | ₹6,225 |
 | Optional Components | ₹955 |
-| **TOTAL** | **₹15,812** |
 | Contingency (20%) | ₹3,162 |
-| **GRAND TOTAL** | **₹14,832** |
+| **TOTAL** | **₹14,832** |
 
 **Note:** Prices are estimates based on AliExpress/eBay (low-cost suppliers). Local electronics stores may charge 20-50% more. Bulk purchases (10+ units) reduce cost by ~30%.
 
