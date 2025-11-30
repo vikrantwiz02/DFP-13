@@ -5,11 +5,14 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  SafeAreaView,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import theme, { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../theme';
 import { RootState } from '../../store';
 import { startLesson } from '../../store/slices/lessonsSlice';
 import { RootStackParamList } from '../../navigation/RootNavigator';
@@ -25,6 +28,21 @@ interface Props {
   route: LessonDetailScreenRouteProp;
 }
 
+const EDU_COLORS = {
+  primaryBlue: '#3B82F6',
+  deepBlue: '#2563EB',
+  softPurple: '#8B5CF6',
+  richPurple: '#7C3AED',
+  vibrantGreen: '#10B981',
+  emeraldGreen: '#059669',
+  warmOrange: '#F59E0B',
+  sunsetOrange: '#F97316',
+  deepSlate: '#0F172A',
+  slateGray: '#1E293B',
+  cardDark: '#1A1A2E',
+  accent: '#06B6D4',
+};
+
 export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { lessonId } = route.params;
   const dispatch = useDispatch();
@@ -38,9 +56,11 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   if (!lesson) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Lesson not found</Text>
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Lesson not found</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -50,217 +70,363 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.levelBadge}>{lesson.level}</Text>
-          {isCompleted && <Text style={styles.completedBadge}>✓ Completed</Text>}
+    <SafeAreaView style={styles.container}>
+      {/* Background Gradient */}
+      <LinearGradient
+        colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
+        style={styles.backgroundGradient}
+      >
+        {/* Floating Orbs */}
+        <View style={styles.floatingOrbs}>
+          <View style={[styles.orb, styles.orb1]} />
+          <View style={[styles.orb, styles.orb2]} />
         </View>
 
-        <Text style={styles.title}>{lesson.title}</Text>
-        <Text style={styles.description}>{lesson.description}</Text>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header Card */}
+          <View style={styles.headerCard}>
+            <LinearGradient
+              colors={[EDU_COLORS.primaryBlue, EDU_COLORS.deepBlue]}
+              style={styles.levelBadge}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Text style={styles.levelText}>{lesson.level.toUpperCase()}</Text>
+            </LinearGradient>
 
-        {/* Meta Info */}
-        <View style={styles.metaContainer}>
-          <View style={styles.metaItem}>
-            <Text style={styles.metaLabel}>Duration</Text>
-            <Text style={styles.metaValue}>⏱ {lesson.duration_min} min</Text>
-          </View>
-          <View style={styles.metaItem}>
-            <Text style={styles.metaLabel}>Difficulty</Text>
-            <Text style={styles.metaValue}>{lesson.level}</Text>
-          </View>
-        </View>
-
-        {/* Prerequisites */}
-        {lesson.prerequisites && lesson.prerequisites.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Prerequisites</Text>
-            {lesson.prerequisites.map((prereq, index) => (
-              <View key={index} style={styles.prerequisiteItem}>
-                <Text style={styles.prerequisiteText}>• {prereq}</Text>
+            {isCompleted && (
+              <View style={styles.completedBadge}>
+                <Ionicons name="checkmark-circle" size={20} color={EDU_COLORS.vibrantGreen} />
+                <Text style={styles.completedText}>Completed</Text>
               </View>
-            ))}
+            )}
           </View>
-        )}
 
-        {/* Learning Objectives */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>What You'll Learn</Text>
-          <Text style={styles.objectivesText}>
-            This lesson will teach you the fundamentals of {lesson.title.toLowerCase()}.
-            You'll practice recognition and writing through interactive exercises.
-          </Text>
-        </View>
+          {/* Title Section */}
+          <Text style={styles.title}>{lesson.title}</Text>
+          <Text style={styles.description}>{lesson.description}</Text>
 
-        {/* Device Warning */}
-        {!connected && (
-          <View style={styles.warningCard}>
-            <Text style={styles.warningIcon}>⚠️</Text>
-            <View style={styles.warningContent}>
-              <Text style={styles.warningTitle}>Device Not Connected</Text>
-              <Text style={styles.warningText}>
-                Connect your Braille device for the best learning experience
-              </Text>
+          {/* Stats Cards */}
+          <View style={styles.statsContainer}>
+            <View style={styles.statCard}>
+              <LinearGradient
+                colors={['rgba(59, 130, 246, 0.1)', 'rgba(37, 99, 235, 0.05)']}
+                style={styles.statGradient}
+              >
+                <Ionicons name="time-outline" size={24} color={EDU_COLORS.primaryBlue} />
+                <Text style={styles.statValue}>{lesson.duration_min}</Text>
+                <Text style={styles.statLabel}>Minutes</Text>
+              </LinearGradient>
+            </View>
+
+            <View style={styles.statCard}>
+              <LinearGradient
+                colors={['rgba(139, 92, 246, 0.1)', 'rgba(124, 58, 237, 0.05)']}
+                style={styles.statGradient}
+              >
+                <Ionicons name="layers-outline" size={24} color={EDU_COLORS.softPurple} />
+                <Text style={styles.statValue}>{lesson.chapter}</Text>
+                <Text style={styles.statLabel}>Chapter</Text>
+              </LinearGradient>
             </View>
           </View>
-        )}
-      </ScrollView>
 
-      {/* Bottom Action Button */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.startButton}
-          onPress={handleStartLesson}
-        >
-          <Text style={styles.startButtonText}>
-            {isCompleted ? 'Review Lesson' : 'Start Lesson'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          {/* Prerequisites */}
+          {lesson.prerequisites && lesson.prerequisites.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Ionicons name="git-branch-outline" size={20} color={EDU_COLORS.primaryBlue} />
+                <Text style={styles.sectionTitle}>Prerequisites</Text>
+              </View>
+              <View style={styles.prerequisitesList}>
+                {lesson.prerequisites.map((prereq, index) => (
+                  <View key={index} style={styles.prerequisiteItem}>
+                    <View style={styles.prerequisiteCheck}>
+                      <Ionicons name="checkmark" size={14} color={EDU_COLORS.vibrantGreen} />
+                    </View>
+                    <Text style={styles.prerequisiteText}>{prereq}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Learning Objectives */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="bulb-outline" size={20} color={EDU_COLORS.warmOrange} />
+              <Text style={styles.sectionTitle}>What You'll Learn</Text>
+            </View>
+            <Text style={styles.objectivesText}>
+              Master the fundamentals of {lesson.title.toLowerCase()} through interactive exercises and practice.
+            </Text>
+          </View>
+
+          {/* Device Connection Warning */}
+          {!connected && (
+            <View style={styles.warningCard}>
+              <LinearGradient
+                colors={['rgba(245, 158, 11, 0.15)', 'rgba(245, 158, 11, 0.05)']}
+                style={styles.warningGradient}
+              >
+                <View style={styles.warningHeader}>
+                  <Ionicons name="warning-outline" size={24} color={EDU_COLORS.warmOrange} />
+                  <Text style={styles.warningTitle}>Device Not Connected</Text>
+                </View>
+                <Text style={styles.warningText}>
+                  Connect your Braille device for the best learning experience
+                </Text>
+              </LinearGradient>
+            </View>
+          )}
+        </ScrollView>
+
+        {/* Action Button */}
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={styles.startButton}
+            onPress={handleStartLesson}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={[EDU_COLORS.primaryBlue, EDU_COLORS.deepBlue]}
+              style={styles.buttonGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Ionicons
+                name={isCompleted ? 'refresh' : 'play'}
+                size={20}
+                color="#FFFFFF"
+              />
+              <Text style={styles.buttonText}>
+                {isCompleted ? 'Review Lesson' : 'Start Lesson'}
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background.primary,
+    backgroundColor: EDU_COLORS.deepSlate,
   },
-  content: {
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: TYPOGRAPHY.sizes.h4,
+    color: COLORS.error.main,
+    textAlign: 'center',
+  },
+  backgroundGradient: {
+    flex: 1,
+  },
+  floatingOrbs: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  orb: {
+    position: 'absolute',
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    opacity: 0.05,
+  },
+  orb1: {
+    top: -50,
+    right: -50,
+    backgroundColor: EDU_COLORS.primaryBlue,
+  },
+  orb2: {
+    bottom: 100,
+    left: -50,
+    backgroundColor: EDU_COLORS.softPurple,
+  },
+  scrollView: {
     flex: 1,
   },
   scrollContent: {
-    padding: theme.spacing.lg,
+    padding: SPACING.lg,
+    paddingBottom: 100,
   },
-  header: {
+  headerCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.md,
+    marginBottom: SPACING.xl,
   },
   levelBadge: {
-    backgroundColor: theme.colors.primary.dark,
-    color: theme.colors.primary.main,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    borderRadius: theme.radius.sm,
-    fontSize: theme.typography.sizes.bodySmall,
-    fontWeight: theme.typography.weights.medium as any,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.full,
+  },
+  levelText: {
+    color: '#FFFFFF',
+    fontSize: TYPOGRAPHY.sizes.caption,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    letterSpacing: 1,
   },
   completedBadge: {
-    color: theme.colors.success.main,
-    fontSize: theme.typography.sizes.body,
-    fontWeight: theme.typography.weights.semiBold as any,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.full,
+  },
+  completedText: {
+    color: EDU_COLORS.vibrantGreen,
+    fontSize: TYPOGRAPHY.sizes.bodySmall,
+    fontWeight: TYPOGRAPHY.weights.semiBold as any,
   },
   title: {
-    fontSize: theme.typography.sizes.h1,
-    fontWeight: theme.typography.weights.bold as any,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
+    fontSize: TYPOGRAPHY.sizes.h1,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    color: COLORS.text.primary,
+    marginBottom: SPACING.md,
+    lineHeight: 40,
   },
   description: {
-    fontSize: theme.typography.sizes.body,
-    color: theme.colors.text.secondary,
+    fontSize: TYPOGRAPHY.sizes.body,
+    color: COLORS.text.secondary,
     lineHeight: 24,
-    marginBottom: theme.spacing.xl,
+    marginBottom: SPACING.xl,
   },
-  metaContainer: {
+  statsContainer: {
     flexDirection: 'row',
-    gap: theme.spacing.lg,
-    marginBottom: theme.spacing.xl,
+    gap: SPACING.md,
+    marginBottom: SPACING.xl,
   },
-  metaItem: {
+  statCard: {
     flex: 1,
-    backgroundColor: theme.colors.surface.elevated,
-    padding: theme.spacing.md,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.border.medium,
+    borderRadius: RADIUS.lg,
+    overflow: 'hidden',
   },
-  metaLabel: {
-    fontSize: theme.typography.sizes.caption,
-    color: theme.colors.text.secondary,
-    marginBottom: theme.spacing.xs,
+  statGradient: {
+    padding: SPACING.lg,
+    alignItems: 'center',
   },
-  metaValue: {
-    fontSize: theme.typography.sizes.body,
-    fontWeight: theme.typography.weights.semiBold as any,
-    color: theme.colors.text.primary,
+  statValue: {
+    fontSize: TYPOGRAPHY.sizes.h2,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    color: COLORS.text.primary,
+    marginVertical: SPACING.sm,
+  },
+  statLabel: {
+    fontSize: TYPOGRAPHY.sizes.caption,
+    color: COLORS.text.secondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   section: {
-    marginBottom: theme.spacing.xl,
+    marginBottom: SPACING.xl,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   sectionTitle: {
-    fontSize: theme.typography.sizes.h3,
-    fontWeight: theme.typography.weights.bold as any,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.md,
+    fontSize: TYPOGRAPHY.sizes.h4,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    color: COLORS.text.primary,
+  },
+  prerequisitesList: {
+    gap: SPACING.sm,
   },
   prerequisiteItem: {
-    marginBottom: theme.spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    padding: SPACING.md,
+    borderRadius: RADIUS.md,
+  },
+  prerequisiteCheck: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   prerequisiteText: {
-    fontSize: theme.typography.sizes.body,
-    color: theme.colors.text.secondary,
+    flex: 1,
+    fontSize: TYPOGRAPHY.sizes.body,
+    color: COLORS.text.primary,
   },
   objectivesText: {
-    fontSize: theme.typography.sizes.body,
-    color: theme.colors.text.secondary,
+    fontSize: TYPOGRAPHY.sizes.body,
+    color: COLORS.text.secondary,
     lineHeight: 24,
   },
   warningCard: {
+    borderRadius: RADIUS.lg,
+    overflow: 'hidden',
+    marginBottom: SPACING.xl,
+  },
+  warningGradient: {
+    padding: SPACING.lg,
+  },
+  warningHeader: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.warning.background,
-    borderWidth: 1,
-    borderColor: theme.colors.warning.main,
-    borderRadius: theme.radius.lg,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
-  },
-  warningIcon: {
-    fontSize: 24,
-    marginRight: theme.spacing.md,
-  },
-  warningContent: {
-    flex: 1,
+    alignItems: 'center',
+    gap: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   warningTitle: {
-    fontSize: theme.typography.sizes.body,
-    fontWeight: theme.typography.weights.semiBold as any,
-    color: theme.colors.warning.main,
-    marginBottom: theme.spacing.xs,
+    fontSize: TYPOGRAPHY.sizes.body,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    color: EDU_COLORS.warmOrange,
   },
   warningText: {
-    fontSize: theme.typography.sizes.bodySmall,
-    color: theme.colors.text.secondary,
+    fontSize: TYPOGRAPHY.sizes.bodySmall,
+    color: COLORS.text.secondary,
+    lineHeight: 20,
   },
   footer: {
-    padding: theme.spacing.lg,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: SPACING.lg,
+    backgroundColor: 'rgba(15, 23, 42, 0.95)',
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border.medium,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
   startButton: {
-    backgroundColor: theme.colors.primary.main,
-    borderRadius: theme.radius.lg,
-    padding: theme.spacing.md,
+    borderRadius: RADIUS.lg,
+    overflow: 'hidden',
+    ...SHADOWS.medium,
+  },
+  buttonGradient: {
+    flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 48,
     justifyContent: 'center',
+    gap: SPACING.sm,
+    padding: SPACING.lg,
+    minHeight: 56,
   },
-  startButtonDisabled: {
-    backgroundColor: theme.colors.surface.elevated,
-  },
-  startButtonText: {
-    fontSize: theme.typography.sizes.body,
-    fontWeight: theme.typography.weights.semiBold as any,
-    color: theme.colors.text.primary,
-  },
-  errorText: {
-    fontSize: theme.typography.sizes.h4,
-    color: theme.colors.error.main,
-    textAlign: 'center',
-    marginTop: theme.spacing.xxl,
+  buttonText: {
+    fontSize: TYPOGRAPHY.sizes.body,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
 });
