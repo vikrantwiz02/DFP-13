@@ -119,7 +119,7 @@ export const ActiveLessonScreen: React.FC<Props> = ({ navigation, route }) => {
             Step {currentStep + 1} of {totalSteps}
           </Text>
           <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${progress}%` }]} />
+            <View style={[styles.progressFill, { width: progress + '%' }]} />
           </View>
         </View>
         <TouchableOpacity onPress={handleVoiceAssistant} style={styles.voiceButton}>

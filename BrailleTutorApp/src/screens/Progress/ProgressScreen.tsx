@@ -4,7 +4,7 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  SafeAreaView,
+  Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -43,10 +43,10 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
   const achievements = stats.achievements || [];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <LinearGradient
-        colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
-        style={styles.backgroundGradient}
+        colors={['transparent', EDU_COLORS.deepSlate]}
+        style={styles.backgroundGlow}
       >
         {/* Floating Orbs */}
         <View style={styles.floatingOrbs}>
@@ -55,7 +55,12 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* Header */}
-        <View style={styles.header}>
+        <LinearGradient
+          colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
+          style={styles.header}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
           <View style={styles.headerContent}>
             <View>
               <Text style={styles.title}>Your Progress</Text>
@@ -70,49 +75,57 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
               </LinearGradient>
             </View>
           </View>
-        </View>
+        </LinearGradient>
 
         <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           {/* Stats Overview */}
           <View style={styles.statsGrid}>
-          <LinearGradient
-            colors={[COLORS.primary.main + '30', COLORS.primary.main + '10']}
-            style={styles.statCard}
-          >
-            <Ionicons name="book" size={32} color={COLORS.primary.main} />
-            <Text style={styles.statValue}>{completedLessons.length}</Text>
-            <Text style={styles.statLabel}>Lessons</Text>
-          </LinearGradient>
-          
-          <LinearGradient
-            colors={[COLORS.warning.main + '30', COLORS.warning.main + '10']}
-            style={styles.statCard}
-          >
-            <Ionicons name="flame" size={32} color={COLORS.warning.main} />
-            <Text style={styles.statValue}>{stats.currentStreak}</Text>
-            <Text style={styles.statLabel}>Day Streak</Text>
-          </LinearGradient>
-        </View>
+            <View style={styles.statCardWrapper}>
+              <LinearGradient
+                colors={[EDU_COLORS.deepBlue, EDU_COLORS.primaryBlue]}
+                style={styles.statCard}
+              >
+                <Ionicons name="book" size={32} color="#FFFFFF" />
+                <Text style={styles.statValue}>{completedLessons.length}</Text>
+                <Text style={styles.statLabel}>Lessons</Text>
+              </LinearGradient>
+            </View>
+            
+            <View style={styles.statCardWrapper}>
+              <LinearGradient
+                colors={[EDU_COLORS.warmOrange, EDU_COLORS.sunsetOrange]}
+                style={styles.statCard}
+              >
+                <Ionicons name="flame" size={32} color="#FFFFFF" />
+                <Text style={styles.statValue}>{stats.currentStreak}</Text>
+                <Text style={styles.statLabel}>Day Streak</Text>
+              </LinearGradient>
+            </View>
+          </View>
 
-        <View style={styles.statsGrid}>
-          <LinearGradient
-            colors={[COLORS.success.main + '30', COLORS.success.main + '10']}
-            style={styles.statCard}
-          >
-            <Ionicons name="time" size={32} color={COLORS.success.main} />
-            <Text style={styles.statValue}>{stats.totalPracticeMinutes}</Text>
-            <Text style={styles.statLabel}>Minutes</Text>
-          </LinearGradient>
-          
-          <LinearGradient
-            colors={[COLORS.secondary.main + '30', COLORS.secondary.main + '10']}
-            style={styles.statCard}
-          >
-            <Ionicons name="star" size={32} color={COLORS.secondary.main} />
-            <Text style={styles.statValue}>{stats.averageScore}%</Text>
-            <Text style={styles.statLabel}>Accuracy</Text>
-          </LinearGradient>
-        </View>
+          <View style={styles.statsGrid}>
+            <View style={styles.statCardWrapper}>
+              <LinearGradient
+                colors={[EDU_COLORS.vibrantGreen, EDU_COLORS.emeraldGreen]}
+                style={styles.statCard}
+              >
+                <Ionicons name="time" size={32} color="#FFFFFF" />
+                <Text style={styles.statValue}>{stats.totalPracticeMinutes}</Text>
+                <Text style={styles.statLabel}>Minutes</Text>
+              </LinearGradient>
+            </View>
+            
+            <View style={styles.statCardWrapper}>
+              <LinearGradient
+                colors={[EDU_COLORS.softPurple, EDU_COLORS.richPurple]}
+                style={styles.statCard}
+              >
+                <Ionicons name="star" size={32} color="#FFFFFF" />
+                <Text style={styles.statValue}>{stats.averageScore}%</Text>
+                <Text style={styles.statLabel}>Accuracy</Text>
+              </LinearGradient>
+            </View>
+          </View>
 
         {/* Weekly Progress Chart */}
         <View style={styles.section}>
@@ -166,7 +179,7 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
                     <View
                       style={[
                         styles.levelProgressFill,
-                        { width: `${percentage}%` },
+                        { width: percentage + '%' },
                       ]}
                     />
                   </View>
@@ -213,16 +226,16 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
         </View>
       </ScrollView>
       </LinearGradient>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EDU_COLORS.deepSlate,
+    backgroundColor: '#0A0A0F',
   },
-  backgroundGradient: {
+  backgroundGlow: {
     flex: 1,
   },
   floatingOrbs: {
@@ -250,8 +263,12 @@ const styles = StyleSheet.create({
     backgroundColor: EDU_COLORS.softPurple,
   },
   header: {
-    padding: SPACING.lg,
-    paddingTop: SPACING.md,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingBottom: SPACING.xl,
+    paddingHorizontal: SPACING.lg,
+    borderBottomLeftRadius: RADIUS.xl,
+    borderBottomRightRadius: RADIUS.xl,
+    overflow: 'hidden',
   },
   trophyContainer: {
     borderRadius: RADIUS.md,
@@ -267,14 +284,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: TYPOGRAPHY.sizes.h1,
-    fontWeight: TYPOGRAPHY.weights.bold as any,
-    color: COLORS.text.primary,
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.sizes.body,
-    color: COLORS.text.secondary,
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   content: {
     flex: 1,
@@ -287,28 +304,31 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
     marginBottom: SPACING.md,
   },
-  statCard: {
+  statCardWrapper: {
     flex: 1,
     borderRadius: RADIUS.lg,
+    overflow: 'hidden',
+    ...SHADOWS.medium,
+  },
+  statCard: {
     padding: SPACING.lg,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border.light,
   },
   statIcon: {
     fontSize: 32,
     marginBottom: SPACING.sm,
   },
   statValue: {
-    fontSize: TYPOGRAPHY.sizes.h2,
-    fontWeight: 'bold',
-    color: COLORS.text.primary,
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginVertical: SPACING.xs,
   },
   statLabel: {
-    fontSize: TYPOGRAPHY.sizes.caption,
-    color: COLORS.text.secondary,
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
+    letterSpacing: 1,
   },
   section: {
     marginTop: SPACING.lg,
@@ -394,7 +414,8 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   achievementCard: {
-    width: (width - SPACING.lg * 2 - SPACING.md) / 2,
+    flex: 1,
+    minWidth: '45%',
     backgroundColor: COLORS.surface.elevated,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,

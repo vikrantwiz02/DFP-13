@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Platform,
   Animated,
-  Dimensions,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -28,8 +27,6 @@ type HomeScreenNavigationProp = CompositeNavigationProp<
 interface Props {
   navigation: HomeScreenNavigationProp;
 }
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -571,7 +568,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   gridCell: {
-    width: (SCREEN_WIDTH - SPACING.lg * 2 - SPACING.lg * 2 - 4 * 9) / 10,
+    width: 28,
     height: 6,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 2,
@@ -638,7 +635,8 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   actionCard: {
-    width: (SCREEN_WIDTH - SPACING.lg * 2 - SPACING.md) / 2,
+    flex: 1,
+    minWidth: '45%',
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
     borderWidth: 1,

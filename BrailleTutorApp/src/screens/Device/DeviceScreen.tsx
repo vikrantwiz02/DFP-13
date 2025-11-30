@@ -221,16 +221,19 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
                     </Text>
                   </View>
                   <View style={styles.progressBar}>
-                    <LinearGradient
-                      colors={[EDU_COLORS.primaryBlue, EDU_COLORS.softPurple]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
+                    <View
                       style={[
                         styles.progressFill,
-                        { width: `${currentJob.progress}%` },
+                        { width: currentJob.progress + '%' },
                       ]}
-                    />
-                  </View>
+                    >
+                      <LinearGradient
+                        colors={[EDU_COLORS.primaryBlue, EDU_COLORS.softPurple]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.progressGradient}
+                      />
+                    </View>
                   </View>
                   <Text style={styles.progressDetails}>
                     {currentJob.dotsCompleted} / {currentJob.totalDots} dots
@@ -511,6 +514,9 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
+  },
+  progressGradient: {
+    flex: 1,
   },
   progressDetails: {
     fontSize: 12,
