@@ -95,14 +95,27 @@ sequenceDiagram
     Cloud->>App: Return braille dot pattern
     App->>Device: Send print job via BLE
     Device->>Device: Parse job, plan path
+    Device->>App: Job accepted (ack)
     Device->>Motors: Move to start position
+    Motors->>Device: Homing complete
+    
     loop For each dot
         Device->>Motors: Move X/Y to position
         Device->>Motors: Actuate stylus (servo down)
         Device->>Motors: Release stylus (servo up)
+        Motors->>Device: Dot complete (position, index)
+        Device->>App: Progress update (dot_complete)
+        App->>User: Update progress bar
     end
-    Device->>App: Print complete notification
+    
+    Motors->>Device: All dots complete
+    Device->>App: Job complete (status, duration)
     App->>User: Voice/haptic feedback
+    
+    Note over Motors,Device: If motor error occurs:
+    Motors-->>Device: Error (MOTOR_STALL, position)
+    Device-->>App: Job failed (error details)
+    App-->>User: Alert + recovery options
 ```
 
 ### 3.2.2 Lesson Mode Workflow
