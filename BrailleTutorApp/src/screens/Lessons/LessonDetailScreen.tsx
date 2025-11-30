@@ -5,8 +5,9 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
+  Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -56,11 +57,23 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   if (!lesson) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Lesson not found</Text>
-        </View>
-      </SafeAreaView>
+      <View style={styles.container}>
+        <LinearGradient
+          colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
+          style={styles.backgroundGradient}
+        >
+          <View style={styles.errorContainer}>
+            <Ionicons name="alert-circle-outline" size={64} color={COLORS.error.main} />
+            <Text style={styles.errorText}>Lesson not found</Text>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.backButtonText}>Go Back</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </View>
     );
   }
 
@@ -70,119 +83,95 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Background Gradient */}
       <LinearGradient
-        colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
+        colors={[EDU_COLORS.deepSlate, '#0A0A0F']}
         style={styles.backgroundGradient}
       >
-        {/* Floating Orbs */}
-        <View style={styles.floatingOrbs}>
-          <View style={[styles.orb, styles.orb1]} />
-          <View style={[styles.orb, styles.orb2]} />
-        </View>
+        {/* Header Card - Matching LessonsScreen Style */}
+        <LinearGradient
+          colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
+          style={styles.header}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          {/* Back Button */}
+          <TouchableOpacity
+            style={styles.headerBackButton}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+
+          <View style={styles.headerContent}>
+            <View style={styles.headerLeft}>
+              {/* Level Badge */}
+              <View style={styles.levelBadgeContainer}>
+                <Text style={styles.levelText}>{lesson.level.toUpperCase()}</Text>
+              </View>
+
+              {/* Title */}
+              <Text style={styles.title}>{lesson.title}</Text>
+
+              {/* Description */}
+              <Text style={styles.subtitle}>{lesson.description}</Text>
+
+              {/* Chapter Info */}
+              <View style={styles.chapterInfo}>
+                <Ionicons name="layers-outline" size={16} color={EDU_COLORS.accent} />
+                <Text style={styles.chapterText}>{lesson.chapter}</Text>
+              </View>
+            </View>
+
+            {/* Stats Circle */}
+            <View style={styles.headerRight}>
+              <View style={styles.statsCircle}>
+                <Ionicons name="time-outline" size={24} color={EDU_COLORS.primaryBlue} />
+                <Text style={styles.statsValue}>{lesson.duration_min}</Text>
+                <Text style={styles.statsLabel}>min</Text>
+              </View>
+            </View>
+          </View>
+        </LinearGradient>
 
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header Card */}
-          <View style={styles.headerCard}>
-            <LinearGradient
-              colors={[EDU_COLORS.primaryBlue, EDU_COLORS.deepBlue]}
-              style={styles.levelBadge}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <Text style={styles.levelText}>{lesson.level.toUpperCase()}</Text>
-            </LinearGradient>
 
-            {isCompleted && (
-              <View style={styles.completedBadge}>
-                <Ionicons name="checkmark-circle" size={20} color={EDU_COLORS.vibrantGreen} />
-                <Text style={styles.completedText}>Completed</Text>
-              </View>
-            )}
-          </View>
-
-          {/* Title Section */}
-          <Text style={styles.title}>{lesson.title}</Text>
-          <Text style={styles.description}>{lesson.description}</Text>
-
-          {/* Stats Cards */}
-          <View style={styles.statsContainer}>
-            <View style={styles.statCard}>
-              <LinearGradient
-                colors={['rgba(59, 130, 246, 0.1)', 'rgba(37, 99, 235, 0.05)']}
-                style={styles.statGradient}
-              >
-                <Ionicons name="time-outline" size={24} color={EDU_COLORS.primaryBlue} />
-                <Text style={styles.statValue}>{lesson.duration_min}</Text>
-                <Text style={styles.statLabel}>Minutes</Text>
-              </LinearGradient>
-            </View>
-
-            <View style={styles.statCard}>
-              <LinearGradient
-                colors={['rgba(139, 92, 246, 0.1)', 'rgba(124, 58, 237, 0.05)']}
-                style={styles.statGradient}
-              >
-                <Ionicons name="layers-outline" size={24} color={EDU_COLORS.softPurple} />
-                <Text style={styles.statValue}>{lesson.chapter}</Text>
-                <Text style={styles.statLabel}>Chapter</Text>
-              </LinearGradient>
-            </View>
-          </View>
-
-          {/* Prerequisites */}
-          {lesson.prerequisites && lesson.prerequisites.length > 0 && (
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Ionicons name="git-branch-outline" size={20} color={EDU_COLORS.primaryBlue} />
-                <Text style={styles.sectionTitle}>Prerequisites</Text>
-              </View>
-              <View style={styles.prerequisitesList}>
-                {lesson.prerequisites.map((prereq, index) => (
-                  <View key={index} style={styles.prerequisiteItem}>
-                    <View style={styles.prerequisiteCheck}>
-                      <Ionicons name="checkmark" size={14} color={EDU_COLORS.vibrantGreen} />
-                    </View>
-                    <Text style={styles.prerequisiteText}>{prereq}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Learning Objectives */}
+          {/* What You'll Learn Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="bulb-outline" size={20} color={EDU_COLORS.warmOrange} />
+              <Ionicons name="bulb" size={20} color={EDU_COLORS.warmOrange} />
               <Text style={styles.sectionTitle}>What You'll Learn</Text>
             </View>
-            <Text style={styles.objectivesText}>
-              Master the fundamentals of {lesson.title.toLowerCase()} through interactive exercises and practice.
-            </Text>
+            <View style={styles.learningCard}>
+              <Text style={styles.learningText}>
+                Master the fundamentals of {lesson.title.toLowerCase()} through interactive exercises and practice.
+              </Text>
+            </View>
           </View>
 
           {/* Device Connection Warning */}
           {!connected && (
             <View style={styles.warningCard}>
-              <LinearGradient
-                colors={['rgba(245, 158, 11, 0.15)', 'rgba(245, 158, 11, 0.05)']}
-                style={styles.warningGradient}
-              >
-                <View style={styles.warningHeader}>
-                  <Ionicons name="warning-outline" size={24} color={EDU_COLORS.warmOrange} />
-                  <Text style={styles.warningTitle}>Device Not Connected</Text>
-                </View>
+              <View style={styles.warningIconContainer}>
+                <Ionicons name="warning" size={24} color={EDU_COLORS.warmOrange} />
+              </View>
+              <View style={styles.warningContent}>
+                <Text style={styles.warningTitle}>Device Not Connected</Text>
                 <Text style={styles.warningText}>
                   Connect your Braille device for the best learning experience
                 </Text>
-              </LinearGradient>
+              </View>
             </View>
           )}
+
+          {/* Bottom padding for button */}
+          <View style={{ height: 80 }} />
         </ScrollView>
 
         {/* Action Button */}
@@ -190,7 +179,7 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.startButton}
             onPress={handleStartLesson}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
           >
             <LinearGradient
               colors={[EDU_COLORS.primaryBlue, EDU_COLORS.deepBlue]}
@@ -199,13 +188,11 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
               end={{ x: 1, y: 1 }}
             >
               <Ionicons
-                name={isCompleted ? 'refresh' : 'play'}
-                size={20}
+                name="play"
+                size={24}
                 color="#FFFFFF"
               />
-              <Text style={styles.buttonText}>
-                {isCompleted ? 'Review Lesson' : 'Start Lesson'}
-              </Text>
+              <Text style={styles.buttonText}>Start Lesson</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -217,121 +204,135 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EDU_COLORS.deepSlate,
+    backgroundColor: '#0A0A0F',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: SPACING.xl,
   },
   errorText: {
-    fontSize: TYPOGRAPHY.sizes.h4,
-    color: COLORS.error.main,
+    fontSize: TYPOGRAPHY.sizes.h3,
+    color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.xl,
+  },
+  backButton: {
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.md,
+    backgroundColor: EDU_COLORS.primaryBlue,
+    borderRadius: RADIUS.md,
+  },
+  backButtonText: {
+    color: '#FFFFFF',
+    fontSize: TYPOGRAPHY.sizes.body,
+    fontWeight: TYPOGRAPHY.weights.semiBold as any,
   },
   backgroundGradient: {
     flex: 1,
   },
-  floatingOrbs: {
+  header: {
+    paddingTop: Platform.OS === 'ios' ? 50 : 16,
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.md,
+    borderBottomLeftRadius: RADIUS.xl,
+    borderBottomRightRadius: RADIUS.xl,
+    overflow: 'hidden',
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  headerLeft: {
+    flex: 1,
+    marginRight: SPACING.md,
+  },
+  headerRight: {
+    marginLeft: SPACING.sm,
+  },
+  statsCircle: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    borderWidth: 3,
+    borderColor: EDU_COLORS.primaryBlue,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statsValue: {
+    fontSize: 18,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    color: '#FFFFFF',
+    marginTop: 2,
+  },
+  statsLabel: {
+    fontSize: 10,
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  chapterInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    marginTop: 6,
+  },
+  chapterText: {
+    fontSize: 13,
+    color: EDU_COLORS.accent,
+  },
+  headerBackButton: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  orb: {
-    position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    opacity: 0.05,
-  },
-  orb1: {
-    top: -50,
-    right: -50,
-    backgroundColor: EDU_COLORS.primaryBlue,
-  },
-  orb2: {
-    bottom: 100,
-    left: -50,
-    backgroundColor: EDU_COLORS.softPurple,
+    top: Platform.OS === 'ios' ? 50 : 16,
+    left: SPACING.lg,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    zIndex: 100,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    padding: SPACING.lg,
-    paddingBottom: 100,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.md,
   },
-  headerCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.xl,
-  },
-  levelBadge: {
+  levelBadgeContainer: {
+    alignSelf: 'flex-start',
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingVertical: 4,
     borderRadius: RADIUS.full,
+    marginBottom: SPACING.xs,
+    marginLeft: 48,
+    backgroundColor: EDU_COLORS.primaryBlue + '40',
+    borderWidth: 1,
+    borderColor: EDU_COLORS.primaryBlue + '60',
   },
   levelText: {
     color: '#FFFFFF',
-    fontSize: TYPOGRAPHY.sizes.caption,
+    fontSize: 11,
     fontWeight: TYPOGRAPHY.weights.bold as any,
     letterSpacing: 1,
   },
-  completedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xs,
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.full,
-  },
-  completedText: {
-    color: EDU_COLORS.vibrantGreen,
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    fontWeight: TYPOGRAPHY.weights.semiBold as any,
-  },
   title: {
-    fontSize: TYPOGRAPHY.sizes.h1,
+    fontSize: 26,
     fontWeight: TYPOGRAPHY.weights.bold as any,
-    color: COLORS.text.primary,
-    marginBottom: SPACING.md,
-    lineHeight: 40,
+    color: '#FFFFFF',
+    marginBottom: 4,
+    lineHeight: 32,
   },
-  description: {
-    fontSize: TYPOGRAPHY.sizes.body,
-    color: COLORS.text.secondary,
-    lineHeight: 24,
-    marginBottom: SPACING.xl,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    gap: SPACING.md,
-    marginBottom: SPACING.xl,
-  },
-  statCard: {
-    flex: 1,
-    borderRadius: RADIUS.lg,
-    overflow: 'hidden',
-  },
-  statGradient: {
-    padding: SPACING.lg,
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: TYPOGRAPHY.sizes.h2,
-    fontWeight: TYPOGRAPHY.weights.bold as any,
-    color: COLORS.text.primary,
-    marginVertical: SPACING.sm,
-  },
-  statLabel: {
-    fontSize: TYPOGRAPHY.sizes.caption,
-    color: COLORS.text.secondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+  subtitle: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
+    lineHeight: 20,
   },
   section: {
     marginBottom: SPACING.xl,
@@ -343,90 +344,79 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   sectionTitle: {
-    fontSize: TYPOGRAPHY.sizes.h4,
+    fontSize: 18,
     fontWeight: TYPOGRAPHY.weights.bold as any,
-    color: COLORS.text.primary,
+    color: '#FFFFFF',
   },
-  prerequisitesList: {
-    gap: SPACING.sm,
-  },
-  prerequisiteItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    padding: SPACING.md,
+  learningCard: {
+    backgroundColor: 'rgba(30, 41, 59, 0.3)',
     borderRadius: RADIUS.md,
+    padding: SPACING.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  prerequisiteCheck: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+  learningText: {
+    fontSize: 15,
+    color: 'rgba(255, 255, 255, 0.7)',
+    lineHeight: 22,
+  },
+  warningCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: SPACING.md,
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderRadius: RADIUS.md,
+    padding: SPACING.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.3)',
+  },
+  warningIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  prerequisiteText: {
+  warningContent: {
     flex: 1,
-    fontSize: TYPOGRAPHY.sizes.body,
-    color: COLORS.text.primary,
-  },
-  objectivesText: {
-    fontSize: TYPOGRAPHY.sizes.body,
-    color: COLORS.text.secondary,
-    lineHeight: 24,
-  },
-  warningCard: {
-    borderRadius: RADIUS.lg,
-    overflow: 'hidden',
-    marginBottom: SPACING.xl,
-  },
-  warningGradient: {
-    padding: SPACING.lg,
-  },
-  warningHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.md,
-    marginBottom: SPACING.sm,
   },
   warningTitle: {
-    fontSize: TYPOGRAPHY.sizes.body,
+    fontSize: 16,
     fontWeight: TYPOGRAPHY.weights.bold as any,
     color: EDU_COLORS.warmOrange,
+    marginBottom: SPACING.xs,
   },
   warningText: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    color: COLORS.text.secondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
     lineHeight: 20,
   },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: SPACING.lg,
-    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.md,
+    backgroundColor: 'rgba(10, 10, 15, 0.98)',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
   startButton: {
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
-    ...SHADOWS.medium,
+    ...SHADOWS.large,
   },
   buttonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: SPACING.sm,
-    padding: SPACING.lg,
-    minHeight: 56,
+    paddingVertical: 14,
+    minHeight: 52,
   },
   buttonText: {
-    fontSize: TYPOGRAPHY.sizes.body,
+    fontSize: 17,
     fontWeight: TYPOGRAPHY.weights.bold as any,
     color: '#FFFFFF',
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
   },
 });
