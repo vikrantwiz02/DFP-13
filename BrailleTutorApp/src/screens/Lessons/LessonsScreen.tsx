@@ -93,10 +93,20 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Text style={styles.title}>Lessons</Text>
-          <Text style={styles.subtitle}>250+ lessons across 5 levels</Text>
+          <View style={styles.headerContent}>
+            <View>
+              <Text style={styles.title}>Lessons</Text>
+              <Text style={styles.subtitle}>250+ lessons across 5 levels</Text>
+            </View>
+            <Ionicons name="library" size={28} color={EDU_COLORS.primaryBlue} />
+          </View>
         </LinearGradient>
 
+        <ScrollView 
+          style={styles.scrollView}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>
@@ -111,38 +121,37 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </View>
 
-      {/* Level Filter */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterContainer}
-        contentContainerStyle={styles.filterContent}
-      >
-        <TouchableOpacity
-          style={[styles.filterChip, !selectedLevel && styles.filterChipActive]}
-          onPress={() => setSelectedLevel(null)}
-        >
-          <Text style={[styles.filterText, !selectedLevel && styles.filterTextActive]}>
-            All
-          </Text>
-        </TouchableOpacity>
-        {levels.map((level) => (
-          <TouchableOpacity
-            key={level}
-            style={[styles.filterChip, selectedLevel === level && styles.filterChipActive]}
-            onPress={() => setSelectedLevel(level)}
+          {/* Level Filter */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.filterContainer}
+            contentContainerStyle={styles.filterContent}
           >
-            <Text
-              style={[styles.filterText, selectedLevel === level && styles.filterTextActive]}
+            <TouchableOpacity
+              style={[styles.filterChip, !selectedLevel && styles.filterChipActive]}
+              onPress={() => setSelectedLevel(null)}
             >
-              {level}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <Text style={[styles.filterText, !selectedLevel && styles.filterTextActive]}>
+                All
+              </Text>
+            </TouchableOpacity>
+            {levels.map((level) => (
+              <TouchableOpacity
+                key={level}
+                style={[styles.filterChip, selectedLevel === level && styles.filterChipActive]}
+                onPress={() => setSelectedLevel(level)}
+              >
+                <Text
+                  style={[styles.filterText, selectedLevel === level && styles.filterTextActive]}
+                >
+                  {level}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
 
-      {/* Lessons List */}
-      <ScrollView style={styles.lessonsList} contentContainerStyle={styles.lessonsContent}>
+          {/* Lessons List */}
         {filteredLessons.map((lesson: any) => {
           const completed = isLessonCompleted(lesson.id);
           return (
@@ -152,7 +161,7 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
               onPress={() => handleLessonPress(lesson.id)}
             >
               <LinearGradient
-                colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+                colors={[EDU_COLORS.slateGray + '40', EDU_COLORS.deepSlate + '20']}
                 style={styles.lessonCardGradient}
               >
                 <View style={styles.lessonHeader}>
@@ -183,7 +192,10 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
             </TouchableOpacity>
           );
         })}
-      </ScrollView>
+
+          {/* Bottom spacing */}
+          <View style={{ height: 120 }} />
+        </ScrollView>
       </LinearGradient>
     </View>
   );
@@ -204,43 +216,54 @@ const styles = StyleSheet.create({
   },
   orb: {
     position: 'absolute',
-    borderRadius: 1000,
-    opacity: 0.25,
+    borderRadius: 100,
+    opacity: 0.1,
   },
   orb1: {
-    width: 300,
-    height: 300,
+    width: 200,
+    height: 200,
     backgroundColor: EDU_COLORS.primaryBlue,
     top: -100,
-    right: -100,
+    right: -50,
   },
   orb2: {
-    width: 250,
-    height: 250,
+    width: 150,
+    height: 150,
     backgroundColor: EDU_COLORS.softPurple,
-    bottom: -80,
-    left: -80,
+    bottom: 100,
+    left: -50,
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingHorizontal: SPACING.xl,
-    paddingBottom: SPACING.md,
+    paddingTop: Platform.OS === 'ios' ? 60 : 20,
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.xl,
     borderBottomLeftRadius: RADIUS.xl,
     borderBottomRightRadius: RADIUS.xl,
     overflow: 'hidden',
   },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    paddingTop: SPACING.lg,
+  },
   title: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: TYPOGRAPHY.sizes.h3,
+    fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: TYPOGRAPHY.sizes.body,
     color: 'rgba(255, 255, 255, 0.7)',
   },
   searchContainer: {
-    paddingHorizontal: SPACING.xl,
+    paddingHorizontal: SPACING.lg,
     marginBottom: SPACING.md,
   },
   searchInputContainer: {
@@ -266,20 +289,20 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   filterContent: {
-    paddingHorizontal: SPACING.xl,
+    paddingHorizontal: SPACING.lg,
     gap: SPACING.sm,
   },
   filterChip: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: RADIUS.full,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   filterChipActive: {
-    backgroundColor: EDU_COLORS.primaryBlue,
-    borderColor: EDU_COLORS.primaryBlue,
+    backgroundColor: EDU_COLORS.primaryBlue + '40',
+    borderColor: EDU_COLORS.primaryBlue + '60',
   },
   filterText: {
     color: 'rgba(255, 255, 255, 0.7)',
@@ -289,17 +312,13 @@ const styles = StyleSheet.create({
   filterTextActive: {
     color: '#FFFFFF',
   },
-  lessonsList: {
-    flex: 1,
-  },
-  lessonsContent: {
-    padding: SPACING.xl,
-  },
   lessonCard: {
-    borderRadius: RADIUS.lg,
+    marginHorizontal: SPACING.lg,
     marginBottom: SPACING.md,
+    borderRadius: RADIUS.lg,
     overflow: 'hidden',
-    ...SHADOWS.medium,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   lessonCardGradient: {
     padding: SPACING.lg,

@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
     right: '20%',
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingTop: Platform.OS === 'ios' ? 60 : 20,
     paddingBottom: SPACING.xl,
     paddingHorizontal: SPACING.lg,
     borderBottomLeftRadius: RADIUS.xl,

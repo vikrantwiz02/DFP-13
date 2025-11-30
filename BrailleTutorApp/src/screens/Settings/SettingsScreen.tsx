@@ -104,14 +104,14 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.title}>Settings</Text>
               <Text style={styles.subtitle}>Customize your experience</Text>
             </View>
-            <Ionicons name="settings-sharp" size={32} color={EDU_COLORS.primaryBlue} />
+            <Ionicons name="settings-sharp" size={28} color={EDU_COLORS.primaryBlue} />
           </View>
         </LinearGradient>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         {/* Profile Section */}
         <LinearGradient
-          colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+          colors={[EDU_COLORS.slateGray + '40', EDU_COLORS.deepSlate + '20']}
           style={styles.section}
         >
           <Text style={styles.sectionTitle}>Profile</Text>
@@ -133,7 +133,7 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Appearance Section */}
         <LinearGradient
-          colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+          colors={[EDU_COLORS.slateGray + '40', EDU_COLORS.deepSlate + '20']}
           style={styles.section}
         >
           <Text style={styles.sectionTitle}>Appearance</Text>
@@ -157,7 +157,7 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Voice & Audio Section */}
         <LinearGradient
-          colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+          colors={[EDU_COLORS.slateGray + '40', EDU_COLORS.deepSlate + '20']}
           style={styles.section}
         >
           <Text style={styles.sectionTitle}>Voice & Audio</Text>
@@ -207,7 +207,7 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Device Settings */}
         <LinearGradient
-          colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+          colors={[EDU_COLORS.slateGray + '40', EDU_COLORS.deepSlate + '20']}
           style={styles.section}
         >
           <Text style={styles.sectionTitle}>Device Settings</Text>
@@ -244,7 +244,7 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* About Section */}
         <LinearGradient
-          colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+          colors={[EDU_COLORS.slateGray + '40', EDU_COLORS.deepSlate + '20']}
           style={styles.section}
         >
           <Text style={styles.sectionTitle}>About</Text>
@@ -315,27 +315,27 @@ const styles = StyleSheet.create({
   },
   orb: {
     position: 'absolute',
-    borderRadius: 1000,
-    opacity: 0.25,
+    borderRadius: 100,
+    opacity: 0.1,
   },
   orb1: {
-    width: 300,
-    height: 300,
+    width: 200,
+    height: 200,
     backgroundColor: EDU_COLORS.softPurple,
     top: -100,
-    right: -100,
+    right: -50,
   },
   orb2: {
-    width: 250,
-    height: 250,
+    width: 150,
+    height: 150,
     backgroundColor: EDU_COLORS.primaryBlue,
-    bottom: -80,
-    left: -80,
+    bottom: 100,
+    left: -50,
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: SPACING.md,
-    paddingHorizontal: SPACING.xl,
+    paddingTop: Platform.OS === 'ios' ? 60 : 20,
+    paddingBottom: SPACING.xl,
+    paddingHorizontal: SPACING.lg,
     borderBottomLeftRadius: RADIUS.xl,
     borderBottomRightRadius: RADIUS.xl,
     overflow: 'hidden',
@@ -346,13 +346,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: TYPOGRAPHY.sizes.h3,
+    fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: TYPOGRAPHY.sizes.body,
     color: 'rgba(255, 255, 255, 0.7)',
   },
   content: {
@@ -365,7 +365,8 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     marginBottom: SPACING.md,
-    ...SHADOWS.medium,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   sectionTitle: {
     fontSize: 18,
@@ -441,7 +442,8 @@ const styles = StyleSheet.create({
     marginTop: SPACING.lg,
     marginBottom: SPACING.xl,
     overflow: 'hidden',
-    ...SHADOWS.medium,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
   },
   logoutButtonGradient: {
     flexDirection: 'row',

@@ -155,7 +155,7 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
             </View>
             <Ionicons 
               name={connected ? "bluetooth" : "bluetooth-outline"} 
-              size={32} 
+              size={28} 
               color={connected ? EDU_COLORS.vibrantGreen : EDU_COLORS.primaryBlue} 
             />
           </View>
@@ -165,7 +165,7 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
         {/* Connected Device Card */}
         {connected && deviceInfo ? (
           <LinearGradient
-            colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+            colors={[EDU_COLORS.slateGray + '40', EDU_COLORS.deepSlate + '20']}
             style={styles.connectedCard}
           >
             <View style={styles.deviceHeader}>
@@ -294,7 +294,7 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
                     onPress={() => handleConnect(device.id)}
                   >
                     <LinearGradient
-                      colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+                      colors={[EDU_COLORS.slateGray + '40', EDU_COLORS.deepSlate + '20']}
                       style={styles.deviceItemGradient}
                     >
                     <View style={styles.deviceItemInfo}>
@@ -352,27 +352,27 @@ const styles = StyleSheet.create({
   },
   orb: {
     position: 'absolute',
-    borderRadius: 1000,
-    opacity: 0.25,
+    borderRadius: 100,
+    opacity: 0.1,
   },
   orb1: {
-    width: 300,
-    height: 300,
+    width: 200,
+    height: 200,
     backgroundColor: EDU_COLORS.primaryBlue,
     top: -100,
-    right: -100,
+    right: -50,
   },
   orb2: {
-    width: 250,
-    height: 250,
+    width: 150,
+    height: 150,
     backgroundColor: EDU_COLORS.vibrantGreen,
-    bottom: -80,
-    left: -80,
+    bottom: 100,
+    left: -50,
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: SPACING.md,
-    paddingHorizontal: SPACING.xl,
+    paddingTop: Platform.OS === 'ios' ? 60 : 20,
+    paddingBottom: SPACING.xl,
+    paddingHorizontal: SPACING.lg,
     borderBottomLeftRadius: RADIUS.xl,
     borderBottomRightRadius: RADIUS.xl,
     overflow: 'hidden',
@@ -383,13 +383,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: TYPOGRAPHY.sizes.h3,
+    fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: TYPOGRAPHY.sizes.body,
     color: 'rgba(255, 255, 255, 0.7)',
   },
   content: {
@@ -403,8 +403,7 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
     marginBottom: SPACING.md,
     borderWidth: 1,
-    borderColor: EDU_COLORS.vibrantGreen,
-    ...SHADOWS.medium,
+    borderColor: 'rgba(16, 185, 129, 0.3)',
   },
   deviceHeader: {
     flexDirection: 'row',
@@ -545,7 +544,8 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     marginBottom: SPACING.lg,
     overflow: 'hidden',
-    ...SHADOWS.medium,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
   },
   scanButtonGradient: {
     flexDirection: 'row',
@@ -577,7 +577,8 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     marginBottom: SPACING.sm,
     overflow: 'hidden',
-    ...SHADOWS.medium,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   deviceItemGradient: {
     flexDirection: 'row',
@@ -606,7 +607,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
-    ...SHADOWS.medium,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.2)',
   },
   helpIcon: {
     marginRight: SPACING.md,

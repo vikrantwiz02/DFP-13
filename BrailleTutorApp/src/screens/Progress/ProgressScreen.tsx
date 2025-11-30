@@ -82,10 +82,10 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.statsGrid}>
             <View style={styles.statCardWrapper}>
               <LinearGradient
-                colors={[EDU_COLORS.deepBlue, EDU_COLORS.primaryBlue]}
+                colors={[EDU_COLORS.primaryBlue + '30', EDU_COLORS.primaryBlue + '10']}
                 style={styles.statCard}
               >
-                <Ionicons name="book" size={32} color="#FFFFFF" />
+                <Ionicons name="book" size={32} color={EDU_COLORS.primaryBlue} />
                 <Text style={styles.statValue}>{completedLessons.length}</Text>
                 <Text style={styles.statLabel}>Lessons</Text>
               </LinearGradient>
@@ -93,10 +93,10 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
             
             <View style={styles.statCardWrapper}>
               <LinearGradient
-                colors={[EDU_COLORS.warmOrange, EDU_COLORS.sunsetOrange]}
+                colors={[EDU_COLORS.warmOrange + '30', EDU_COLORS.warmOrange + '10']}
                 style={styles.statCard}
               >
-                <Ionicons name="flame" size={32} color="#FFFFFF" />
+                <Ionicons name="flame" size={32} color={EDU_COLORS.warmOrange} />
                 <Text style={styles.statValue}>{stats.currentStreak}</Text>
                 <Text style={styles.statLabel}>Day Streak</Text>
               </LinearGradient>
@@ -106,10 +106,10 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.statsGrid}>
             <View style={styles.statCardWrapper}>
               <LinearGradient
-                colors={[EDU_COLORS.vibrantGreen, EDU_COLORS.emeraldGreen]}
+                colors={[EDU_COLORS.vibrantGreen + '30', EDU_COLORS.vibrantGreen + '10']}
                 style={styles.statCard}
               >
-                <Ionicons name="time" size={32} color="#FFFFFF" />
+                <Ionicons name="time" size={32} color={EDU_COLORS.vibrantGreen} />
                 <Text style={styles.statValue}>{stats.totalPracticeMinutes}</Text>
                 <Text style={styles.statLabel}>Minutes</Text>
               </LinearGradient>
@@ -117,10 +117,10 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
             
             <View style={styles.statCardWrapper}>
               <LinearGradient
-                colors={[EDU_COLORS.softPurple, EDU_COLORS.richPurple]}
+                colors={[EDU_COLORS.softPurple + '30', EDU_COLORS.softPurple + '10']}
                 style={styles.statCard}
               >
-                <Ionicons name="star" size={32} color="#FFFFFF" />
+                <Ionicons name="star" size={32} color={EDU_COLORS.softPurple} />
                 <Text style={styles.statValue}>{stats.averageScore}%</Text>
                 <Text style={styles.statLabel}>Accuracy</Text>
               </LinearGradient>
@@ -247,23 +247,25 @@ const styles = StyleSheet.create({
   },
   orb: {
     position: 'absolute',
-    width: 200,
-    height: 200,
     borderRadius: 100,
-    opacity: 0.2,
+    opacity: 0.1,
   },
   orb1: {
-    top: -50,
-    right: -50,
+    width: 200,
+    height: 200,
     backgroundColor: EDU_COLORS.primaryBlue,
+    top: -100,
+    right: -50,
   },
   orb2: {
+    width: 150,
+    height: 150,
+    backgroundColor: EDU_COLORS.softPurple,
     bottom: 100,
     left: -50,
-    backgroundColor: EDU_COLORS.softPurple,
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingTop: Platform.OS === 'ios' ? 60 : 20,
     paddingBottom: SPACING.xl,
     paddingHorizontal: SPACING.lg,
     borderBottomLeftRadius: RADIUS.xl,
@@ -271,12 +273,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   trophyContainer: {
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.lg,
     overflow: 'hidden',
   },
   trophyGradient: {
     padding: SPACING.md,
-    borderRadius: RADIUS.md,
   },
   headerContent: {
     flexDirection: 'row',
@@ -284,13 +285,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: TYPOGRAPHY.sizes.h3,
+    fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: TYPOGRAPHY.sizes.body,
     color: 'rgba(255, 255, 255, 0.7)',
   },
   content: {
@@ -308,7 +309,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
-    ...SHADOWS.medium,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   statCard: {
     padding: SPACING.lg,
@@ -319,15 +321,15 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   statValue: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: TYPOGRAPHY.sizes.h2,
+    fontWeight: 'bold',
     color: '#FFFFFF',
     marginVertical: SPACING.xs,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: TYPOGRAPHY.sizes.caption,
     color: 'rgba(255, 255, 255, 0.7)',
-    textAlign: 'center',
+    fontWeight: '600',
     letterSpacing: 1,
   },
   section: {
