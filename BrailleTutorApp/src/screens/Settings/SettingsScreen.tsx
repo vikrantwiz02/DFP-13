@@ -25,6 +25,21 @@ interface Props {
   navigation: SettingsScreenNavigationProp;
 }
 
+const EDU_COLORS = {
+  primaryBlue: '#3B82F6',
+  deepBlue: '#2563EB',
+  softPurple: '#8B5CF6',
+  richPurple: '#7C3AED',
+  vibrantGreen: '#10B981',
+  emeraldGreen: '#059669',
+  warmOrange: '#F59E0B',
+  sunsetOrange: '#F97316',
+  deepSlate: '#0F172A',
+  slateGray: '#1E293B',
+  cardDark: '#1A1A2E',
+  accent: '#06B6D4',
+};
+
 export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -67,153 +82,220 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <LinearGradient
-        colors={[COLORS.surface.elevated, COLORS.background.primary]}
-        style={styles.header}
+        colors={['transparent', EDU_COLORS.deepSlate]}
+        style={styles.backgroundGlow}
       >
-        <View style={styles.headerContent}>
-          <View>
-            <Text style={styles.title}>Settings</Text>
-            <Text style={styles.subtitle}>Customize your experience</Text>
-          </View>
-          <Ionicons name="settings-sharp" size={32} color={COLORS.primary.main} />
+        {/* Floating Orbs */}
+        <View style={styles.floatingOrbs}>
+          <View style={[styles.orb, styles.orb1]} />
+          <View style={[styles.orb, styles.orb2]} />
         </View>
-      </LinearGradient>
+
+        {/* Header */}
+        <LinearGradient
+          colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
+          style={styles.header}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View style={styles.headerContent}>
+            <View>
+              <Text style={styles.title}>Settings</Text>
+              <Text style={styles.subtitle}>Customize your experience</Text>
+            </View>
+            <Ionicons name="settings-sharp" size={32} color={EDU_COLORS.primaryBlue} />
+          </View>
+        </LinearGradient>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         {/* Profile Section */}
-        <View style={styles.section}>
+        <LinearGradient
+          colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+          style={styles.section}
+        >
           <Text style={styles.sectionTitle}>Profile</Text>
           <View style={styles.profileCard}>
-            <View style={styles.profileAvatar}>
+            <LinearGradient
+              colors={[EDU_COLORS.primaryBlue, EDU_COLORS.softPurple]}
+              style={styles.profileAvatar}
+            >
               <Text style={styles.profileAvatarText}>
                 {user?.name?.charAt(0).toUpperCase() || 'U'}
               </Text>
-            </View>
+            </LinearGradient>
             <View style={styles.profileInfo}>
               <Text style={styles.profileName}>{user?.name || 'User'}</Text>
               <Text style={styles.profileEmail}>{user?.email || 'user@example.com'}</Text>
             </View>
           </View>
-        </View>
+        </LinearGradient>
 
         {/* Appearance Section */}
-        <View style={styles.section}>
+        <LinearGradient
+          colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+          style={styles.section}
+        >
           <Text style={styles.sectionTitle}>Appearance</Text>
           
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Dark Mode</Text>
-              <Text style={styles.settingDescription}>Use dark theme</Text>
+              <Ionicons name="moon" size={20} color={EDU_COLORS.accent} style={styles.settingIcon} />
+              <View style={styles.settingTextContainer}>
+                <Text style={styles.settingLabel}>Dark Mode</Text>
+                <Text style={styles.settingDescription}>Use dark theme</Text>
+              </View>
             </View>
             <Switch
               value={settings.darkMode}
               onValueChange={handleToggleDarkMode}
-              trackColor={{ false: COLORS.surface.elevated, true: COLORS.primary.main }}
-              thumbColor={COLORS.text.primary}
+              trackColor={{ false: 'rgba(255, 255, 255, 0.2)', true: EDU_COLORS.primaryBlue }}
+              thumbColor="#FFFFFF"
             />
           </View>
-        </View>
+        </LinearGradient>
 
         {/* Voice & Audio Section */}
-        <View style={styles.section}>
+        <LinearGradient
+          colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+          style={styles.section}
+        >
           <Text style={styles.sectionTitle}>Voice & Audio</Text>
           
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Voice Enabled</Text>
-              <Text style={styles.settingDescription}>Enable AI voice tutor</Text>
+              <Ionicons name="mic" size={20} color={EDU_COLORS.vibrantGreen} style={styles.settingIcon} />
+              <View style={styles.settingTextContainer}>
+                <Text style={styles.settingLabel}>Voice Enabled</Text>
+                <Text style={styles.settingDescription}>Enable AI voice tutor</Text>
+              </View>
             </View>
             <Switch
               value={settings.voiceEnabled}
               onValueChange={handleToggleVoiceEnabled}
-              trackColor={{ false: COLORS.surface.elevated, true: COLORS.primary.main }}
-              thumbColor={COLORS.text.primary}
+              trackColor={{ false: 'rgba(255, 255, 255, 0.2)', true: EDU_COLORS.vibrantGreen }}
+              thumbColor="#FFFFFF"
             />
           </View>
 
           <TouchableOpacity style={styles.settingItem} onPress={handleChangeVoiceSpeed}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Voice Speed</Text>
-              <Text style={styles.settingDescription}>
-                Current: {settings.voiceSpeed}x
-              </Text>
+              <Ionicons name="speedometer" size={20} color={EDU_COLORS.warmOrange} style={styles.settingIcon} />
+              <View style={styles.settingTextContainer}>
+                <Text style={styles.settingLabel}>Voice Speed</Text>
+                <Text style={styles.settingDescription}>
+                  Current: {settings.voiceSpeed}x
+                </Text>
+              </View>
             </View>
-            <Text style={styles.settingArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.5)" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.settingItem} onPress={handleChangeLanguage}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Language</Text>
-              <Text style={styles.settingDescription}>
-                Current: {settings.language}
-              </Text>
+              <Ionicons name="language" size={20} color={EDU_COLORS.accent} style={styles.settingIcon} />
+              <View style={styles.settingTextContainer}>
+                <Text style={styles.settingLabel}>Language</Text>
+                <Text style={styles.settingDescription}>
+                  Current: {settings.language}
+                </Text>
+              </View>
             </View>
-            <Text style={styles.settingArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.5)" />
           </TouchableOpacity>
-        </View>
+        </LinearGradient>
 
         {/* Device Settings */}
-        <View style={styles.section}>
+        <LinearGradient
+          colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+          style={styles.section}
+        >
           <Text style={styles.sectionTitle}>Device Settings</Text>
           
           <TouchableOpacity style={styles.settingItem} onPress={handleChangeDotDepth}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Dot Depth</Text>
-              <Text style={styles.settingDescription}>
-                Current: {settings.dotDepth}mm
-              </Text>
+              <Ionicons name="options" size={20} color={EDU_COLORS.primaryBlue} style={styles.settingIcon} />
+              <View style={styles.settingTextContainer}>
+                <Text style={styles.settingLabel}>Dot Depth</Text>
+                <Text style={styles.settingDescription}>
+                  Current: {settings.dotDepthMm}mm
+                </Text>
+              </View>
             </View>
-            <Text style={styles.settingArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.5)" />
           </TouchableOpacity>
 
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Haptic Feedback</Text>
-              <Text style={styles.settingDescription}>Vibrate on interactions</Text>
+              <Ionicons name="hand-left" size={20} color={EDU_COLORS.softPurple} style={styles.settingIcon} />
+              <View style={styles.settingTextContainer}>
+                <Text style={styles.settingLabel}>Haptic Feedback</Text>
+                <Text style={styles.settingDescription}>Vibrate on interactions</Text>
+              </View>
             </View>
             <Switch
               value={settings.hapticFeedback}
               onValueChange={handleToggleHapticFeedback}
-              trackColor={{ false: COLORS.surface.elevated, true: COLORS.primary.main }}
-              thumbColor={COLORS.text.primary}
+              trackColor={{ false: 'rgba(255, 255, 255, 0.2)', true: EDU_COLORS.softPurple }}
+              thumbColor="#FFFFFF"
             />
           </View>
-        </View>
+        </LinearGradient>
 
         {/* About Section */}
-        <View style={styles.section}>
+        <LinearGradient
+          colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+          style={styles.section}
+        >
           <Text style={styles.sectionTitle}>About</Text>
           
           <TouchableOpacity style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Version</Text>
-              <Text style={styles.settingDescription}>1.0.0</Text>
+              <Ionicons name="information-circle" size={20} color={EDU_COLORS.accent} style={styles.settingIcon} />
+              <View style={styles.settingTextContainer}>
+                <Text style={styles.settingLabel}>Version</Text>
+                <Text style={styles.settingDescription}>1.0.0</Text>
+              </View>
             </View>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.settingItem}>
-            <Text style={styles.settingLabel}>Privacy Policy</Text>
-            <Text style={styles.settingArrow}>›</Text>
+            <View style={styles.settingInfo}>
+              <Ionicons name="shield-checkmark" size={20} color={EDU_COLORS.vibrantGreen} style={styles.settingIcon} />
+              <Text style={styles.settingLabel}>Privacy Policy</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.5)" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.settingItem}>
-            <Text style={styles.settingLabel}>Terms of Service</Text>
-            <Text style={styles.settingArrow}>›</Text>
+            <View style={styles.settingInfo}>
+              <Ionicons name="document-text" size={20} color={EDU_COLORS.primaryBlue} style={styles.settingIcon} />
+              <Text style={styles.settingLabel}>Terms of Service</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.5)" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.settingItem}>
-            <Text style={styles.settingLabel}>Help & Support</Text>
-            <Text style={styles.settingArrow}>›</Text>
+            <View style={styles.settingInfo}>
+              <Ionicons name="help-circle" size={20} color={EDU_COLORS.warmOrange} style={styles.settingIcon} />
+              <Text style={styles.settingLabel}>Help & Support</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.5)" />
           </TouchableOpacity>
-        </View>
+        </LinearGradient>
 
         {/* Logout Button */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
+          <LinearGradient
+            colors={['#EF4444', '#DC2626']}
+            style={styles.logoutButtonGradient}
+          >
+            <Ionicons name="log-out" size={20} color="#FFFFFF" />
+            <Text style={styles.logoutText}>Logout</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
+      </LinearGradient>
     </View>
   );
 };
@@ -221,14 +303,42 @@ export const SettingsScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background.primary,
+    backgroundColor: '#0A0A0F',
+  },
+  backgroundGlow: {
+    flex: 1,
+  },
+  floatingOrbs: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  orb: {
+    position: 'absolute',
+    borderRadius: 1000,
+    opacity: 0.25,
+  },
+  orb1: {
+    width: 300,
+    height: 300,
+    backgroundColor: EDU_COLORS.softPurple,
+    top: -100,
+    right: -100,
+  },
+  orb2: {
+    width: 250,
+    height: 250,
+    backgroundColor: EDU_COLORS.primaryBlue,
+    bottom: -80,
+    left: -80,
   },
   header: {
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: SPACING.lg,
-    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.md,
+    paddingHorizontal: SPACING.xl,
     borderBottomLeftRadius: RADIUS.xl,
     borderBottomRightRadius: RADIUS.xl,
+    overflow: 'hidden',
   },
   headerContent: {
     flexDirection: 'row',
@@ -236,105 +346,113 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: TYPOGRAPHY.sizes.h1,
-    fontWeight: 'bold',
-    color: COLORS.text.primary,
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.sizes.body,
-    color: COLORS.text.secondary,
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   content: {
     flex: 1,
   },
   scrollContent: {
-    padding: SPACING.lg,
+    padding: SPACING.xl,
   },
   section: {
-    marginBottom: SPACING.xl,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    marginBottom: SPACING.md,
+    ...SHADOWS.medium,
   },
   sectionTitle: {
-    fontSize: TYPOGRAPHY.sizes.h4,
-    fontWeight: 'bold',
-    color: COLORS.text.primary,
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: SPACING.md,
   },
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface.elevated,
-    borderRadius: RADIUS.lg,
-    padding: SPACING.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border.light,
   },
   profileAvatar: {
     width: 60,
     height: 60,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.primary.main,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: SPACING.md,
   },
   profileAvatarText: {
-    fontSize: TYPOGRAPHY.sizes.h2,
-    fontWeight: 'bold',
-    color: COLORS.text.primary,
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   profileInfo: {
     flex: 1,
   },
   profileName: {
-    fontSize: TYPOGRAPHY.sizes.h4,
+    fontSize: 18,
     fontWeight: '600',
-    color: COLORS.text.primary,
+    color: '#FFFFFF',
     marginBottom: SPACING.xs,
   },
   profileEmail: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    color: COLORS.text.secondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   settingItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: COLORS.surface.elevated,
-    borderRadius: RADIUS.lg,
-    padding: SPACING.md,
-    marginBottom: SPACING.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border.light,
+    paddingVertical: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   settingInfo: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  settingIcon: {
+    marginRight: SPACING.md,
+  },
+  settingTextContainer: {
+    flex: 1,
   },
   settingLabel: {
-    fontSize: TYPOGRAPHY.sizes.body,
+    fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text.primary,
-    marginBottom: SPACING.xs,
+    color: '#FFFFFF',
+    marginBottom: 2,
   },
   settingDescription: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    color: COLORS.text.secondary,
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   settingArrow: {
-    fontSize: 24,
-    color: COLORS.text.secondary,
+    fontSize: 20,
+    color: 'rgba(255, 255, 255, 0.5)',
   },
   logoutButton: {
-    backgroundColor: COLORS.error.main,
     borderRadius: RADIUS.lg,
-    padding: SPACING.md,
-    alignItems: 'center',
     marginTop: SPACING.lg,
     marginBottom: SPACING.xl,
+    overflow: 'hidden',
+    ...SHADOWS.medium,
+  },
+  logoutButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SPACING.md,
+    gap: SPACING.sm,
   },
   logoutText: {
-    fontSize: TYPOGRAPHY.sizes.body,
+    fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text.primary,
+    color: '#FFFFFF',
   },
 });

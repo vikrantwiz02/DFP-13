@@ -30,6 +30,21 @@ interface Props {
   navigation: DeviceScreenNavigationProp;
 }
 
+const EDU_COLORS = {
+  primaryBlue: '#3B82F6',
+  deepBlue: '#2563EB',
+  softPurple: '#8B5CF6',
+  richPurple: '#7C3AED',
+  vibrantGreen: '#10B981',
+  emeraldGreen: '#059669',
+  warmOrange: '#F59E0B',
+  sunsetOrange: '#F97316',
+  deepSlate: '#0F172A',
+  slateGray: '#1E293B',
+  cardDark: '#1A1A2E',
+  accent: '#06B6D4',
+};
+
 export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useDispatch();
   const {
@@ -114,37 +129,52 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <LinearGradient
-        colors={[COLORS.surface.elevated, COLORS.background.primary]}
-        style={styles.header}
+        colors={['transparent', EDU_COLORS.deepSlate]}
+        style={styles.backgroundGlow}
       >
-        <View style={styles.headerContent}>
-          <View>
-            <Text style={styles.title}>Device Manager</Text>
-            <Text style={styles.subtitle}>
-              {connected ? 'Device connected' : 'Pair your Braille device'}
-            </Text>
-          </View>
-          <Ionicons 
-            name={connected ? "bluetooth" : "bluetooth-outline"} 
-            size={32} 
-            color={connected ? COLORS.success.main : COLORS.primary.main} 
-          />
+        {/* Floating Orbs */}
+        <View style={styles.floatingOrbs}>
+          <View style={[styles.orb, styles.orb1]} />
+          <View style={[styles.orb, styles.orb2]} />
         </View>
-      </LinearGradient>
+
+        {/* Header */}
+        <LinearGradient
+          colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
+          style={styles.header}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View style={styles.headerContent}>
+            <View>
+              <Text style={styles.title}>Device Manager</Text>
+              <Text style={styles.subtitle}>
+                {connected ? 'Device connected' : 'Pair your Braille device'}
+              </Text>
+            </View>
+            <Ionicons 
+              name={connected ? "bluetooth" : "bluetooth-outline"} 
+              size={32} 
+              color={connected ? EDU_COLORS.vibrantGreen : EDU_COLORS.primaryBlue} 
+            />
+          </View>
+        </LinearGradient>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         {/* Connected Device Card */}
         {connected && deviceInfo ? (
-          <View style={styles.connectedCard}>
+          <LinearGradient
+            colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+            style={styles.connectedCard}
+          >
             <View style={styles.deviceHeader}>
               <View style={styles.deviceInfo}>
                 <Text style={styles.deviceName}>{deviceInfo.name}</Text>
                 <Text style={styles.deviceId}>{deviceInfo.id}</Text>
               </View>
               <TouchableOpacity onPress={handleDisconnect} style={styles.disconnectButton}>
-                <Text style={styles.disconnectText}>Disconnect</Text>
+                <Ionicons name="close-circle" size={24} color={EDU_COLORS.warmOrange} />
               </TouchableOpacity>
             </View>
 
@@ -152,8 +182,14 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.healthContainer}>
               <Text style={styles.healthLabel}>Connection Health</Text>
               <View style={styles.healthIndicator}>
-                <Text style={styles.healthIcon}>{getHealthIcon()}</Text>
-                <Text style={[styles.healthText, { color: getHealthColor() }]}>
+                <Ionicons 
+                  name={connectionHealth === 'good' ? 'radio-button-on' : connectionHealth === 'warning' ? 'warning' : 'close-circle'} 
+                  size={20} 
+                  color={connectionHealth === 'good' ? EDU_COLORS.vibrantGreen : connectionHealth === 'warning' ? EDU_COLORS.warmOrange : '#EF4444'} 
+                />
+                <Text style={[styles.healthText, { 
+                  color: connectionHealth === 'good' ? EDU_COLORS.vibrantGreen : connectionHealth === 'warning' ? EDU_COLORS.warmOrange : '#EF4444' 
+                }]}>
                   {connectionHealth === 'good'
                     ? 'Excellent'
                     : connectionHealth === 'warning'
@@ -185,12 +221,16 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
                     </Text>
                   </View>
                   <View style={styles.progressBar}>
-                    <View
+                    <LinearGradient
+                      colors={[EDU_COLORS.primaryBlue, EDU_COLORS.softPurple]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
                       style={[
                         styles.progressFill,
                         { width: `${currentJob.progress}%` },
                       ]}
                     />
+                  </View>
                   </View>
                   <Text style={styles.progressDetails}>
                     {currentJob.dotsCompleted} / {currentJob.totalDots} dots
@@ -214,7 +254,7 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
                 )}
               </View>
             )}
-          </View>
+          </LinearGradient>
         ) : (
           /* Scan for Devices */
           <View style={styles.scanSection}>
@@ -222,17 +262,22 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
               style={[styles.scanButton, scanning && styles.scanButtonActive]}
               onPress={handleScan}
             >
+              <LinearGradient
+                colors={scanning ? [EDU_COLORS.deepBlue, EDU_COLORS.richPurple] : [EDU_COLORS.primaryBlue, EDU_COLORS.softPurple]}
+                style={styles.scanButtonGradient}
+              >
               {scanning ? (
                 <>
-                  <ActivityIndicator color={COLORS.text.primary} style={styles.scanIcon} />
+                  <ActivityIndicator color="#FFFFFF" style={styles.scanIcon} />
                   <Text style={styles.scanButtonText}>Scanning...</Text>
                 </>
               ) : (
                 <>
-                  <Text style={styles.scanIcon}>🔍</Text>
+                  <Ionicons name="search" size={24} color="#FFFFFF" style={styles.scanIcon} />
                   <Text style={styles.scanButtonText}>Scan for Devices</Text>
                 </>
               )}
+              </LinearGradient>
             </TouchableOpacity>
 
             {/* Available Devices List */}
@@ -245,21 +290,32 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
                     style={styles.deviceItem}
                     onPress={() => handleConnect(device.id)}
                   >
+                    <LinearGradient
+                      colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+                      style={styles.deviceItemGradient}
+                    >
                     <View style={styles.deviceItemInfo}>
                       <Text style={styles.deviceItemName}>{device.name}</Text>
                       <Text style={styles.deviceItemId}>{device.id}</Text>
                     </View>
                     {device.rssi && (
-                      <Text style={styles.deviceItemRssi}>{device.rssi} dBm</Text>
+                      <View style={styles.rssiContainer}>
+                        <Ionicons name="cellular" size={16} color={EDU_COLORS.accent} />
+                        <Text style={styles.deviceItemRssi}> {device.rssi} dBm</Text>
+                      </View>
                     )}
+                    </LinearGradient>
                   </TouchableOpacity>
                 ))}
               </View>
             )}
 
             {/* Help Section */}
-            <View style={styles.helpCard}>
-              <Text style={styles.helpIcon}>💡</Text>
+            <LinearGradient
+              colors={['rgba(139, 92, 246, 0.1)', 'rgba(59, 130, 246, 0.1)']}
+              style={styles.helpCard}
+            >
+              <Ionicons name="bulb" size={32} color={EDU_COLORS.warmOrange} style={styles.helpIcon} />
               <View style={styles.helpContent}>
                 <Text style={styles.helpTitle}>Connection Tips</Text>
                 <Text style={styles.helpText}>
@@ -269,10 +325,11 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
                   • Restart the device if it doesn't appear
                 </Text>
               </View>
-            </View>
+            </LinearGradient>
           </View>
         )}
       </ScrollView>
+      </LinearGradient>
     </View>
   );
 };
@@ -280,14 +337,42 @@ export const DeviceScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background.primary,
+    backgroundColor: '#0A0A0F',
+  },
+  backgroundGlow: {
+    flex: 1,
+  },
+  floatingOrbs: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  orb: {
+    position: 'absolute',
+    borderRadius: 1000,
+    opacity: 0.25,
+  },
+  orb1: {
+    width: 300,
+    height: 300,
+    backgroundColor: EDU_COLORS.primaryBlue,
+    top: -100,
+    right: -100,
+  },
+  orb2: {
+    width: 250,
+    height: 250,
+    backgroundColor: EDU_COLORS.vibrantGreen,
+    bottom: -80,
+    left: -80,
   },
   header: {
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: SPACING.lg,
-    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.md,
+    paddingHorizontal: SPACING.xl,
     borderBottomLeftRadius: RADIUS.xl,
     borderBottomRightRadius: RADIUS.xl,
+    overflow: 'hidden',
   },
   headerContent: {
     flexDirection: 'row',
@@ -295,27 +380,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: TYPOGRAPHY.sizes.h1,
-    fontWeight: 'bold',
-    color: COLORS.text.primary,
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.sizes.body,
-    color: COLORS.text.secondary,
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   content: {
     flex: 1,
   },
   scrollContent: {
-    padding: SPACING.lg,
+    padding: SPACING.xl,
   },
   connectedCard: {
-    backgroundColor: COLORS.surface.elevated,
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
+    marginBottom: SPACING.md,
     borderWidth: 1,
-    borderColor: COLORS.success.main,
+    borderColor: EDU_COLORS.vibrantGreen,
+    ...SHADOWS.medium,
   },
   deviceHeader: {
     flexDirection: 'row',
@@ -327,50 +413,51 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   deviceName: {
-    fontSize: TYPOGRAPHY.sizes.h3,
-    fontWeight: 'bold',
-    color: COLORS.text.primary,
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: SPACING.xs,
   },
   deviceId: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    color: COLORS.text.secondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   disconnectButton: {
-    backgroundColor: COLORS.error.main,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.md,
+    padding: SPACING.xs,
   },
   disconnectText: {
-    color: COLORS.text.primary,
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
+    color: '#FFFFFF',
+    fontSize: 14,
     fontWeight: '600',
   },
   healthContainer: {
     marginBottom: SPACING.lg,
   },
   healthLabel: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    color: COLORS.text.secondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
     marginBottom: SPACING.xs,
   },
   healthIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: SPACING.xs,
+    gap: SPACING.sm,
   },
   healthIcon: {
-    fontSize: 20,
     marginRight: SPACING.sm,
   },
   healthText: {
-    fontSize: TYPOGRAPHY.sizes.body,
+    fontSize: 16,
     fontWeight: '600',
   },
   rssiText: {
-    fontSize: TYPOGRAPHY.sizes.caption,
-    color: COLORS.text.secondary,
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.5)',
+  },
+  rssiContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   statusContainer: {
     flexDirection: 'row',
@@ -378,24 +465,24 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   statusLabel: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    color: COLORS.text.secondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   statusValue: {
-    fontSize: TYPOGRAPHY.sizes.body,
+    fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text.primary,
+    color: '#FFFFFF',
     textTransform: 'capitalize',
   },
   printJobCard: {
-    backgroundColor: COLORS.background.primary,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: RADIUS.md,
     padding: SPACING.md,
   },
   printJobTitle: {
-    fontSize: TYPOGRAPHY.sizes.h4,
+    fontSize: 18,
     fontWeight: '600',
-    color: COLORS.text.primary,
+    color: '#FFFFFF',
     marginBottom: SPACING.md,
   },
   progressContainer: {
@@ -407,28 +494,27 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   progressLabel: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    color: COLORS.text.secondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   progressPercentage: {
-    fontSize: TYPOGRAPHY.sizes.body,
-    fontWeight: 'bold',
-    color: COLORS.primary.main,
+    fontSize: 16,
+    fontWeight: '700',
+    color: EDU_COLORS.primaryBlue,
   },
   progressBar: {
     height: 8,
-    backgroundColor: COLORS.surface.elevated,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: RADIUS.full,
     overflow: 'hidden',
     marginBottom: SPACING.xs,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: COLORS.primary.main,
   },
   progressDetails: {
-    fontSize: TYPOGRAPHY.sizes.caption,
-    color: COLORS.text.secondary,
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   positionContainer: {
     flexDirection: 'row',
@@ -436,101 +522,101 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   positionLabel: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    color: COLORS.text.secondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   positionValue: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
+    fontSize: 14,
     fontWeight: '600',
-    color: COLORS.text.primary,
+    color: '#FFFFFF',
   },
   etaText: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    color: COLORS.text.secondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   scanSection: {},
   scanButton: {
+    borderRadius: RADIUS.lg,
+    marginBottom: SPACING.lg,
+    overflow: 'hidden',
+    ...SHADOWS.medium,
+  },
+  scanButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primary.main,
-    borderRadius: RADIUS.lg,
     padding: SPACING.md,
-    marginBottom: SPACING.lg,
   },
   scanButtonActive: {
-    backgroundColor: COLORS.primary.dark,
+    opacity: 0.8,
   },
   scanIcon: {
-    fontSize: 24,
     marginRight: SPACING.sm,
   },
   scanButtonText: {
-    fontSize: TYPOGRAPHY.sizes.body,
+    fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text.primary,
+    color: '#FFFFFF',
   },
   devicesContainer: {
     marginBottom: SPACING.lg,
   },
   devicesTitle: {
-    fontSize: TYPOGRAPHY.sizes.h4,
-    fontWeight: 'bold',
-    color: COLORS.text.primary,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: SPACING.md,
   },
   deviceItem: {
+    borderRadius: RADIUS.lg,
+    marginBottom: SPACING.sm,
+    overflow: 'hidden',
+    ...SHADOWS.medium,
+  },
+  deviceItemGradient: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: COLORS.surface.elevated,
-    borderRadius: RADIUS.lg,
     padding: SPACING.md,
-    marginBottom: SPACING.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border.light,
   },
   deviceItemInfo: {
     flex: 1,
   },
   deviceItemName: {
-    fontSize: TYPOGRAPHY.sizes.body,
+    fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text.primary,
+    color: '#FFFFFF',
     marginBottom: SPACING.xs,
   },
   deviceItemId: {
-    fontSize: TYPOGRAPHY.sizes.caption,
-    color: COLORS.text.secondary,
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   deviceItemRssi: {
-    fontSize: TYPOGRAPHY.sizes.caption,
-    color: COLORS.text.secondary,
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   helpCard: {
     flexDirection: 'row',
-    backgroundColor: COLORS.surface.elevated,
     borderRadius: RADIUS.lg,
     padding: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border.light,
+    ...SHADOWS.medium,
   },
   helpIcon: {
-    fontSize: 32,
     marginRight: SPACING.md,
   },
   helpContent: {
     flex: 1,
   },
   helpTitle: {
-    fontSize: TYPOGRAPHY.sizes.body,
+    fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text.primary,
+    color: '#FFFFFF',
     marginBottom: SPACING.sm,
   },
   helpText: {
-    fontSize: TYPOGRAPHY.sizes.bodySmall,
-    color: COLORS.text.secondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
     lineHeight: 20,
   },
 });

@@ -4,8 +4,7 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  Dimensions,
-  Platform,
+  SafeAreaView,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -21,7 +20,20 @@ interface Props {
   navigation: ProgressScreenNavigationProp;
 }
 
-const { width } = Dimensions.get('window');
+const EDU_COLORS = {
+  primaryBlue: '#3B82F6',
+  deepBlue: '#2563EB',
+  softPurple: '#8B5CF6',
+  richPurple: '#7C3AED',
+  vibrantGreen: '#10B981',
+  emeraldGreen: '#059669',
+  warmOrange: '#F59E0B',
+  sunsetOrange: '#F97316',
+  deepSlate: '#0F172A',
+  slateGray: '#1E293B',
+  cardDark: '#1A1A2E',
+  accent: '#06B6D4',
+};
 
 export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
   const { completed: completedLessons = [] } = useSelector((state: RootState) => state.lessons);
@@ -31,24 +43,38 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
   const achievements = stats.achievements || [];
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
+    <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={[COLORS.surface.elevated, COLORS.background.primary]}
-        style={styles.header}
+        colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
+        style={styles.backgroundGradient}
       >
-        <View style={styles.headerContent}>
-          <View>
-            <Text style={styles.title}>Your Progress</Text>
-            <Text style={styles.subtitle}>Track your learning journey</Text>
-          </View>
-          <Ionicons name="trophy" size={32} color={COLORS.warning.main} />
+        {/* Floating Orbs */}
+        <View style={styles.floatingOrbs}>
+          <View style={[styles.orb, styles.orb1]} />
+          <View style={[styles.orb, styles.orb2]} />
         </View>
-      </LinearGradient>
 
-      <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
-        {/* Stats Overview */}
-        <View style={styles.statsGrid}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <View>
+              <Text style={styles.title}>Your Progress</Text>
+              <Text style={styles.subtitle}>Track your learning journey</Text>
+            </View>
+            <View style={styles.trophyContainer}>
+              <LinearGradient
+                colors={[EDU_COLORS.warmOrange, EDU_COLORS.sunsetOrange]}
+                style={styles.trophyGradient}
+              >
+                <Ionicons name="trophy" size={24} color="#FFFFFF" />
+              </LinearGradient>
+            </View>
+          </View>
+        </View>
+
+        <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* Stats Overview */}
+          <View style={styles.statsGrid}>
           <LinearGradient
             colors={[COLORS.primary.main + '30', COLORS.primary.main + '10']}
             style={styles.statCard}
@@ -186,21 +212,54 @@ export const ProgressScreen: React.FC<Props> = ({ navigation }) => {
           ))}
         </View>
       </ScrollView>
-    </View>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background.primary,
+    backgroundColor: EDU_COLORS.deepSlate,
+  },
+  backgroundGradient: {
+    flex: 1,
+  },
+  floatingOrbs: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  orb: {
+    position: 'absolute',
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    opacity: 0.2,
+  },
+  orb1: {
+    top: -50,
+    right: -50,
+    backgroundColor: EDU_COLORS.primaryBlue,
+  },
+  orb2: {
+    bottom: 100,
+    left: -50,
+    backgroundColor: EDU_COLORS.softPurple,
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: SPACING.lg,
-    paddingHorizontal: SPACING.lg,
-    borderBottomLeftRadius: RADIUS.xl,
-    borderBottomRightRadius: RADIUS.xl,
+    padding: SPACING.lg,
+    paddingTop: SPACING.md,
+  },
+  trophyContainer: {
+    borderRadius: RADIUS.md,
+    overflow: 'hidden',
+  },
+  trophyGradient: {
+    padding: SPACING.md,
+    borderRadius: RADIUS.md,
   },
   headerContent: {
     flexDirection: 'row',
@@ -209,7 +268,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: TYPOGRAPHY.sizes.h1,
-    fontWeight: 'bold',
+    fontWeight: TYPOGRAPHY.weights.bold as any,
     color: COLORS.text.primary,
     marginBottom: SPACING.xs,
   },

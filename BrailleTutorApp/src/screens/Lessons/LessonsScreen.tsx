@@ -29,6 +29,21 @@ interface Props {
   navigation: LessonsScreenNavigationProp;
 }
 
+const EDU_COLORS = {
+  primaryBlue: '#3B82F6',
+  deepBlue: '#2563EB',
+  softPurple: '#8B5CF6',
+  richPurple: '#7C3AED',
+  vibrantGreen: '#10B981',
+  emeraldGreen: '#059669',
+  warmOrange: '#F59E0B',
+  sunsetOrange: '#F97316',
+  deepSlate: '#0F172A',
+  slateGray: '#1E293B',
+  cardDark: '#1A1A2E',
+  accent: '#06B6D4',
+};
+
 export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useDispatch();
   const { available, completed, loading } = useSelector(
@@ -61,22 +76,40 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Lessons</Text>
-        <Text style={styles.subtitle}>250+ lessons across 5 levels</Text>
-      </View>
+      <LinearGradient
+        colors={['transparent', EDU_COLORS.deepSlate]}
+        style={styles.backgroundGlow}
+      >
+        {/* Floating Orbs */}
+        <View style={styles.floatingOrbs}>
+          <View style={[styles.orb, styles.orb1]} />
+          <View style={[styles.orb, styles.orb2]} />
+        </View>
 
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search lessons..."
-          placeholderTextColor={theme.colors.text.secondary}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
+        {/* Header */}
+        <LinearGradient
+          colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
+          style={styles.header}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <Text style={styles.title}>Lessons</Text>
+          <Text style={styles.subtitle}>250+ lessons across 5 levels</Text>
+        </LinearGradient>
+
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <View style={styles.searchInputContainer}>
+            <Ionicons name="search" size={20} color="rgba(255, 255, 255, 0.5)" style={styles.searchIcon} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search lessons..."
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+        </View>
 
       {/* Level Filter */}
       <ScrollView
@@ -118,28 +151,40 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
               style={styles.lessonCard}
               onPress={() => handleLessonPress(lesson.id)}
             >
-              <View style={styles.lessonHeader}>
-                <View style={styles.lessonInfo}>
-                  <Text style={styles.lessonTitle}>{lesson.title}</Text>
-                  <Text style={styles.lessonDescription} numberOfLines={2}>
-                    {lesson.description}
-                  </Text>
+              <LinearGradient
+                colors={[EDU_COLORS.cardDark, EDU_COLORS.deepSlate]}
+                style={styles.lessonCardGradient}
+              >
+                <View style={styles.lessonHeader}>
+                  <View style={styles.lessonInfo}>
+                    <Text style={styles.lessonTitle}>{lesson.title}</Text>
+                    <Text style={styles.lessonDescription} numberOfLines={2}>
+                      {lesson.description}
+                    </Text>
+                  </View>
+                  {completed && (
+                    <View style={styles.completedBadge}>
+                      <Ionicons name="checkmark-circle" size={24} color={EDU_COLORS.vibrantGreen} />
+                    </View>
+                  )}
                 </View>
-                {completed && <Text style={styles.completedBadge}>✓</Text>}
-              </View>
-              <View style={styles.lessonFooter}>
-                <View style={styles.lessonMeta}>
-                  <Text style={styles.levelBadge}>{lesson.level}</Text>
-                  <Text style={styles.durationText}>⏱ {lesson.estimatedDuration} min</Text>
+                <View style={styles.lessonFooter}>
+                  <View style={styles.lessonMeta}>
+                    <View style={styles.levelBadge}>
+                      <Text style={styles.levelText}>{lesson.level}</Text>
+                    </View>
+                    <View style={styles.durationContainer}>
+                      <Ionicons name="time-outline" size={16} color={EDU_COLORS.accent} />
+                      <Text style={styles.durationText}> {lesson.duration_min} min</Text>
+                    </View>
+                  </View>
                 </View>
-                {!completed && lesson.isLocked && (
-                  <Text style={styles.lockedText}>🔒 Locked</Text>
-                )}
-              </View>
+              </LinearGradient>
             </TouchableOpacity>
           );
         })}
       </ScrollView>
+      </LinearGradient>
     </View>
   );
 };
@@ -147,127 +192,175 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background.primary,
+    backgroundColor: '#0A0A0F',
+  },
+  backgroundGlow: {
+    flex: 1,
+  },
+  floatingOrbs: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  orb: {
+    position: 'absolute',
+    borderRadius: 1000,
+    opacity: 0.25,
+  },
+  orb1: {
+    width: 300,
+    height: 300,
+    backgroundColor: EDU_COLORS.primaryBlue,
+    top: -100,
+    right: -100,
+  },
+  orb2: {
+    width: 250,
+    height: 250,
+    backgroundColor: EDU_COLORS.softPurple,
+    bottom: -80,
+    left: -80,
   },
   header: {
-    padding: theme.spacing.lg,
-    paddingTop: theme.spacing.xl,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingHorizontal: SPACING.xl,
+    paddingBottom: SPACING.md,
+    borderBottomLeftRadius: RADIUS.xl,
+    borderBottomRightRadius: RADIUS.xl,
+    overflow: 'hidden',
   },
   title: {
-    fontSize: theme.typography.sizes.h1,
-    fontWeight: theme.typography.weights.bold as any,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: theme.typography.sizes.body,
-    color: theme.colors.text.secondary,
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   searchContainer: {
-    paddingHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
+    paddingHorizontal: SPACING.xl,
+    marginBottom: SPACING.md,
+  },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: SPACING.md,
+  },
+  searchIcon: {
+    marginRight: SPACING.sm,
   },
   searchInput: {
-    backgroundColor: theme.colors.surface.elevated,
-    borderRadius: theme.radius.lg,
-    padding: theme.spacing.md,
-    color: theme.colors.text.primary,
-    fontSize: theme.typography.sizes.body,
-    borderWidth: 1,
-    borderColor: theme.colors.border.medium,
+    flex: 1,
+    padding: SPACING.md,
+    color: '#FFFFFF',
+    fontSize: 16,
   },
   filterContainer: {
     maxHeight: 50,
-    marginBottom: theme.spacing.md,
+    marginBottom: SPACING.md,
   },
   filterContent: {
-    paddingHorizontal: theme.spacing.lg,
-    gap: theme.spacing.sm,
+    paddingHorizontal: SPACING.xl,
+    gap: SPACING.sm,
   },
   filterChip: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    backgroundColor: theme.colors.surface.elevated,
-    borderRadius: theme.radius.full,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: RADIUS.full,
     borderWidth: 1,
-    borderColor: theme.colors.border.medium,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   filterChipActive: {
-    backgroundColor: theme.colors.primary.main,
-    borderColor: theme.colors.primary.main,
+    backgroundColor: EDU_COLORS.primaryBlue,
+    borderColor: EDU_COLORS.primaryBlue,
   },
   filterText: {
-    color: theme.colors.text.secondary,
-    fontSize: theme.typography.sizes.bodySmall,
-    fontWeight: theme.typography.weights.medium as any,
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 14,
+    fontWeight: '600',
   },
   filterTextActive: {
-    color: theme.colors.text.primary,
+    color: '#FFFFFF',
   },
   lessonsList: {
     flex: 1,
   },
   lessonsContent: {
-    padding: theme.spacing.lg,
+    padding: SPACING.xl,
   },
   lessonCard: {
-    backgroundColor: theme.colors.surface.elevated,
-    borderRadius: theme.radius.lg,
-    padding: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border.medium,
+    borderRadius: RADIUS.lg,
+    marginBottom: SPACING.md,
+    overflow: 'hidden',
+    ...SHADOWS.medium,
+  },
+  lessonCardGradient: {
+    padding: SPACING.lg,
   },
   lessonHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing.sm,
+    marginBottom: SPACING.sm,
   },
   lessonInfo: {
     flex: 1,
-    marginRight: theme.spacing.md,
+    marginRight: SPACING.md,
   },
   lessonTitle: {
-    fontSize: theme.typography.sizes.h4,
-    fontWeight: theme.typography.weights.semiBold as any,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: SPACING.xs,
   },
   lessonDescription: {
-    fontSize: theme.typography.sizes.bodySmall,
-    color: theme.colors.text.secondary,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
     lineHeight: 20,
   },
   completedBadge: {
-    fontSize: 24,
-    color: theme.colors.success.main,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   lessonFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: theme.spacing.sm,
+    marginTop: SPACING.sm,
   },
   lessonMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.md,
+    gap: SPACING.md,
   },
   levelBadge: {
-    backgroundColor: theme.colors.primary.dark,
-    color: theme.colors.primary.main,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.radius.sm,
-    fontSize: theme.typography.sizes.caption,
-    fontWeight: theme.typography.weights.medium as any,
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+    borderRadius: RADIUS.sm,
+  },
+  levelText: {
+    color: EDU_COLORS.primaryBlue,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  durationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   durationText: {
-    fontSize: theme.typography.sizes.caption,
-    color: theme.colors.text.secondary,
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   lockedText: {
-    fontSize: theme.typography.sizes.caption,
-    color: theme.colors.warning.main,
+    fontSize: 12,
+    color: EDU_COLORS.warmOrange,
   },
 });
