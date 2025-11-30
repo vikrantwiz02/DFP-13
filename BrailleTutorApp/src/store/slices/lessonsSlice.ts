@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { allLessons } from '../../data';
 
 interface Lesson {
   id: string;
   title: string;
-  level: 'foundation' | 'literacy' | 'fluency' | 'advanced' | 'specialization';
+  level: string;
   chapter: string;
   duration_min: number;
   description: string;
@@ -34,7 +35,7 @@ interface LessonsState {
 }
 
 const initialState: LessonsState = {
-  available: [],
+  available: allLessons,
   completed: [],
   current: null,
   currentStep: 0,
@@ -53,11 +54,21 @@ const lessonsSlice = createSlice({
     },
     fetchLessonsSuccess(state, action: PayloadAction<Lesson[]>) {
       state.loading = false;
-      state.available = action.payload;
+      state.available = action.payload.length > 0 ? action.payload : allLessons;
     },
     fetchLessonsFailure(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
+      // Ensure lessons are still available even on failure
+      if (state.available.length === 0) {
+        state.available = allLessons;
+      }
+    },
+    // New action to ensure lessons are loaded
+    ensureLessonsLoaded(state) {
+      if (state.available.length === 0) {
+        state.available = allLessons;
+      }
     },
     startLesson(state, action: PayloadAction<Lesson>) {
       state.current = action.payload;
@@ -104,6 +115,7 @@ export const {
   fetchLessonsStart,
   fetchLessonsSuccess,
   fetchLessonsFailure,
+  ensureLessonsLoaded,
   startLesson,
   nextStep,
   previousStep,

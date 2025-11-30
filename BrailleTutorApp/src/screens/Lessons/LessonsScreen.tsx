@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,9 +16,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import theme, { COLORS, SPACING, RADIUS, TYPOGRAPHY, SHADOWS } from '../../theme';
 import { RootState } from '../../store';
-import { fetchLessonsStart } from '../../store/slices/lessonsSlice';
+import { fetchLessonsStart, ensureLessonsLoaded } from '../../store/slices/lessonsSlice';
 import { MainTabParamList } from '../../navigation/MainTabNavigator';
 import { RootStackParamList } from '../../navigation/RootNavigator';
+import { getAvailableLessons, getLessonStats } from '../../data';
 
 type LessonsScreenNavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Lessons'>,
@@ -51,27 +52,75 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'all' | 'chapters'>('all');
 
   useEffect(() => {
     dispatch(fetchLessonsStart());
-    // TODO: Fetch actual lessons from API
+    dispatch(ensureLessonsLoaded());
   }, [dispatch]);
 
-  const levels = ['Foundation', 'Elementary', 'Intermediate', 'Advanced', 'Specialization'];
+  const levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
+  
+  const stats = useMemo(() => getLessonStats(), []);
+  
+  const completedIds = useMemo(
+    () => completed.map((c: any) => c.lessonId),
+    [completed]
+  );
 
-  const filteredLessons = available.filter((lesson: any) => {
-    const matchesSearch = lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lesson.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesLevel = !selectedLevel || lesson.level === selectedLevel;
-    return matchesSearch && matchesLevel;
-  });
+  const availableLessonsData = useMemo(
+    () => getAvailableLessons(completedIds),
+    [completedIds]
+  );
+
+  const filteredLessons = useMemo(() => {
+    return available.filter((lesson: any) => {
+      const matchesSearch = lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lesson.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lesson.chapter.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesLevel = !selectedLevel || lesson.level === selectedLevel;
+      return matchesSearch && matchesLevel;
+    });
+  }, [available, searchQuery, selectedLevel]);
+
+  const lessonsByChapter = useMemo(() => {
+    const grouped: { [key: string]: any[] } = {};
+    filteredLessons.forEach((lesson: any) => {
+      if (!grouped[lesson.chapter]) {
+        grouped[lesson.chapter] = [];
+      }
+      grouped[lesson.chapter].push(lesson);
+    });
+    return grouped;
+  }, [filteredLessons]);
 
   const handleLessonPress = (lessonId: string) => {
-    navigation.navigate('LessonDetail', { lessonId });
+    const lesson = available.find((l: any) => l.id === lessonId);
+    if (lesson) {
+      // Check if prerequisites are met
+      const prereqsMet = lesson.prerequisites.every((prereqId: string) =>
+        completedIds.includes(prereqId)
+      );
+      
+      if (prereqsMet) {
+        navigation.navigate('LessonDetail', { lessonId });
+      }
+    }
   };
 
   const isLessonCompleted = (lessonId: string) => {
-    return completed.some((lesson: any) => lesson.lessonId === lessonId);
+    return completedIds.includes(lessonId);
+  };
+
+  const isLessonLocked = (lesson: any) => {
+    return !lesson.prerequisites.every((prereqId: string) =>
+      completedIds.includes(prereqId)
+    );
+  };
+
+  const getProgressPercentage = () => {
+    if (available.length === 0) return 0;
+    return Math.round((completed.length / available.length) * 100);
   };
 
   return (
@@ -94,11 +143,28 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
           end={{ x: 1, y: 1 }}
         >
           <View style={styles.headerContent}>
-            <View>
-              <Text style={styles.title}>Lessons</Text>
-              <Text style={styles.subtitle}>250+ lessons across 5 levels</Text>
+            <View style={styles.headerLeft}>
+              <Text style={styles.title}>Braille Lessons</Text>
+              <Text style={styles.subtitle}>
+                {stats.total} lessons • {Math.floor(stats.totalDuration / 60)}h {stats.totalDuration % 60}m total
+              </Text>
             </View>
-            <Ionicons name="library" size={28} color={EDU_COLORS.primaryBlue} />
+            <View style={styles.headerRight}>
+              <View style={styles.statsCircle}>
+                <Text style={styles.statsPercentage}>{getProgressPercentage()}%</Text>
+                <Text style={styles.statsLabel}>Complete</Text>
+              </View>
+            </View>
+          </View>
+          
+          {/* Progress Bar */}
+          <View style={styles.progressBarContainer}>
+            <View style={styles.progressBarBg}>
+              <View style={[styles.progressBarFill, { width: `${getProgressPercentage()}%` }]} />
+            </View>
+            <Text style={styles.progressText}>
+              {completed.length} of {available.length} lessons completed
+            </Text>
           </View>
         </LinearGradient>
 
@@ -121,6 +187,36 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </View>
 
+          {/* View Mode Toggle */}
+          <View style={styles.viewModeContainer}>
+            <TouchableOpacity
+              style={[styles.viewModeButton, viewMode === 'all' && styles.viewModeButtonActive]}
+              onPress={() => setViewMode('all')}
+            >
+              <Ionicons 
+                name="list" 
+                size={18} 
+                color={viewMode === 'all' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.6)'} 
+              />
+              <Text style={[styles.viewModeText, viewMode === 'all' && styles.viewModeTextActive]}>
+                All Lessons
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.viewModeButton, viewMode === 'chapters' && styles.viewModeButtonActive]}
+              onPress={() => setViewMode('chapters')}
+            >
+              <Ionicons 
+                name="folder-open" 
+                size={18} 
+                color={viewMode === 'chapters' ? '#FFFFFF' : 'rgba(255, 255, 255, 0.6)'} 
+              />
+              <Text style={[styles.viewModeText, viewMode === 'chapters' && styles.viewModeTextActive]}>
+                By Chapter
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Level Filter */}
           <ScrollView
             horizontal
@@ -133,65 +229,191 @@ export const LessonsScreen: React.FC<Props> = ({ navigation }) => {
               onPress={() => setSelectedLevel(null)}
             >
               <Text style={[styles.filterText, !selectedLevel && styles.filterTextActive]}>
-                All
+                All Levels
               </Text>
+              <View style={styles.filterBadge}>
+                <Text style={styles.filterBadgeText}>{available.length}</Text>
+              </View>
             </TouchableOpacity>
-            {levels.map((level) => (
-              <TouchableOpacity
-                key={level}
-                style={[styles.filterChip, selectedLevel === level && styles.filterChipActive]}
-                onPress={() => setSelectedLevel(level)}
-              >
-                <Text
-                  style={[styles.filterText, selectedLevel === level && styles.filterTextActive]}
+            {levels.map((level) => {
+              const levelCount = available.filter((l: any) => l.level === level).length;
+              return (
+                <TouchableOpacity
+                  key={level}
+                  style={[styles.filterChip, selectedLevel === level && styles.filterChipActive]}
+                  onPress={() => setSelectedLevel(level)}
                 >
-                  {level}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text
+                    style={[styles.filterText, selectedLevel === level && styles.filterTextActive]}
+                  >
+                    {level}
+                  </Text>
+                  <View style={styles.filterBadge}>
+                    <Text style={styles.filterBadgeText}>{levelCount}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
 
           {/* Lessons List */}
-        {filteredLessons.map((lesson: any) => {
-          const completed = isLessonCompleted(lesson.id);
-          return (
-            <TouchableOpacity
-              key={lesson.id}
-              style={styles.lessonCard}
-              onPress={() => handleLessonPress(lesson.id)}
-            >
-              <LinearGradient
-                colors={[EDU_COLORS.slateGray + '40', EDU_COLORS.deepSlate + '20']}
-                style={styles.lessonCardGradient}
-              >
-                <View style={styles.lessonHeader}>
-                  <View style={styles.lessonInfo}>
-                    <Text style={styles.lessonTitle}>{lesson.title}</Text>
-                    <Text style={styles.lessonDescription} numberOfLines={2}>
-                      {lesson.description}
-                    </Text>
-                  </View>
-                  {completed && (
-                    <View style={styles.completedBadge}>
-                      <Ionicons name="checkmark-circle" size={24} color={EDU_COLORS.vibrantGreen} />
-                    </View>
-                  )}
+          {viewMode === 'all' ? (
+            // All Lessons View
+            <>
+              {filteredLessons.length > 0 ? (
+                filteredLessons.map((lesson: any) => {
+                  const completed = isLessonCompleted(lesson.id);
+                  const locked = isLessonLocked(lesson);
+                  return (
+                    <TouchableOpacity
+                      key={lesson.id}
+                      style={[styles.lessonCard, locked && styles.lessonCardLocked]}
+                      onPress={() => handleLessonPress(lesson.id)}
+                      disabled={locked}
+                      activeOpacity={locked ? 1 : 0.7}
+                    >
+                      <LinearGradient
+                        colors={
+                          locked
+                            ? ['rgba(30, 30, 30, 0.4)', 'rgba(20, 20, 20, 0.2)']
+                            : [EDU_COLORS.slateGray + '40', EDU_COLORS.deepSlate + '20']
+                        }
+                        style={styles.lessonCardGradient}
+                      >
+                        <View style={styles.lessonHeader}>
+                          <View style={styles.lessonInfo}>
+                            <View style={styles.lessonTitleRow}>
+                              <Text style={[styles.lessonId, locked && styles.lessonIdLocked]}>
+                                {lesson.id}
+                              </Text>
+                              <Text style={[styles.lessonTitle, locked && styles.lessonTitleLocked]}>
+                                {lesson.title}
+                              </Text>
+                            </View>
+                            <Text style={[styles.lessonChapter, locked && styles.lessonChapterLocked]}>
+                              {lesson.chapter}
+                            </Text>
+                            <Text
+                              style={[styles.lessonDescription, locked && styles.lessonDescriptionLocked]}
+                              numberOfLines={2}
+                            >
+                              {lesson.description}
+                            </Text>
+                          </View>
+                          <View style={styles.lessonStatus}>
+                            {locked ? (
+                              <Ionicons name="lock-closed" size={24} color="rgba(255, 255, 255, 0.3)" />
+                            ) : completed ? (
+                              <Ionicons name="checkmark-circle" size={28} color={EDU_COLORS.vibrantGreen} />
+                            ) : (
+                              <Ionicons name="play-circle" size={28} color={EDU_COLORS.primaryBlue} />
+                            )}
+                          </View>
+                        </View>
+                        <View style={styles.lessonFooter}>
+                          <View style={styles.lessonMeta}>
+                            <View style={[styles.levelBadge, locked && styles.levelBadgeLocked]}>
+                              <Text style={[styles.levelText, locked && styles.levelTextLocked]}>
+                                {lesson.level}
+                              </Text>
+                            </View>
+                            <View style={styles.durationContainer}>
+                              <Ionicons
+                                name="time-outline"
+                                size={16}
+                                color={locked ? 'rgba(255, 255, 255, 0.3)' : EDU_COLORS.accent}
+                              />
+                              <Text style={[styles.durationText, locked && styles.durationTextLocked]}>
+                                {' '}{lesson.duration_min} min
+                              </Text>
+                            </View>
+                            {lesson.prerequisites.length > 0 && (
+                              <View style={styles.prereqContainer}>
+                                <Ionicons
+                                  name="git-branch-outline"
+                                  size={14}
+                                  color={locked ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.5)'}
+                                />
+                                <Text style={[styles.prereqText, locked && styles.prereqTextLocked]}>
+                                  {' '}{lesson.prerequisites.length} prereq
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  );
+                })
+              ) : (
+                <View style={styles.emptyState}>
+                  <Ionicons name="search-outline" size={64} color="rgba(255, 255, 255, 0.3)" />
+                  <Text style={styles.emptyStateText}>No lessons found</Text>
+                  <Text style={styles.emptyStateSubtext}>Try adjusting your filters</Text>
                 </View>
-                <View style={styles.lessonFooter}>
-                  <View style={styles.lessonMeta}>
-                    <View style={styles.levelBadge}>
-                      <Text style={styles.levelText}>{lesson.level}</Text>
+              )}
+            </>
+          ) : (
+            // Chapters View
+            <>
+              {Object.keys(lessonsByChapter).length > 0 ? (
+                Object.entries(lessonsByChapter).map(([chapter, lessons]: [string, any]) => (
+                  <View key={chapter} style={styles.chapterSection}>
+                    <View style={styles.chapterHeader}>
+                      <Ionicons name="folder-open" size={20} color={EDU_COLORS.primaryBlue} />
+                      <Text style={styles.chapterTitle}>{chapter}</Text>
+                      <View style={styles.chapterBadge}>
+                        <Text style={styles.chapterBadgeText}>{lessons.length}</Text>
+                      </View>
                     </View>
-                    <View style={styles.durationContainer}>
-                      <Ionicons name="time-outline" size={16} color={EDU_COLORS.accent} />
-                      <Text style={styles.durationText}> {lesson.duration_min} min</Text>
-                    </View>
+                    {lessons.map((lesson: any) => {
+                      const completed = isLessonCompleted(lesson.id);
+                      const locked = isLessonLocked(lesson);
+                      return (
+                        <TouchableOpacity
+                          key={lesson.id}
+                          style={[styles.chapterLessonCard, locked && styles.lessonCardLocked]}
+                          onPress={() => handleLessonPress(lesson.id)}
+                          disabled={locked}
+                          activeOpacity={locked ? 1 : 0.7}
+                        >
+                          <View style={styles.chapterLessonContent}>
+                            <View style={styles.chapterLessonLeft}>
+                              <Text style={[styles.chapterLessonId, locked && styles.lessonIdLocked]}>
+                                {lesson.id}
+                              </Text>
+                              <View style={styles.chapterLessonInfo}>
+                                <Text style={[styles.chapterLessonTitle, locked && styles.lessonTitleLocked]}>
+                                  {lesson.title}
+                                </Text>
+                                <Text style={[styles.chapterLessonDuration, locked && styles.durationTextLocked]}>
+                                  {lesson.duration_min} min
+                                </Text>
+                              </View>
+                            </View>
+                            <View style={styles.chapterLessonRight}>
+                              {locked ? (
+                                <Ionicons name="lock-closed" size={20} color="rgba(255, 255, 255, 0.3)" />
+                              ) : completed ? (
+                                <Ionicons name="checkmark-circle" size={24} color={EDU_COLORS.vibrantGreen} />
+                              ) : (
+                                <Ionicons name="play-circle-outline" size={24} color={EDU_COLORS.primaryBlue} />
+                              )}
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      );
+                    })}
                   </View>
+                ))
+              ) : (
+                <View style={styles.emptyState}>
+                  <Ionicons name="folder-open-outline" size={64} color="rgba(255, 255, 255, 0.3)" />
+                  <Text style={styles.emptyStateText}>No chapters found</Text>
                 </View>
-              </LinearGradient>
-            </TouchableOpacity>
-          );
-        })}
+              )}
+            </>
+          )}
 
           {/* Bottom spacing */}
           <View style={{ height: 120 }} />
@@ -244,7 +466,52 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: SPACING.lg,
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  headerRight: {
+    marginLeft: SPACING.md,
+  },
+  statsCircle: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    borderWidth: 3,
+    borderColor: EDU_COLORS.primaryBlue,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statsPercentage: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  statsLabel: {
+    fontSize: 10,
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  progressBarContainer: {
+    marginTop: SPACING.sm,
+  },
+  progressBarBg: {
+    height: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: RADIUS.full,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: EDU_COLORS.vibrantGreen,
+    borderRadius: RADIUS.full,
+  },
+  progressText: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: SPACING.xs,
   },
   scrollView: {
     flex: 1,
@@ -284,6 +551,36 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
   },
+  viewModeContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: SPACING.lg,
+    marginBottom: SPACING.md,
+    gap: SPACING.sm,
+  },
+  viewModeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    gap: SPACING.xs,
+  },
+  viewModeButtonActive: {
+    backgroundColor: EDU_COLORS.primaryBlue + '30',
+    borderColor: EDU_COLORS.primaryBlue + '60',
+  },
+  viewModeText: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  viewModeTextActive: {
+    color: '#FFFFFF',
+  },
   filterContainer: {
     maxHeight: 50,
     marginBottom: SPACING.md,
@@ -293,12 +590,15 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   filterChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: RADIUS.full,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    gap: SPACING.xs,
   },
   filterChipActive: {
     backgroundColor: EDU_COLORS.primaryBlue + '40',
@@ -312,6 +612,19 @@ const styles = StyleSheet.create({
   filterTextActive: {
     color: '#FFFFFF',
   },
+  filterBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: RADIUS.full,
+    minWidth: 20,
+    alignItems: 'center',
+  },
+  filterBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
   lessonCard: {
     marginHorizontal: SPACING.lg,
     marginBottom: SPACING.md,
@@ -319,6 +632,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  lessonCardLocked: {
+    opacity: 0.6,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   lessonCardGradient: {
     padding: SPACING.lg,
@@ -332,16 +649,53 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: SPACING.md,
   },
+  lessonTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.xs,
+    gap: SPACING.sm,
+  },
+  lessonId: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: EDU_COLORS.primaryBlue,
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 2,
+    borderRadius: RADIUS.sm,
+  },
+  lessonIdLocked: {
+    color: 'rgba(255, 255, 255, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
   lessonTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
     color: '#FFFFFF',
+    flex: 1,
+  },
+  lessonTitleLocked: {
+    color: 'rgba(255, 255, 255, 0.4)',
+  },
+  lessonChapter: {
+    fontSize: 12,
+    color: EDU_COLORS.accent,
     marginBottom: SPACING.xs,
+  },
+  lessonChapterLocked: {
+    color: 'rgba(255, 255, 255, 0.3)',
   },
   lessonDescription: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.7)',
     lineHeight: 20,
+  },
+  lessonDescriptionLocked: {
+    color: 'rgba(255, 255, 255, 0.3)',
+  },
+  lessonStatus: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   completedBadge: {
     alignItems: 'center',
@@ -364,10 +718,16 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
     borderRadius: RADIUS.sm,
   },
+  levelBadgeLocked: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
   levelText: {
     color: EDU_COLORS.primaryBlue,
     fontSize: 12,
     fontWeight: '600',
+  },
+  levelTextLocked: {
+    color: 'rgba(255, 255, 255, 0.3)',
   },
   durationContainer: {
     flexDirection: 'row',
@@ -378,8 +738,112 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: 'rgba(255, 255, 255, 0.6)',
   },
+  durationTextLocked: {
+    color: 'rgba(255, 255, 255, 0.3)',
+  },
+  prereqContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  prereqText: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.5)',
+  },
+  prereqTextLocked: {
+    color: 'rgba(255, 255, 255, 0.3)',
+  },
   lockedText: {
     fontSize: 12,
     color: EDU_COLORS.warmOrange,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.xl * 3,
+  },
+  emptyStateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.5)',
+    marginTop: SPACING.md,
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.3)',
+    marginTop: SPACING.xs,
+  },
+  chapterSection: {
+    marginBottom: SPACING.xl,
+  },
+  chapterHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderLeftWidth: 3,
+    borderLeftColor: EDU_COLORS.primaryBlue,
+    gap: SPACING.sm,
+  },
+  chapterTitle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  chapterBadge: {
+    backgroundColor: EDU_COLORS.primaryBlue + '40',
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 4,
+    borderRadius: RADIUS.full,
+    minWidth: 28,
+    alignItems: 'center',
+  },
+  chapterBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  chapterLessonCard: {
+    marginHorizontal: SPACING.lg,
+    marginTop: SPACING.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+  },
+  chapterLessonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: SPACING.md,
+  },
+  chapterLessonLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+  },
+  chapterLessonId: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: EDU_COLORS.accent,
+  },
+  chapterLessonInfo: {
+    flex: 1,
+  },
+  chapterLessonTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 2,
+  },
+  chapterLessonDuration: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.5)',
+  },
+  chapterLessonRight: {
+    marginLeft: SPACING.sm,
   },
 });

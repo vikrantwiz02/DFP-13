@@ -17,7 +17,7 @@ LogBox.ignoreLogs([
 export default function App() {
   useEffect(() => {
     // Initialize app-level services
-    console.log('🚀 Braille Tutor App Initialized');
+    console.log('Braille Tutor App Initialized');
   }, []);
 
   return (
