@@ -563,15 +563,6 @@ Math: Vout = 5V × (2kΩ / 3kΩ) = 3.33V ✓ (safe for HC-05 3.3V logic)
 
 ---
 
-### 5.5.4 Consumables & Tools
-
-| **Item** | **Description** | **Cost** | **Notes** |
-|---|---|---|---|
-| Braille Paper | 140-160 GSM, 100 sheets | ₹830 | Practice/testing |
-| 3D Printing Filament | PLA, 1kg spool | ₹1,660 | For linkages, mounts |
-| Soldering Supplies | Wire, solder, flux | ₹415 | Assembly |
-| Hot Glue / Epoxy | Adhesives | ₹415 | Mounting components |
-| Screwdriver Set | Phillips, hex keys | ₹830 | (Often already owned) |
 
 **Subtotal Consumables:** **₹4,150**
 
@@ -584,10 +575,9 @@ Math: Vout = 5V × (2kΩ / 3kΩ) = 3.33V ✓ (safe for HC-05 3.3V logic)
 | Core Electronics | ₹4,482 |
 | Mechanical Components | ₹6,225 |
 | Optional Components | ₹955 |
-| Consumables & Tools | ₹4,150 |
 | **TOTAL** | **₹15,812** |
 | Contingency (20%) | ₹3,162 |
-| **GRAND TOTAL** | **₹18,974** |
+| **GRAND TOTAL** | **₹14,832** |
 
 **Note:** Prices are estimates based on AliExpress/eBay (low-cost suppliers). Local electronics stores may charge 20-50% more. Bulk purchases (10+ units) reduce cost by ~30%.
 
