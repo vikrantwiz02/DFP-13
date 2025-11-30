@@ -13,7 +13,7 @@ Our braille plotter uses a **simplified 3-servo architecture** based on Arduino 
 
 This design eliminates the complexity of stepper motors and drivers, making the system:
 - **Simpler** - fewer components, easier assembly
-- **Cheaper** - 3 servos cost $15-24 total vs. $60+ for steppers+drivers
+- **Cheaper** - 3 servos cost ₹1,245-1,992 total vs. ₹4,980+ for steppers+drivers
 - **Quieter** - no stepper motor noise
 - **More accessible** - standard hobby servos available everywhere
 - **Beginner-friendly** - Arduino Servo library makes programming trivial
@@ -54,7 +54,7 @@ As shown in your circuit diagram, this design uses **3 standard hobby servo moto
 
 **Key Advantages of This Design:**
 1. **Simplicity** - No motor drivers needed, direct PWM control from Arduino
-2. **Cost** - Total motor cost $15-24 (vs. $60+ for steppers+drivers)
+2. **Cost** - Total motor cost ₹1,245-1,992 (vs. ₹4,980+ for steppers+drivers)
 3. **Ease** - Beginner-friendly Arduino Servo library
 4. **Quiet** - Much quieter than stepper motors
 5. **Available** - Standard hobby servos sold in every electronics store
@@ -127,7 +127,7 @@ As shown in your circuit diagram, this design uses **3 standard hobby servo moto
 - **Power:** 5V logic, 7-12V DC input via barrel jack or USB (5V)
 - **Programming:** USB interface (CH340 or ATmega16U2 chip)
 - **Dimensions:** 68.6×53.4mm
-- **Cost:** $3-5 (compatible clone) or $25 (genuine Arduino)
+- **Cost:** ₹249-415 (compatible clone) or ₹2,075 (genuine Arduino)
 
 **Why Arduino UNO for This Project:**
 1. **Beginner-friendly** - Massive tutorials, examples, community support
@@ -153,7 +153,7 @@ As shown in your circuit diagram, this design uses **3 standard hobby servo moto
 - **Gear Material:** Metal gears (brass/steel) for durability
 - **Weight:** ~55g
 - **Dimensions:** 40×20×38mm
-- **Cost:** ~$8-12 each
+- **Cost:** ~₹664-996 each
 
 **Why MG996R:**
 - High torque needed to move carriage and paper platform
@@ -171,7 +171,7 @@ As shown in your circuit diagram, this design uses **3 standard hobby servo moto
 - **Current:** 100mA idle, 500mA stall
 - **Weight:** 9g (SG90), 13g (MG90S)
 - **Dimensions:** 22×12×29mm (compact)
-- **Cost:** ~$2-4 (SG90) or $5-8 (MG90S)
+- **Cost:** ~₹166-332 (SG90) or ₹415-664 (MG90S)
 
 **Why SG90/MG90S:**
 - Lightweight (doesn't add much load to X-axis carriage)
@@ -210,7 +210,7 @@ As shown in your circuit diagram, this design uses **3 standard hobby servo moto
 - Input: 7-40V DC
 - Output: Adjustable 1.25-35V (set to 5.0V)
 - Current: 3A continuous (sufficient for 3 servos)
-- Cost: $1-3
+- Cost: ₹83-249
 - Features: Built-in protection (overcurrent, thermal)
 
 ---
@@ -264,7 +264,7 @@ Common Ground Connection (CRITICAL!):
 - **Voltage:** 3.6-6V (typically powered from Arduino 5V)
 - **Current:** 30mA active, 8mA paired
 - **Pins:** VCC, GND, TX, RX, EN (enable), STATE (connection status)
-- **Cost:** $3-6
+- **Cost:** ₹249-498
 
 **HC-06 Alternative (Simpler):**
 - Slave-only mode (cannot initiate pairing)
@@ -313,7 +313,7 @@ Voltage at HC-05 RX = 5V × (2kΩ / (1kΩ + 2kΩ)) = 3.33V ✓
   - Other pin → GND
   - When pressed, pin reads LOW; when released, reads HIGH
 - **Use:** Home positioning at startup (zero calibration)
-- **Cost:** $0.50 each
+- **Cost:** ₹42 each
 
 **Power LED Indicator:**
 - **Component:** 5mm LED (red) + 220Ω resistor
@@ -510,22 +510,22 @@ Math: Vout = 5V × (2kΩ / 3kΩ) = 3.33V ✓ (safe for HC-05 3.3V logic)
 
 ### 5.5.1 Core Electronics
 
-| **Component** | **Description** | **Quantity** | **Unit Price (USD)** | **Total** | **Supplier Notes** |
+| **Component** | **Description** | **Quantity** | **Unit Price (INR)** | **Total** | **Supplier Notes** |
 |---|---|---|---|---|---|
-| Arduino UNO R3 | ATmega328P, USB | 1 | $5 | $5 | Compatible clone (CH340 USB chip) |
-| MG996R Servo | High-torque, metal gear | 2 | $10 | $20 | X-Axis, Y-Axis |
-| SG90 Micro Servo | 9g, plastic gear | 1 | $3 | $3 | Stylus actuation |
-| HC-05 Bluetooth | Serial SPP module | 1 | $5 | $5 | Or HC-06 |
-| LM2596 Buck Converter | DC-DC step-down, 3A | 1 | $2 | $2 | Adjustable output |
-| 9V/5A Power Adapter | Wall supply, 5.5mm jack | 1 | $8 | $8 | Or 9V/3A minimum |
-| Limit Switches | Microswitch, lever arm | 2 | $1 | $2 | Optional homing |
-| Resistors (1kΩ, 2kΩ) | 1/4W carbon film | 1 pack | $1 | $1 | Voltage divider |
-| LED + Resistors | Status indicators | 2 | $0.50 | $1 | Red, green LEDs |
-| Electrolytic Capacitor | 100µF, 16V | 2 | $0.50 | $1 | Servo power decoupling |
-| Jumper Wires | Male-male, male-female | 40 pcs | $3 | $3 | Assorted pack |
-| Breadboard | 830 tie-points | 1 | $3 | $3 | For prototyping |
+| Arduino UNO R3 | ATmega328P, USB | 1 | ₹415 | ₹415 | Compatible clone (CH340 USB chip) |
+| MG996R Servo | High-torque, metal gear | 2 | ₹830 | ₹1,660 | X-Axis, Y-Axis |
+| SG90 Micro Servo | 9g, plastic gear | 1 | ₹249 | ₹249 | Stylus actuation |
+| HC-05 Bluetooth | Serial SPP module | 1 | ₹415 | ₹415 | Or HC-06 |
+| LM2596 Buck Converter | DC-DC step-down, 3A | 1 | ₹166 | ₹166 | Adjustable output |
+| 9V/5A Power Adapter | Wall supply, 5.5mm jack | 1 | ₹664 | ₹664 | Or 9V/3A minimum |
+| Limit Switches | Microswitch, lever arm | 2 | ₹83 | ₹166 | Optional homing |
+| Resistors (1kΩ, 2kΩ) | 1/4W carbon film | 1 pack | ₹83 | ₹83 | Voltage divider |
+| LED + Resistors | Status indicators | 2 | ₹42 | ₹83 | Red, green LEDs |
+| Electrolytic Capacitor | 100µF, 16V | 2 | ₹42 | ₹83 | Servo power decoupling |
+| Jumper Wires | Male-male, male-female | 40 pcs | ₹249 | ₹249 | Assorted pack |
+| Breadboard | 830 tie-points | 1 | ₹249 | ₹249 | For prototyping |
 
-**Subtotal Electronics:** **$54**
+**Subtotal Electronics:** **₹4,482**
 
 ---
 
@@ -533,20 +533,20 @@ Math: Vout = 5V × (2kΩ / 3kΩ) = 3.33V ✓ (safe for HC-05 3.3V logic)
 
 | **Component** | **Description** | **Quantity** | **Unit Price** | **Total** | **Notes** |
 |---|---|---|---|---|---|
-| Acrylic Sheet (Black) | 10mm thick, 300×300mm | 1 | $15 | $15 | Base platform |
-| Acrylic Sheet (Clear) | 3mm thick, 200×200mm | 1 | $5 | $5 | Hold-down bar |
-| Smooth Rods | 8mm dia, 300mm length | 2 | $4 | $8 | X-axis rails |
-| Linear Bearings | LM8UU (8mm ID) | 4 | $2 | $8 | For smooth rods |
-| GT2 Timing Belt | 6mm width, 2m length | 1 | $5 | $5 | Alternative to linkage |
-| GT2 Pulley (20-tooth) | 5mm bore | 2 | $3 | $6 | For belt drive (optional) |
-| Servo Horns/Arms | Plastic, included w/ servos | - | - | $0 | Included |
-| Linkage Rods | 3D printed or aluminum | 3 | $2 | $6 | Servo to linear motion |
-| Ball-Point Stylus | Steel tip, 1.5mm | 1 | $5 | $5 | Custom fabricated |
-| M3 Hardware | Screws, nuts, washers | 50 pcs | $5 | $5 | Assorted pack |
-| Spring Clips | Paper hold-downs | 4 | $1 | $4 | Or magnetic holders |
-| Wood/MDF Base | 12mm plywood, 350×350mm | 1 | $8 | $8 | Frame base |
+| Acrylic Sheet (Black) | 10mm thick, 300×300mm | 1 | ₹1,245 | ₹1,245 | Base platform |
+| Acrylic Sheet (Clear) | 3mm thick, 200×200mm | 1 | ₹415 | ₹415 | Hold-down bar |
+| Smooth Rods | 8mm dia, 300mm length | 2 | ₹332 | ₹664 | X-axis rails |
+| Linear Bearings | LM8UU (8mm ID) | 4 | ₹166 | ₹664 | For smooth rods |
+| GT2 Timing Belt | 6mm width, 2m length | 1 | ₹415 | ₹415 | Alternative to linkage |
+| GT2 Pulley (20-tooth) | 5mm bore | 2 | ₹249 | ₹498 | For belt drive (optional) |
+| Servo Horns/Arms | Plastic, included w/ servos | - | - | ₹0 | Included |
+| Linkage Rods | 3D printed or aluminum | 3 | ₹166 | ₹498 | Servo to linear motion |
+| Ball-Point Stylus | Steel tip, 1.5mm | 1 | ₹415 | ₹415 | Custom fabricated |
+| M3 Hardware | Screws, nuts, washers | 50 pcs | ₹415 | ₹415 | Assorted pack |
+| Spring Clips | Paper hold-downs | 4 | ₹83 | ₹332 | Or magnetic holders |
+| Wood/MDF Base | 12mm plywood, 350×350mm | 1 | ₹664 | ₹664 | Frame base |
 
-**Subtotal Mechanical:** **$75**
+**Subtotal Mechanical:** **₹6,225**
 
 ---
 
@@ -554,12 +554,12 @@ Math: Vout = 5V × (2kΩ / 3kΩ) = 3.33V ✓ (safe for HC-05 3.3V logic)
 
 | **Component** | **Description** | **Quantity** | **Unit Price** | **Total** | **Notes** |
 |---|---|---|---|---|---|
-| TCRT5000 Sensor | IR paper detect | 1 | $2 | $2 | Optional |
-| SD Card Module | Data logging | 1 | $3 | $3 | For offline printing |
-| LCD Display (16×2) | Status display | 1 | $5 | $5 | Optional UI |
-| Push Buttons | User input | 3 | $0.50 | $1.50 | Start/Stop/Home |
+| TCRT5000 Sensor | IR paper detect | 1 | ₹166 | ₹166 | Optional |
+| SD Card Module | Data logging | 1 | ₹249 | ₹249 | For offline printing |
+| LCD Display (16×2) | Status display | 1 | ₹415 | ₹415 | Optional UI |
+| Push Buttons | User input | 3 | ₹42 | ₹125 | Start/Stop/Home |
 
-**Subtotal Optional:** **$11.50**
+**Subtotal Optional:** **₹955**
 
 ---
 
@@ -567,27 +567,27 @@ Math: Vout = 5V × (2kΩ / 3kΩ) = 3.33V ✓ (safe for HC-05 3.3V logic)
 
 | **Item** | **Description** | **Cost** | **Notes** |
 |---|---|---|---|
-| Braille Paper | 140-160 GSM, 100 sheets | $10 | Practice/testing |
-| 3D Printing Filament | PLA, 1kg spool | $20 | For linkages, mounts |
-| Soldering Supplies | Wire, solder, flux | $5 | Assembly |
-| Hot Glue / Epoxy | Adhesives | $5 | Mounting components |
-| Screwdriver Set | Phillips, hex keys | $10 | (Often already owned) |
+| Braille Paper | 140-160 GSM, 100 sheets | ₹830 | Practice/testing |
+| 3D Printing Filament | PLA, 1kg spool | ₹1,660 | For linkages, mounts |
+| Soldering Supplies | Wire, solder, flux | ₹415 | Assembly |
+| Hot Glue / Epoxy | Adhesives | ₹415 | Mounting components |
+| Screwdriver Set | Phillips, hex keys | ₹830 | (Often already owned) |
 
-**Subtotal Consumables:** **$50**
+**Subtotal Consumables:** **₹4,150**
 
 ---
 
 ### 5.5.5 Total Prototype Cost
 
-| **Category** | **Cost (USD)** |
+| **Category** | **Cost (INR)** |
 |---|---|
-| Core Electronics | $54 |
-| Mechanical Components | $75 |
-| Optional Components | $12 |
-| Consumables & Tools | $50 |
-| **TOTAL** | **$191** |
-| Contingency (20%) | $38 |
-| **GRAND TOTAL** | **$229** |
+| Core Electronics | ₹4,482 |
+| Mechanical Components | ₹6,225 |
+| Optional Components | ₹955 |
+| Consumables & Tools | ₹4,150 |
+| **TOTAL** | **₹15,812** |
+| Contingency (20%) | ₹3,162 |
+| **GRAND TOTAL** | **₹18,974** |
 
 **Note:** Prices are estimates based on AliExpress/eBay (low-cost suppliers). Local electronics stores may charge 20-50% more. Bulk purchases (10+ units) reduce cost by ~30%.
 
@@ -722,7 +722,7 @@ void homeAxes() {
 | **Aspect** | **Our 3-Servo Design** | **Stepper Motor Alternative** |
 |---|---|---|
 | **Complexity** | Low (beginner-friendly) | High (requires drivers, tuning) |
-| **Cost** | $20-24 (3 servos) | $60+ (motors + drivers) |
+| **Cost** | ₹1,660-1,992 (3 servos) | ₹4,980+ (motors + drivers) |
 | **Noise** | Quiet | Loud (stepper whine) |
 | **Code Complexity** | Simple Servo library | AccelStepper, step/dir logic |
 | **Power Supply** | Single 5V rail | Multiple voltages (12V, 5V, 3.3V) |
@@ -833,7 +833,7 @@ This chapter presented a complete hardware design for a braille plotter using:
 - **External 5V/3A power supply** (buck converter from 9V)
 - **Simple mechanical design** (3D printed linkages, acrylic platform)
 
-**Total prototype cost: ~$229** (vs. $2,000+ for commercial embossers)
+**Total prototype cost: ~₹18,974** (vs. ₹1,66,000+ for commercial embossers)
 
 **Key advantages:**
 - Simplicity and ease of assembly
