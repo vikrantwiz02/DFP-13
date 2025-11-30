@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -60,7 +59,7 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       <View style={styles.container}>
         <LinearGradient
           colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
-          style={styles.backgroundGradient}
+          style={styles.backgroundGlow}
         >
           <View style={styles.errorContainer}>
             <Ionicons name="alert-circle-outline" size={64} color={COLORS.error.main} />
@@ -83,30 +82,29 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Background Gradient */}
+    <View style={styles.container}>
       <LinearGradient
-        colors={[EDU_COLORS.deepSlate, '#0A0A0F']}
-        style={styles.backgroundGradient}
+        colors={['transparent', EDU_COLORS.deepSlate]}
+        style={styles.backgroundGlow}
       >
-        {/* Header Card - Matching LessonsScreen Style */}
+        {/* Header - Matching LessonsScreen Style */}
         <LinearGradient
           colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
           style={styles.header}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          {/* Back Button */}
-          <TouchableOpacity
-            style={styles.headerBackButton}
-            onPress={() => navigation.goBack()}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-
           <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
+              {/* Back Button integrated in header */}
+              <TouchableOpacity
+                style={styles.backButtonInline}
+                onPress={() => navigation.goBack()}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+              </TouchableOpacity>
+
               {/* Level Badge */}
               <View style={styles.levelBadgeContainer}>
                 <Text style={styles.levelText}>{lesson.level.toUpperCase()}</Text>
@@ -138,7 +136,7 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
 
@@ -197,7 +195,7 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </LinearGradient>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -205,6 +203,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0A0A0F',
+  },
+  backgroundGlow: {
+    flex: 1,
   },
   errorContainer: {
     flex: 1,
@@ -230,13 +231,21 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.sizes.body,
     fontWeight: TYPOGRAPHY.weights.semiBold as any,
   },
-  backgroundGradient: {
-    flex: 1,
+  backButtonInline: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    marginBottom: SPACING.sm,
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 50 : 16,
+    paddingTop: Platform.OS === 'ios' ? 60 : 20,
     paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.md,
+    paddingBottom: SPACING.xl,
     borderBottomLeftRadius: RADIUS.xl,
     borderBottomRightRadius: RADIUS.xl,
     overflow: 'hidden',
@@ -248,10 +257,9 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     flex: 1,
-    marginRight: SPACING.md,
   },
   headerRight: {
-    marginLeft: SPACING.sm,
+    marginLeft: SPACING.md,
   },
   statsCircle: {
     width: 70,
@@ -267,51 +275,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: TYPOGRAPHY.weights.bold as any,
     color: '#FFFFFF',
-    marginTop: 2,
   },
   statsLabel: {
     fontSize: 10,
     color: 'rgba(255, 255, 255, 0.7)',
   },
-  chapterInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xs,
-    marginTop: 6,
-  },
-  chapterText: {
-    fontSize: 13,
-    color: EDU_COLORS.accent,
-  },
-  headerBackButton: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : 16,
-    left: SPACING.lg,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    zIndex: 100,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.md,
-  },
   levelBadgeContainer: {
     alignSelf: 'flex-start',
     paddingHorizontal: SPACING.md,
-    paddingVertical: 4,
+    paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
     marginBottom: SPACING.xs,
-    marginLeft: 48,
     backgroundColor: EDU_COLORS.primaryBlue + '40',
     borderWidth: 1,
     borderColor: EDU_COLORS.primaryBlue + '60',
@@ -323,19 +297,34 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   title: {
-    fontSize: 26,
+    fontSize: TYPOGRAPHY.sizes.h3,
     fontWeight: TYPOGRAPHY.weights.bold as any,
     color: '#FFFFFF',
-    marginBottom: 4,
-    lineHeight: 32,
+    marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: TYPOGRAPHY.sizes.body,
     color: 'rgba(255, 255, 255, 0.7)',
-    lineHeight: 20,
+  },
+  chapterInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    marginTop: SPACING.sm,
+  },
+  chapterText: {
+    fontSize: 12,
+    color: EDU_COLORS.accent,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    paddingTop: SPACING.lg,
   },
   section: {
     marginBottom: SPACING.xl,
+    marginHorizontal: SPACING.lg,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -369,6 +358,7 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
     borderWidth: 1,
     borderColor: 'rgba(245, 158, 11, 0.3)',
+    marginHorizontal: SPACING.lg,
   },
   warningIconContainer: {
     width: 40,
