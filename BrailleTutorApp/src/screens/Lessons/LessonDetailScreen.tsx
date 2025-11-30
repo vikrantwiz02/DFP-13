@@ -28,13 +28,13 @@ interface Props {
 export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
   const { lessonId } = route.params;
   const dispatch = useDispatch();
-  const { availableLessons, completedLessons } = useSelector(
+  const { available, completed } = useSelector(
     (state: RootState) => state.lessons
   );
-  const { isConnected } = useSelector((state: RootState) => state.device);
+  const { connected } = useSelector((state: RootState) => state.device);
 
-  const lesson = availableLessons.find((l) => l.id === lessonId);
-  const isCompleted = completedLessons.some((l) => l.lessonId === lessonId);
+  const lesson = available.find((l) => l.id === lessonId);
+  const isCompleted = completed.some((l) => l.lessonId === lessonId);
 
   if (!lesson) {
     return (
@@ -65,7 +65,7 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         <View style={styles.metaContainer}>
           <View style={styles.metaItem}>
             <Text style={styles.metaLabel}>Duration</Text>
-            <Text style={styles.metaValue}>⏱ {lesson.estimatedDuration} min</Text>
+            <Text style={styles.metaValue}>⏱ {lesson.duration_min} min</Text>
           </View>
           <View style={styles.metaItem}>
             <Text style={styles.metaLabel}>Difficulty</Text>
@@ -95,7 +95,7 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
 
         {/* Device Warning */}
-        {!isConnected && (
+        {!connected && (
           <View style={styles.warningCard}>
             <Text style={styles.warningIcon}>⚠️</Text>
             <View style={styles.warningContent}>
@@ -111,12 +111,11 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
       {/* Bottom Action Button */}
       <View style={styles.footer}>
         <TouchableOpacity
-          style={[styles.startButton, lesson.isLocked && styles.startButtonDisabled]}
+          style={styles.startButton}
           onPress={handleStartLesson}
-          disabled={lesson.isLocked}
         >
           <Text style={styles.startButtonText}>
-            {lesson.isLocked ? '🔒 Locked' : isCompleted ? 'Review Lesson' : 'Start Lesson'}
+            {isCompleted ? 'Review Lesson' : 'Start Lesson'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -213,7 +212,7 @@ const styles = StyleSheet.create({
   },
   warningCard: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.warning.mainDark,
+    backgroundColor: theme.colors.warning.background,
     borderWidth: 1,
     borderColor: theme.colors.warning.main,
     borderRadius: theme.radius.lg,
