@@ -173,22 +173,37 @@ graph TD
 └─────────────────────────────────┘
 ```
 
-**Interaction Flow:**
+**Interaction Flow (with Motor Acknowledgments):**
 ```mermaid
 sequenceDiagram
     participant U as User
     participant A as App
     participant AI as AI Tutor
     participant D as Device
+    participant M as Motors
     
     U->>A: Tap "Start Lesson: Letter A"
     A->>AI: Request lesson plan
     AI->>A: Send step 1 instructions
     A->>U: Display + play audio
     A->>D: Send print command (⠁)
-    D->>D: Print letter A
-    D->>A: Print complete
-    A->>U: "Feel the letter A"
+    D->>D: Parse job, plan path
+    D->>A: Job accepted (ack)
+    D->>M: Move to position & actuate
+    
+    loop For each dot
+        M->>M: Move X/Y to position
+        M->>M: Actuate stylus (servo down)
+        M->>M: Release stylus (servo up)
+        M->>D: Dot complete (position, index)
+        D->>A: Progress update (dot_complete)
+        A->>U: Update progress bar
+    end
+    
+    M->>D: All dots complete
+    D->>A: Job complete (status, duration)
+    A->>U: "Feel the letter A" + haptic feedback
+    
     U->>A: Hold mic button & speak
     A->>AI: Send audio for evaluation
     AI->>AI: Analyze response
@@ -199,6 +214,11 @@ sequenceDiagram
         AI->>A: "Not quite, let's try..."
         A->>U: Play corrective hint
     end
+    
+    Note over M,D: If motor error occurs:
+    M-->>D: Error (MOTOR_STALL, position)
+    D-->>A: Job failed (error details)
+    A-->>U: Alert + recovery options
 ```
 
 ### 6.3.3 Device Control Screen
@@ -235,7 +255,129 @@ sequenceDiagram
 └─────────────────────────────────┘
 ```
 
-### 6.3.4 Progress Dashboard
+### 6.3.4 Real-Time Print Progress
+
+**Live Job Monitoring UI:**
+```
+┌─────────────────────────────────┐
+│  Printing: Lesson Exercise      │
+├─────────────────────────────────┤
+│                                 │
+│  Progress: 127/195 dots (65%)   │
+│  ████████████░░░░░░░░           │
+│                                 │
+│  Current Position:              │
+│  X: 22.5mm  Y: 8.3mm            │
+│                                 │
+│  Status: Printing row 8 of 13   │
+│  Time Elapsed: 2m 15s           │
+│  ETA: 1m 30s remaining          │
+│                                 │
+│  [Visual dot matrix preview]    │
+│  ⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚                │
+│  ⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞                │
+│  ⠥⠧⠺⠭⠽⠵░░░░  ← printing       │
+│                                 │
+│  Last Acknowledgment: 0.2s ago  │
+│  Connection: Strong (RSSI: -45) │
+│                                 │
+│  ┌─────┐ ┌─────┐ ┌──────┐      │
+│  │Pause│ │Cancel│ │Details│     │
+│  └─────┘ └─────┘ └──────┘      │
+└─────────────────────────────────┘
+```
+
+**React Component with Live Updates:**
+```javascript
+const LivePrintMonitor = () => {
+  const currentJob = useSelector(state => state.device.currentJob);
+  const [lastAck, setLastAck] = useState(Date.now());
+  const [healthStatus, setHealthStatus] = useState('healthy');
+  
+  useEffect(() => {
+    // Monitor acknowledgment freshness
+    const interval = setInterval(() => {
+      const timeSinceAck = Date.now() - lastAck;
+      
+      if (timeSinceAck > 5000) {
+        setHealthStatus('warning'); // No ack for 5 seconds
+      } else if (timeSinceAck > 10000) {
+        setHealthStatus('error'); // Connection likely lost
+      } else {
+        setHealthStatus('healthy');
+      }
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [lastAck]);
+  
+  useEffect(() => {
+    // Listen for device updates
+    const unsubscribe = store.subscribe(() => {
+      const state = store.getState();
+      if (state.device.currentJob?.lastUpdate) {
+        setLastAck(state.device.currentJob.lastUpdate);
+      }
+    });
+    
+    return unsubscribe;
+  }, []);
+  
+  const getHealthIndicator = () => {
+    switch(healthStatus) {
+      case 'healthy': return '🟢';
+      case 'warning': return '🟡';
+      case 'error': return '🔴';
+      default: return '⚪';
+    }
+  };
+  
+  const calculateETA = () => {
+    if (!currentJob?.dotsCompleted || !currentJob?.total_dots) return 'Calculating...';
+    
+    const elapsed = Date.now() - currentJob.startTime;
+    const dotsRemaining = currentJob.total_dots - currentJob.dotsCompleted;
+    const msPerDot = elapsed / currentJob.dotsCompleted;
+    const etaMs = dotsRemaining * msPerDot;
+    
+    return formatDuration(etaMs);
+  };
+  
+  return (
+    <View style={styles.monitorContainer}>
+      <Text style={styles.jobTitle}>{currentJob?.name}</Text>
+      
+      <View style={styles.progressContainer}>
+        <Text>{currentJob?.dotsCompleted}/{currentJob?.total_dots} dots</Text>
+        <ProgressBar progress={currentJob?.progress || 0} />
+      </View>
+      
+      <View style={styles.positionContainer}>
+        <Text>Current Position:</Text>
+        <Text>X: {currentJob?.position?.x}mm  Y: {currentJob?.position?.y}mm</Text>
+      </View>
+      
+      <View style={styles.statusRow}>
+        <Text>{getHealthIndicator()} Connection</Text>
+        <Text>Last ack: {formatTimeAgo(lastAck)}</Text>
+      </View>
+      
+      <Text>ETA: {calculateETA()}</Text>
+      
+      {healthStatus === 'error' && (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorText}>⚠️ Device not responding</Text>
+          <TouchableOpacity onPress={attemptReconnect}>
+            <Text style={styles.reconnectBtn}>Reconnect</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
+};
+```
+
+### 6.3.5 Progress Dashboard
 
 **Analytics View:**
 ```
@@ -270,7 +412,209 @@ sequenceDiagram
 
 ## 6.4 BLE Integration
 
-### 6.4.1 Device Discovery & Connection
+### 6.4.1 Motor Acknowledgment Protocol
+
+**Critical Design Issue Identified:**
+The workflow diagram shows that after motors execute the print loop (Move X/Y → Actuate stylus → Release), there is **no acknowledgment** sent back to the Device/App confirming:
+- Individual dot completion
+- Row/line completion  
+- Full job completion
+- Error states (motor stall, position lost, etc.)
+
+This creates race conditions, prevents accurate progress tracking, and hides failures.
+
+**Solution: Bi-directional Status Protocol**
+
+**Motor → Device Acknowledgments:**
+```python
+# After each dot is printed
+{
+  "type": "dot_complete",
+  "job_id": "1234567890",
+  "dot_index": 42,
+  "position": {"x": 15.5, "y": 8.2},
+  "timestamp": 1701360000
+}
+
+# After each row/line
+{
+  "type": "row_complete",
+  "job_id": "1234567890",
+  "row_index": 3,
+  "dots_printed": 28,
+  "timestamp": 1701360005
+}
+
+# Job completion
+{
+  "type": "job_complete",
+  "job_id": "1234567890",
+  "total_dots": 150,
+  "duration_ms": 45200,
+  "status": "success",
+  "timestamp": 1701360045
+}
+
+# Error states
+{
+  "type": "error",
+  "job_id": "1234567890",
+  "error_code": "MOTOR_STALL",
+  "message": "X-axis motor stalled at position 22.3mm",
+  "position": {"x": 22.3, "y": 10.1},
+  "dot_index": 67,
+  "recoverable": false,
+  "timestamp": 1701360020
+}
+```
+
+**Device Firmware Responsibility:**
+- Send `dot_complete` after each stylus up/down cycle
+- Send `row_complete` after finishing each horizontal line
+- Send `job_complete` when print queue job finishes
+- Send `error` immediately on motor failure, endstop trigger, or timeout
+
+**App BLE Handler Updates:**
+```javascript
+onDataReceived(data) {
+  const response = JSON.parse(this.bytesToString(data.value));
+  
+  switch(response.type) {
+    case 'dot_complete':
+      store.dispatch(updateDotProgress(response));
+      break;
+      
+    case 'row_complete':
+      store.dispatch(updateRowProgress(response));
+      break;
+      
+    case 'job_complete':
+      store.dispatch(jobCompleted(response));
+      this.playCompletionSound();
+      this.notifyUser('Print job completed!');
+      break;
+      
+    case 'error':
+      store.dispatch(jobError(response));
+      this.handlePrintError(response);
+      break;
+      
+    case 'status':
+      store.dispatch(updateDeviceStatus(response));
+      break;
+  }
+}
+
+handlePrintError(errorData) {
+  // Stop current job
+  store.dispatch({ type: 'PRINT_JOB_FAILED', payload: errorData });
+  
+  // Show error to user
+  Alert.alert(
+    'Print Error',
+    `${errorData.message}\n\nDot ${errorData.dot_index} at position (${errorData.position.x}, ${errorData.position.y})`,
+    [
+      { text: 'Cancel Job', onPress: () => this.cancelJob(errorData.job_id) },
+      { 
+        text: 'Retry', 
+        onPress: () => this.retryFromPosition(errorData),
+        disabled: !errorData.recoverable
+      }
+    ]
+  );
+  
+  // Voice feedback for accessibility
+  this.speakResponse(`Print error: ${errorData.message}`);
+}
+```
+
+**Progress Tracking in Redux:**
+```javascript
+// reducer deviceReducer.js
+case 'DOT_COMPLETE': {
+  const { dot_index, job_id } = action.payload;
+  const job = state.queue.find(j => j.id === job_id);
+  
+  return {
+    ...state,
+    currentJob: {
+      ...state.currentJob,
+      dotsCompleted: dot_index + 1,
+      progress: ((dot_index + 1) / job.total_dots) * 100,
+      lastUpdate: Date.now()
+    }
+  };
+}
+
+case 'JOB_COMPLETE': {
+  const { job_id, duration_ms } = action.payload;
+  
+  return {
+    ...state,
+    currentJob: null,
+    queue: state.queue.filter(j => j.id !== job_id),
+    history: [
+      ...state.history,
+      {
+        id: job_id,
+        completedAt: Date.now(),
+        duration: duration_ms,
+        status: 'success'
+      }
+    ]
+  };
+}
+```
+
+**Timeout & Watchdog:**
+```javascript
+class PrintJobMonitor {
+  constructor() {
+    this.timeout = 30000; // 30 seconds per dot max
+    this.watchdogTimer = null;
+  }
+  
+  startWatchdog(jobId) {
+    this.resetWatchdog();
+    this.currentJobId = jobId;
+  }
+  
+  resetWatchdog() {
+    if (this.watchdogTimer) clearTimeout(this.watchdogTimer);
+    
+    this.watchdogTimer = setTimeout(() => {
+      // No acknowledgment received in timeout period
+      store.dispatch({
+        type: 'PRINT_TIMEOUT',
+        payload: {
+          job_id: this.currentJobId,
+          message: 'Device not responding'
+        }
+      });
+      
+      this.attemptRecovery();
+    }, this.timeout);
+  }
+  
+  onAcknowledgment(ack) {
+    // Reset watchdog on each acknowledgment
+    this.resetWatchdog();
+  }
+  
+  async attemptRecovery() {
+    // Try to ping device
+    try {
+      await BLEService.sendCommand({ cmd: 'status' });
+      // Wait for response...
+    } catch (error) {
+      // Device lost, attempt reconnect
+      this.handleDisconnect();
+    }
+  }
+}
+```
+
+### 6.4.2 Device Discovery & Connection
 
 **Code Implementation:**
 ```javascript
@@ -352,20 +696,61 @@ class BLEService {
     }
   }
   
-  async sendCommand(command) {
+  async sendCommand(command, options = {}) {
     if (!this.connectedDevice) {
       throw new Error('No device connected');
     }
     
+    const { expectAck = true, timeout = 5000, retries = 3 } = options;
     const data = JSON.stringify(command);
     const bytes = this.stringToBytes(data);
     
-    await BleManager.write(
-      this.connectedDevice,
-      this.SERVICE_UUID,
-      this.RX_CHAR_UUID,
-      bytes
-    );
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        await BleManager.write(
+          this.connectedDevice,
+          this.SERVICE_UUID,
+          this.RX_CHAR_UUID,
+          bytes
+        );
+        
+        if (expectAck) {
+          // Wait for acknowledgment
+          const ack = await this.waitForAck(command.cmd, timeout);
+          return ack;
+        }
+        
+        return { success: true };
+      } catch (error) {
+        console.error(`Command failed (attempt ${attempt + 1}/${retries + 1}):`, error);
+        
+        if (attempt === retries) {
+          throw new Error(`Command '${command.cmd}' failed after ${retries + 1} attempts`);
+        }
+        
+        // Exponential backoff
+        await this.sleep(Math.pow(2, attempt) * 500);
+      }
+    }
+  }
+  
+  waitForAck(cmdType, timeout) {
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        this.ackCallbacks.delete(cmdType);
+        reject(new Error(`Acknowledgment timeout for '${cmdType}'`));
+      }, timeout);
+      
+      this.ackCallbacks.set(cmdType, (ackData) => {
+        clearTimeout(timeoutId);
+        this.ackCallbacks.delete(cmdType);
+        resolve(ackData);
+      });
+    });
+  }
+  
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
   
   onDataReceived(data) {
