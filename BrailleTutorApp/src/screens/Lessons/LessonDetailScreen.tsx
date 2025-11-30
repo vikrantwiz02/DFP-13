@@ -87,7 +87,13 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         colors={['transparent', EDU_COLORS.deepSlate]}
         style={styles.backgroundGlow}
       >
-        {/* Header - Matching LessonsScreen Style */}
+        {/* Animated background elements */}
+        <View style={styles.floatingOrbs}>
+          <View style={[styles.orb, styles.orb1]} />
+          <View style={[styles.orb, styles.orb2]} />
+        </View>
+
+        {/* Header - Matching HomeScreen Style */}
         <LinearGradient
           colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
           style={styles.header}
@@ -96,7 +102,7 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
         >
           <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
-              {/* Back Button integrated in header */}
+              {/* Back Button */}
               <TouchableOpacity
                 style={styles.backButtonInline}
                 onPress={() => navigation.goBack()}
@@ -115,12 +121,6 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
               {/* Description */}
               <Text style={styles.subtitle}>{lesson.description}</Text>
-
-              {/* Chapter Info */}
-              <View style={styles.chapterInfo}>
-                <Ionicons name="layers-outline" size={16} color={EDU_COLORS.accent} />
-                <Text style={styles.chapterText}>{lesson.chapter}</Text>
-              </View>
             </View>
 
             {/* Stats Circle */}
@@ -132,6 +132,12 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
           </View>
+
+          {/* Chapter Info */}
+          <View style={styles.chapterInfo}>
+            <Ionicons name="layers-outline" size={16} color={EDU_COLORS.accent} />
+            <Text style={styles.chapterText}>{lesson.chapter}</Text>
+          </View>
         </LinearGradient>
 
         <ScrollView
@@ -139,6 +145,59 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
+          {/* Lesson Stats Cards */}
+          <View style={styles.statsSection}>
+            <Text style={styles.sectionTitle}>LESSON OVERVIEW</Text>
+            <View style={styles.hologramGrid}>
+              <View style={styles.holoRow}>
+                <View style={styles.statCard}>
+                  <LinearGradient
+                    colors={[EDU_COLORS.primaryBlue + '30', EDU_COLORS.primaryBlue + '10']}
+                    style={styles.statGradient}
+                  >
+                    <Ionicons name="time" size={28} color={EDU_COLORS.primaryBlue} />
+                    <Text style={styles.statValueLarge}>{lesson.duration_min}</Text>
+                    <Text style={styles.statLabelSmall}>Minutes</Text>
+                  </LinearGradient>
+                </View>
+
+                <View style={styles.statCard}>
+                  <LinearGradient
+                    colors={[EDU_COLORS.softPurple + '30', EDU_COLORS.softPurple + '10']}
+                    style={styles.statGradient}
+                  >
+                    <Ionicons name="layers" size={28} color={EDU_COLORS.softPurple} />
+                    <Text style={styles.statValueLarge}>{lesson.chapter.split('-')[0].trim()}</Text>
+                    <Text style={styles.statLabelSmall}>Chapter</Text>
+                  </LinearGradient>
+                </View>
+              </View>
+
+              <View style={styles.holoRow}>
+                <View style={styles.statCard}>
+                  <LinearGradient
+                    colors={[EDU_COLORS.vibrantGreen + '30', EDU_COLORS.vibrantGreen + '10']}
+                    style={styles.statGradient}
+                  >
+                    <Ionicons name="checkmark-circle" size={28} color={EDU_COLORS.vibrantGreen} />
+                    <Text style={styles.statValueLarge}>{isCompleted ? 'Yes' : 'No'}</Text>
+                    <Text style={styles.statLabelSmall}>Completed</Text>
+                  </LinearGradient>
+                </View>
+
+                <View style={styles.statCard}>
+                  <LinearGradient
+                    colors={[EDU_COLORS.warmOrange + '30', EDU_COLORS.warmOrange + '10']}
+                    style={styles.statGradient}
+                  >
+                    <Ionicons name="school" size={28} color={EDU_COLORS.warmOrange} />
+                    <Text style={styles.statValueLarge}>{lesson.level}</Text>
+                    <Text style={styles.statLabelSmall}>Level</Text>
+                  </LinearGradient>
+                </View>
+              </View>
+            </View>
+          </View>
 
           {/* What You'll Learn Section */}
           <View style={styles.section}>
@@ -155,21 +214,154 @@ export const LessonDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
           {/* Device Connection Warning */}
           {!connected && (
-            <View style={styles.warningCard}>
-              <View style={styles.warningIconContainer}>
-                <Ionicons name="warning" size={24} color={EDU_COLORS.warmOrange} />
+            <TouchableOpacity
+              style={[styles.deviceCard]}
+              onPress={() => navigation.navigate('Device' as never)}
+              activeOpacity={0.9}
+            >
+              <LinearGradient
+                colors={[EDU_COLORS.slateGray, EDU_COLORS.deepSlate]}
+                style={styles.neuralGradient}
+              >
+                <View style={styles.neuralHeader}>
+                  <View style={styles.signalContainer}>
+                    <View style={[styles.signalWave, styles.wave1]} />
+                    <View style={[styles.signalWave, styles.wave2]} />
+                    <View style={styles.signalIcon}>
+                      <Ionicons 
+                        name="bluetooth-outline" 
+                        size={24} 
+                        color={EDU_COLORS.warmOrange}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.connectionStatus}>
+                    <Text style={styles.deviceTitle}>Device Not Connected</Text>
+                    <Text style={styles.deviceSubtitle}>
+                      Connect your Braille device for the best learning experience
+                    </Text>
+                  </View>
+                  <Ionicons 
+                    name="chevron-forward" 
+                    size={20} 
+                    color={EDU_COLORS.warmOrange} 
+                  />
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
+
+          {/* Prerequisites Section */}
+          {lesson.prerequisites && lesson.prerequisites.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Ionicons name="lock-closed" size={20} color={EDU_COLORS.accent} />
+                <Text style={styles.sectionTitle}>Prerequisites</Text>
               </View>
-              <View style={styles.warningContent}>
-                <Text style={styles.warningTitle}>Device Not Connected</Text>
-                <Text style={styles.warningText}>
-                  Connect your Braille device for the best learning experience
+              <View style={styles.prereqCard}>
+                <Text style={styles.prereqText}>
+                  Complete these lessons first: {lesson.prerequisites.join(', ')}
                 </Text>
               </View>
             </View>
           )}
 
+          {/* Learning Objectives */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="checkbox" size={20} color={EDU_COLORS.vibrantGreen} />
+              <Text style={styles.sectionTitle}>Learning Objectives</Text>
+            </View>
+            <View style={styles.objectivesContainer}>
+              <View style={styles.objectiveItem}>
+                <View style={styles.objectiveBullet}>
+                  <Ionicons name="checkmark" size={16} color={EDU_COLORS.vibrantGreen} />
+                </View>
+                <Text style={styles.objectiveText}>
+                  Understand core concepts and fundamentals
+                </Text>
+              </View>
+              <View style={styles.objectiveItem}>
+                <View style={styles.objectiveBullet}>
+                  <Ionicons name="checkmark" size={16} color={EDU_COLORS.vibrantGreen} />
+                </View>
+                <Text style={styles.objectiveText}>
+                  Practice tactile reading techniques
+                </Text>
+              </View>
+              <View style={styles.objectiveItem}>
+                <View style={styles.objectiveBullet}>
+                  <Ionicons name="checkmark" size={16} color={EDU_COLORS.vibrantGreen} />
+                </View>
+                <Text style={styles.objectiveText}>
+                  Master pattern recognition skills
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Practice Modes */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="game-controller" size={20} color={EDU_COLORS.primaryBlue} />
+              <Text style={styles.sectionTitle}>Practice Modes</Text>
+            </View>
+            <View style={styles.modesGrid}>
+              <TouchableOpacity style={styles.modeCard} activeOpacity={0.8}>
+                <LinearGradient
+                  colors={[EDU_COLORS.primaryBlue + '30', EDU_COLORS.primaryBlue + '10']}
+                  style={styles.modeGradient}
+                >
+                  <Ionicons name="flash" size={24} color={EDU_COLORS.primaryBlue} />
+                  <Text style={styles.modeTitle}>Quick Practice</Text>
+                  <Text style={styles.modeSubtitle}>5 min session</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.modeCard} activeOpacity={0.8}>
+                <LinearGradient
+                  colors={[EDU_COLORS.softPurple + '30', EDU_COLORS.softPurple + '10']}
+                  style={styles.modeGradient}
+                >
+                  <Ionicons name="trophy" size={24} color={EDU_COLORS.softPurple} />
+                  <Text style={styles.modeTitle}>Challenge</Text>
+                  <Text style={styles.modeSubtitle}>Test skills</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Progress Tracker */}
+          {isCompleted && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Ionicons name="analytics" size={20} color={EDU_COLORS.warmOrange} />
+                <Text style={styles.sectionTitle}>Your Progress</Text>
+              </View>
+              <TouchableOpacity 
+                style={styles.progressCard}
+                onPress={() => navigation.navigate('Progress' as never)}
+                activeOpacity={0.9}
+              >
+                <LinearGradient
+                  colors={[EDU_COLORS.vibrantGreen + '20', EDU_COLORS.vibrantGreen + '08']}
+                  style={styles.progressGradient}
+                >
+                  <View style={styles.progressContent}>
+                    <Ionicons name="checkmark-circle" size={40} color={EDU_COLORS.vibrantGreen} />
+                    <View style={styles.progressInfo}>
+                      <Text style={styles.progressTitle}>Lesson Completed!</Text>
+                      <Text style={styles.progressSubtitle}>View detailed analytics</Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={20} color={EDU_COLORS.vibrantGreen} />
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* Bottom padding for button */}
-          <View style={{ height: 80 }} />
+          <View style={{ height: 100 }} />
         </ScrollView>
 
         {/* Action Button */}
@@ -206,6 +398,32 @@ const styles = StyleSheet.create({
   },
   backgroundGlow: {
     flex: 1,
+  },
+  floatingOrbs: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  orb: {
+    position: 'absolute',
+    borderRadius: 100,
+    opacity: 0.1,
+  },
+  orb1: {
+    width: 200,
+    height: 200,
+    backgroundColor: '#3B82F6',
+    top: -100,
+    right: -50,
+  },
+  orb2: {
+    width: 150,
+    height: 150,
+    backgroundColor: '#8B5CF6',
+    bottom: 200,
+    left: -50,
   },
   errorContainer: {
     flex: 1,
@@ -310,7 +528,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.xs,
-    marginTop: SPACING.sm,
+    marginTop: SPACING.md,
   },
   chapterText: {
     fontSize: 12,
@@ -322,9 +540,193 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: SPACING.lg,
   },
+  statsSection: {
+    marginBottom: SPACING.xl,
+  },
+  hologramGrid: {
+    gap: SPACING.md,
+  },
+  holoRow: {
+    flexDirection: 'row',
+    gap: SPACING.md,
+    marginBottom: SPACING.md,
+  },
+  statCard: {
+    flex: 1,
+    borderRadius: RADIUS.lg,
+    overflow: 'hidden',
+  },
+  statGradient: {
+    padding: SPACING.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 120,
+  },
+  statValueLarge: {
+    fontSize: 28,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    color: '#FFFFFF',
+    marginTop: SPACING.sm,
+  },
+  statLabelSmall: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: SPACING.xs,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  deviceCard: {
+    borderRadius: RADIUS.lg,
+    marginBottom: SPACING.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.3)',
+  },
+  neuralGradient: {
+    padding: SPACING.lg,
+  },
+  neuralHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  signalContainer: {
+    position: 'relative',
+    marginRight: SPACING.md,
+  },
+  signalWave: {
+    position: 'absolute',
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
+    opacity: 0.3,
+  },
+  wave1: {
+    width: 40,
+    height: 40,
+    borderColor: '#F59E0B',
+    top: -8,
+    left: -8,
+  },
+  wave2: {
+    width: 56,
+    height: 56,
+    borderColor: '#F59E0B',
+    top: -16,
+    left: -16,
+  },
+  signalIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: RADIUS.md,
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.3)',
+  },
+  connectionStatus: {
+    flex: 1,
+  },
+  deviceTitle: {
+    fontSize: TYPOGRAPHY.sizes.body,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    color: EDU_COLORS.warmOrange,
+    marginBottom: 4,
+  },
+  deviceSubtitle: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  prereqCard: {
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderRadius: RADIUS.md,
+    padding: SPACING.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+  },
+  prereqText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
+    lineHeight: 20,
+  },
+  objectivesContainer: {
+    gap: SPACING.md,
+  },
+  objectiveItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: SPACING.sm,
+  },
+  objectiveBullet: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  objectiveText: {
+    flex: 1,
+    fontSize: 15,
+    color: 'rgba(255, 255, 255, 0.8)',
+    lineHeight: 22,
+  },
+  modesGrid: {
+    flexDirection: 'row',
+    gap: SPACING.md,
+  },
+  modeCard: {
+    flex: 1,
+    borderRadius: RADIUS.lg,
+    overflow: 'hidden',
+  },
+  modeGradient: {
+    padding: SPACING.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 100,
+  },
+  modeTitle: {
+    fontSize: 15,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    color: '#FFFFFF',
+    marginTop: SPACING.sm,
+  },
+  modeSubtitle: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: SPACING.xs,
+  },
+  progressCard: {
+    borderRadius: RADIUS.lg,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+  },
+  progressGradient: {
+    padding: SPACING.lg,
+  },
+  progressContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+  },
+  progressInfo: {
+    flex: 1,
+  },
+  progressTitle: {
+    fontSize: 16,
+    fontWeight: TYPOGRAPHY.weights.bold as any,
+    color: EDU_COLORS.vibrantGreen,
+    marginBottom: 4,
+  },
+  progressSubtitle: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
   section: {
     marginBottom: SPACING.xl,
-    marginHorizontal: SPACING.lg,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -348,39 +750,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: 'rgba(255, 255, 255, 0.7)',
     lineHeight: 22,
-  },
-  warningCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: SPACING.md,
-    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-    borderRadius: RADIUS.md,
-    padding: SPACING.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.3)',
-    marginHorizontal: SPACING.lg,
-  },
-  warningIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  warningContent: {
-    flex: 1,
-  },
-  warningTitle: {
-    fontSize: 16,
-    fontWeight: TYPOGRAPHY.weights.bold as any,
-    color: EDU_COLORS.warmOrange,
-    marginBottom: SPACING.xs,
-  },
-  warningText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-    lineHeight: 20,
   },
   footer: {
     paddingHorizontal: SPACING.lg,
