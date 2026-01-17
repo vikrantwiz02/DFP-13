@@ -26,7 +26,7 @@ graph TB
     end
     
     subgraph "Hardware Layer"
-        M[X & Y Stepper Motors]
+        M[X & Y Stepper Motors - 3 Total]
         N[Hex-Core Solenoid Array - 6× 24V]
         O[Limit Switches & Sensors]
     end
@@ -61,8 +61,8 @@ graph TB
 | **Embossing Mechanism** | Hex-core solenoid (6× simultaneous) | 100-200× faster than sequential, simultaneous character embossing |
 | **Solenoid Array** | 6× 24V 20N push-pull solenoids | Simultaneous parallel firing, consistent 60N total convergent impact force |
 | **Convergent Guide Block** | SLA 3D-printed (75mm → 7.5mm taper) | Solves spatial pitch constraint, proprietary innovation, ±0.1mm tolerance |
-| **Motion System** | NEMA-17 stepper motors (XY gantry) | Precise positioning (±0.1mm), smooth motion, no jitter, 200×280mm travel |
-| **Microcontroller** | Raspberry Pi Zero 2W or Pi 4 | Built-in WiFi, 26 GPIO pins (6 solenoids + 2 steppers + sensors), real-time socket.io |
+| **Motion System** | NEMA-17 stepper motors (1 X-axis, 2 Y-axis parallel) | Precise positioning (±0.1mm), smooth motion, dual Y-motors prevent holder rod skew, 200×280mm travel |
+| **Microcontroller** | Raspberry Pi Zero 2W or Pi 4 | Built-in WiFi, 26 GPIO pins (6 solenoids + 3 steppers + sensors), real-time socket.io |
 | **Power Distribution** | Isolated 24V/5A SMPS + 5V USB-C | Solenoids on 24V, Pi on isolated 5V, prevents EMI noise corruption |
 | **Communication** | WiFi + Socket.io (real-time) | Bi-directional live updates, 50m+ range, multi-client support |
 | **Speed Capability** | 30-50 characters/second | Complete braille cell in 30ms (20ms fire + 10ms retract) |
@@ -449,7 +449,7 @@ flowchart TD
 | **Solenoid Drivers** | ULN2803 Darlington + IRFZ44N MOSFET | 6-channel parallel solenoid control, simultaneous firing, fast switching |
 | **Embossing Solenoids** | 6× 24V 20N push-pull | Simultaneous 6-dot firing (20ms hold), convergent guide block, ₹400 each |
 | **Convergent Guide Block** | SLA 3D-printed stainless steel | Tapers 6 solenoids (75mm circle) to 7.5mm braille cell, ±0.1mm tolerance |
-| **Power Supply** | 24V/5A SMPS (120W isolated) | Solenoids (14.4A peak) + stepper motors (3.4A) + 470µF ripple filter |
+| **Power Supply** | 24V/5A SMPS (120W isolated) | Solenoids (14.4A peak) + stepper motors (5.04A @ 24V) + 470µF ripple filter |
 | **Logic Power** | 5V USB-C (Raspberry Pi supply) | Isolated from 24V domain to prevent EMI on GPIO signals |
 
 ### 3.10.2 Software Stack

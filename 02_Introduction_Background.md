@@ -36,7 +36,7 @@ We propose a **Hex-Core Solenoid Convergent Embossing System** that uses 6 simul
 **Hardware Features:**
 - **Hex-Core Solenoid Array**: 6× 24V push-pull solenoids (20N force each) for simultaneous 6-dot embossing
 - **Convergent Guide Block**: Proprietary SLA 3D-printed design that tapers 6 solenoids from 75mm circle to 7.5mm standard braille cell
-- **XY-Cartesian Gantry**: NEMA-17 stepper motors with GT2 belts for precision positioning (±0.1mm accuracy)
+- **XY-Cartesian Gantry**: 3× NEMA-17 stepper motors (1 for X-axis, 2 synchronized for Y-axis) with GT2 belts for precision positioning (±0.1mm accuracy) and prevent holder rod skew
 - **Raspberry Pi Controller**: WiFi-enabled microcomputer with 26 GPIO pins for solenoid firing patterns and motion control
 - **Support for 140-160 GSM paper** (standard braille embossing paper)
 - **WiFi connectivity** for real-time app control and progress updates via socket.io

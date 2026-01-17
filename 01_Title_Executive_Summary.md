@@ -64,7 +64,7 @@ We propose a **Hex-Core Solenoid Convergent Embossing System** that overcomes th
 - **Hex-Core Actuator:** Six 24V solenoids (20N force) mounted in circular "Crown" configuration
 - **Convergent Guide Block:** Tapers from 75mm diameter to 7.5mm braille matrix with precision stylus rod alignment
 - **Simultaneous 6-Dot Embossing:** All braille dots printed in parallel (one impact per character = 30-50 chars/sec)
-- **XY-Cartesian Gantry:** NEMA-17 stepper motors with GT2 timing belts for ±0.1mm precision
+- **XY-Cartesian Gantry:** 3× NEMA-17 stepper motors (1 X-axis, 2 Y-axis synchronized) with GT2 timing belts for ±0.1mm precision and prevent holder rod skew
 - **Raspberry Pi Controller:** Real-time motion control, solenoid sequencing, WiFi connectivity
 
 **Software Features:**

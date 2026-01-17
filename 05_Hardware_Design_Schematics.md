@@ -9,7 +9,7 @@ Our braille plotter uses a **revolutionary Hex-Core solenoid architecture** that
 
 - **6× 24V Push-Pull Solenoids:** Mounted in circular "Crown" configuration to prevent mechanical interference
 - **Convergent Guide Block:** Tapers from 75mm diameter circle to centralized 7.5mm braille matrix with 1.5mm dot pitch
-- **XY-Cartesian Gantry:** NEMA-17 stepper motors with GT2 timing belts for precision positioning
+- **3× NEMA-17 Stepper Motors:** 1 for X-axis (holder movement), 2 synchronized for Y-axis (holder rod movement to prevent skew) with GT2 timing belts
 - **Raspberry Pi Controller:** Calculates coordinates, manages solenoid firing patterns, controls motion
 
 This design delivers **simultaneous 6-dot embossing** (entire braille cell in one impact), enabling:
@@ -158,7 +158,8 @@ The embossing head is mounted on an XY gantry that positions it at precise coord
 | Axis | Motor | Driver | Speed | Accuracy | Resolution |
 |------|-------|--------|-------|----------|------------|
 | **X** | NEMA-17 | A4988 | 200 mm/sec | ±0.1mm | 0.1875mm/step |
-| **Y** | NEMA-17 | A4988 | 200 mm/sec | ±0.1mm | 0.1875mm/step |
+| **Y (Motor 1)** | NEMA-17 | A4988 | 200 mm/sec | ±0.1mm | 0.1875mm/step |
+| **Y (Motor 2)** | NEMA-17 | A4988 | 200 mm/sec | ±0.1mm | 0.1875mm/step |
 
 **Stepper Motor Calibration:**
 
@@ -446,18 +447,23 @@ STEPPER MOTOR CONTROL (X-Axis)
 11  │ 17   │ X-Axis Step           │ A4988 #1 STEP pin
 15  │ 22   │ X-Axis Direction      │ A4988 #1 DIR pin
 
-STEPPER MOTOR CONTROL (Y-Axis)
+STEPPER MOTOR CONTROL (Y-Axis Motor 1)
 ─────────────────────────────────
-12  │ 18   │ Y-Axis Step           │ A4988 #2 STEP pin
-16  │ 23   │ Y-Axis Direction      │ A4988 #2 DIR pin
+12  │ 18   │ Y1-Axis Step          │ A4988 #2 STEP pin
+16  │ 23   │ Y1-Axis Direction     │ A4988 #2 DIR pin
+
+STEPPER MOTOR CONTROL (Y-Axis Motor 2)
+─────────────────────────────────
+32  │ 12   │ Y2-Axis Step          │ A4988 #3 STEP pin
+36  │ 16   │ Y2-Axis Direction     │ A4988 #3 DIR pin
 
 SOLENOID CONTROL (6 channels)
 ─────────────────────────────────
-18  │ 24   │ Solenoid 1 Gate       │ ULN2803 pin 1
-22  │ 25   │ Solenoid 2 Gate       │ ULN2803 pin 2
-32  │ 12   │ Solenoid 3 Gate       │ ULN2803 pin 3
-36  │ 16   │ Solenoid 4 Gate       │ ULN2803 pin 4
-38  │ 20   │ Solenoid 5 Gate       │ ULN2803 pin 5
+37  │ 26   │ Solenoid 1 Gate       │ ULN2803 pin 1
+35  │ 19   │ Solenoid 2 Gate       │ ULN2803 pin 2
+33  │ 13   │ Solenoid 3 Gate       │ ULN2803 pin 3
+29  │ 5    │ Solenoid 4 Gate       │ ULN2803 pin 4
+31  │ 6    │ Solenoid 5 Gate       │ ULN2803 pin 5
 40  │ 21   │ Solenoid 6 Gate       │ ULN2803 pin 6
 
 LIMIT SWITCHES & SENSORS
@@ -511,7 +517,7 @@ RESERVED PINS
 ║                            [NEMA-17 X-Axis]               ║
 ║                            Motor 1.68A                    ║
 ║                                                            ║
-║   Step Y (GPIO 18)      Dir Y (GPIO 23)                   ║
+║   Step Y1 (GPIO 18)     Dir Y1 (GPIO 23)                  ║
 ║        │                    │                             ║
 ║        └────────┬───────────┘                             ║
 ║                 │                                         ║
@@ -519,10 +525,21 @@ RESERVED PINS
 ║             (Microstepping     │                          ║
 ║              Driver)           │                          ║
 ║                               │                          ║
-║                            [NEMA-17 Y-Axis]             ║
+║                            [NEMA-17 Y1-Axis]            ║
 ║                            Motor 1.68A                  ║
 ║                                                          ║
-║   Both A4988 chips powered by 24V rail                  ║
+║   Step Y2 (GPIO 12)     Dir Y2 (GPIO 16)                ║
+║        │                    │                             ║
+║        └────────┬───────────┘                             ║
+║                 │                                         ║
+║             [A4988 #3]────────┐                          ║
+║             (Microstepping     │                          ║
+║              Driver)           │                          ║
+║                               │                          ║
+║                            [NEMA-17 Y2-Axis]            ║
+║                            Motor 1.68A                  ║
+║                                                          ║
+║   All 3 A4988 chips powered by 24V rail                 ║
 ║   Logic signals protected by 1kΩ inline resistors       ║
 ║                                                          ║
 ╚══════════════════════════════════════════════════════════════╝
@@ -649,7 +666,7 @@ RESERVED PINS
 | **Logic & Control** | | | | |
 | Raspberry Pi Zero 2W or Pi 4 | 1 | ₹6,500 | ₹6,500 | [robu.in](https://robu.in/) |
 | 6-Channel MOSFET Driver (IRFZ44N) | 1 | ₹600 | ₹600 | [ElectronicComp](https://electroniccomp.com/) |
-| A4988 Stepper Motor Driver | 2 | ₹250 | ₹500 | [robu.in](https://robu.in/) |
+| A4988 Stepper Motor Driver | 3 | ₹250 | ₹750 | [robu.in](https://robu.in/) |
 | ULN2803 Darlington Array IC | 2 | ₹50 | ₹100 | [ElectronicComp](https://electroniccomp.com/) |
 | **Power Supply** | | | | |
 | 24V/5A SMPS (Mean Well) | 1 | ₹1,200 | ₹1,200 | [IndiaMART](https://indiamart.com/) |
@@ -658,7 +675,7 @@ RESERVED PINS
 | 24V Push-Pull Solenoid 20N | 6 | ₹400 | ₹2,400 | [IndiaMART/Aliexpress](https://aliexpress.com/) |
 | 1N4007 Freewheeling Diode | 6 | ₹5 | ₹30 | Local |
 | **Mechanical (XY Gantry)** | | | | |
-| NEMA-17 Stepper Motor (1.68A) | 2 | ₹800 | ₹1,600 | [robu.in](https://robu.in/) |
+| NEMA-17 Stepper Motor (1.68A) | 3 | ₹800 | ₹2,400 | [robu.in](https://robu.in/) |
 | GT2 Timing Belt (10mm width) | 10m | ₹50/m | ₹500 | Local |
 | GT2 Pulley 20-tooth (5mm bore) | 4 | ₹80 | ₹320 | [robu.in](https://robu.in/) |
 | 2020 Aluminum Extrusion | 15m | ₹80/m | ₹1,200 | [IndiaMART](https://indiamart.com/) |
@@ -680,7 +697,7 @@ RESERVED PINS
 | Black Acrylic sheet (8mm × 300×400mm) | 1 | ₹400 | ₹400 | Local |
 | MDF backing for paper platform | 1 | ₹200 | ₹200 | Local |
 | | | | | |
-| **TOTAL PROTOTYPE COST** | | | **₹19,000** | |
+| **TOTAL PROTOTYPE COST** | | | **₹19,650** | |
 
 ---
 
