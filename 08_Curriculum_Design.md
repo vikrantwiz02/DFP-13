@@ -353,7 +353,6 @@ Translated to computer braille for tactile reading
 
 **Skills:**
 - Interpret raised-line diagrams
-- Read tactile maps and charts
 - Understand spatial relationships
 
 **Lesson Example:**

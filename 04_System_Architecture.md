@@ -35,7 +35,6 @@ graph TB
     B <-->|Voice| A
     D -->|Lesson Content| A
     E -->|Braille Data| A
-    F -->|Tactile Map| A
     A -->|Print Jobs| I
     I -->|Motor Control| J
     I -->|Solenoid Firing| K
@@ -83,9 +82,16 @@ sequenceDiagram
     App->>Cloud: Send for translation
     Cloud->>Cloud: Process (Liblouis/Image AI)
     Cloud->>App: Return braille dot pattern
-    App->>Device: Send print job via BLE
-    Device->>Device: Parse job, plan path
-    Device->>App: Job accepted (ack)
+    App->>Device: Send print job via WiFi Socket.io
+    Device->>Device: Parse job, validate, plan path
+    
+    alt Validation Success
+        Device->>App: ACK (job_id, status="accepted")
+    else Validation Error
+        Device->>App: NAK (error_code, error_msg)
+        App->>User: "Error: Invalid job format"
+    end
+    
     Device->>Motors: Move to start position
     Motors->>Device: Homing complete
     
@@ -95,13 +101,24 @@ sequenceDiagram
         Device->>Device: Fire all 6 solenoids in parallel (20ms hold)
         Device->>Device: Retract all solenoids (10ms)
         Motors->>Device: Character embossed (position, index)
-        Device->>App: Progress update (character_complete)
+        
+        alt Character Success
+            Device->>App: Progress update (char_index, status="embossed")
+        else Character Error (solenoid/motor failure)
+            Device->>App: ERROR (error_code, failed_char, recovery_action)
+            App->>User: "Hardware error - Resume or Cancel?"
+        end
+        
         App->>User: Update progress bar (fast - 1 char per 30ms)
     end
     
-    Motors->>Device: All characters complete
-    Device->>App: Job complete (status, duration, pages)
-    App->>User: Voice/haptic feedback
+    alt All Characters Complete
+        Device->>App: COMPLETE (job_id, total_chars, duration_ms, status="success")
+        App->>User: "Job completed! 32 characters printed"
+    else Job Interrupted/Error
+        Device->>App: ABORT (job_id, chars_completed, error_reason)
+        App->>User: "Job interrupted at character 15"
+    end
     
     Note over Motors,Device: Simultaneous 6-dot embossing:
     Note over Motors,Device: All 6 solenoids fire at same time (20N force each)
@@ -123,9 +140,25 @@ sequenceDiagram
     AI_Tutor->>AI_Tutor: Generate personalized content
     AI_Tutor->>App: Send lesson script + braille
     App->>Device: Print letter 'A' in braille
+    Device->>Device: Validate and queue print job
+    
+    alt Print Accepted
+        Device->>App: ACK (job_id, status="queued")
+    else Print Error
+        Device->>App: NAK (error_code, error_msg)
+        App->>User: "Cannot print - check device"
+    end
+    
     Device->>Device: Print tactile representation
-    Device-->>App: Print complete
-    App->>User: "Feel the letter A" (TTS)
+    
+    alt Print Success
+        Device->>App: COMPLETE (job_id, chars_printed=1, duration_ms=30)
+        App->>User: "Feel the letter A" (TTS)
+    else Print Failed
+        Device->>App: ABORT (job_id, error_reason)
+        App->>User: "Print failed - reconnecting..."
+    end
+    
     User->>App: Reads and responds via voice
     App->>AI_Tutor: Send audio for evaluation
     AI_Tutor->>AI_Tutor: Analyze response
@@ -206,7 +239,81 @@ sequenceDiagram
 }
 ```
 
-### 3.3.3 User Progress Data
+### 3.3.3 Device Acknowledgement Messages
+
+**ACK (Positive Acknowledgement) - Job Accepted:**
+```json
+{
+  "type": "ACK",
+  "job_id": "uuid-string",
+  "timestamp": "2025-11-16T10:30:00.500Z",
+  "status": "accepted",
+  "message": "Print job validated and queued",
+  "queue_position": 1,
+  "estimated_duration_ms": 960
+}
+```
+
+**NAK (Negative Acknowledgement) - Validation Error:**
+```json
+{
+  "type": "NAK",
+  "job_id": "uuid-string",
+  "timestamp": "2025-11-16T10:30:00.500Z",
+  "status": "rejected",
+  "error_code": "INVALID_BRAILLE_PATTERN",
+  "error_msg": "Dot pattern contains out-of-bounds coordinates",
+  "details": "Character at index 5: x=30.0 exceeds max 7.5mm"
+}
+```
+
+**PROGRESS - Character Embossing Complete:**
+```json
+{
+  "type": "PROGRESS",
+  "job_id": "uuid-string",
+  "timestamp": "2025-11-16T10:30:00.530Z",
+  "status": "embossed",
+  "char_index": 1,
+  "character": "e",
+  "total_chars": 32,
+  "percent_complete": 3,
+  "elapsed_time_ms": 30
+}
+```
+
+**COMPLETE - Job Successfully Finished:**
+```json
+{
+  "type": "COMPLETE",
+  "job_id": "uuid-string",
+  "timestamp": "2025-11-16T10:31:00.000Z",
+  "status": "success",
+  "total_chars_printed": 32,
+  "total_duration_ms": 960,
+  "pages_completed": 1,
+  "message": "Print job completed successfully"
+}
+```
+
+**ABORT - Job Failed or Interrupted:**
+```json
+{
+  "type": "ABORT",
+  "job_id": "uuid-string",
+  "timestamp": "2025-11-16T10:30:15.000Z",
+  "status": "failed",
+  "chars_completed": 8,
+  "total_chars": 32,
+  "error_code": "SOLENOID_MALFUNCTION",
+  "error_msg": "Solenoid 3 failed to fire",
+  "failed_at_char_index": 8,
+  "recovery_action": "RETRY_AVAILABLE",
+  "details": "Check solenoid 3 connection, voltage 24V stable"
+}
+```
+
+### 3.3.4 User Progress Data
 
 ```json
 {

@@ -402,7 +402,7 @@ export const expertLessons = [
     level: 'Expert',
     chapter: '12 - Professional Applications',
     duration_min: 30,
-    description: 'Tactile maps and technical diagrams',
+    description: 'Technical diagrams and spatial visualization',
     prerequisites: ['L239'],
     completed: false,
   },
