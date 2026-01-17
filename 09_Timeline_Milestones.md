@@ -128,29 +128,31 @@ gantt
 ### 8.3.2 Week 13-14: Electronics Integration
 
 **Tasks:**
-- Wire ESP32, stepper drivers, power supply per schematic
-- Solder connections or use breadboard/perfboard
+- Wire Raspberry Pi, stepper drivers, solenoid drivers per schematic
+- Solder MOSFET driver circuit and stepper modules
 - Mount limit switches and paper sensor
-- Attach servo motor and stylus mechanism
-- Cable management (zip ties, drag chain)
+- Install 6× 24V solenoids in circular Crown configuration
+- Assemble convergent guide block with stylus rods
+- Cable management (zip ties, organized GPIO connections)
 
 **Testing:**
 - Continuity tests (multimeter)
-- Power-on test (check voltages: 12V, 5V, 3.3V)
-- Upload basic firmware (LED blink test)
-- Test each motor individually (jog commands)
+- Power-on test (check voltages: 24V, 5V, 3.3V)
+- GPIO voltage tests (verify 3.3V logic levels)
+- Test each stepper motor individually (jog commands)
+- Test each solenoid individually (pulse firing test)
 
-**Milestone:** All electronics powered and communicating with ESP32
+**Milestone:** All electronics powered and Raspberry Pi communicating with GPIO pins
 
 ### 8.3.3 Week 15-17: Firmware Development
 
 **Core Features:**
 - **Homing routine:** Use limit switches to find origin
-- **Motion control:** AccelStepper integration, path planning
-- **Stylus actuation:** Servo control with timing
-- **BLE server:** Implement GATT service, handle commands
-- **Status reporting:** Send progress updates to app
-- **Error handling:** Detect faults, enter safe mode
+- **Motion control:** Stepper motor control with acceleration profiles, path planning
+- **Solenoid firing:** Simultaneous 6-dot bitmask encoding and GPIO control
+- **WiFi server:** Flask + SocketIO for real-time socket.io communication
+- **Status reporting:** Send progress updates to app (character_complete, progress %)
+- **Error handling:** Detect motor stalls, solenoid shorts, enter safe mode
 
 **Testing:**
 - Print test pattern (grid of dots)
@@ -162,15 +164,17 @@ gantt
 ### 8.3.4 Week 18-20: Hardware Refinement
 
 **Activities:**
-- Calibrate steps-per-mm for both axes
-- Tune servo angles for optimal dot depth
-- Adjust acceleration/speed for smooth motion
+- Calibrate steps-per-mm for both X and Y axes (verify with caliper)
+- Optimize solenoid firing times (start at 20ms, adjust for dot depth)
+- Tune acceleration/speed for smooth motion
+- Verify convergent guide block alignment (all 6 dots must converge to 7.5mm cell)
 - Test on different paper thicknesses (140-160 GSM)
-- Improve cable management and aesthetics
+- Improve cable management and electromagnet isolation
 
 **Testing:**
 - Print braille alphabet (A-Z) and verify tactile readability
 - Blind user testing for dot quality
+- Measure convergence error (<0.1mm deviation)
 - Document optimal settings (speed, depth, paper type)
 
 **Milestone:** Hardware prototype validated and ready for software integration
@@ -312,8 +316,9 @@ gantt
 
 | Issue Identified | Priority | Solution | Timeline |
 |------------------|----------|----------|----------|
-| Dots too shallow on 160 GSM | High | Increase servo angle by 5° | Week 32 |
-| Voice commands slow (5s latency) | Medium | Optimize API, cache common responses | Week 33 |
+| Dots too shallow on 160 GSM | High | Increase solenoid fire time from 20ms to 25ms | Week 32 |
+| Convergence error >0.1mm | High | Adjust guide block alignment or 3D print tolerance | Week 32 |
+| Voice commands slow (5s latency) | Medium | Optimize socket.io server, cache common responses | Week 33 |
 | Difficulty navigating app (VoiceOver) | High | Improve accessibility labels | Week 32 |
 | Lesson too long (15 min) | Medium | Break into shorter 5-min segments | Week 34 |
 | Paper slips during printing | Medium | Add rubber mat under paper | Week 33 |

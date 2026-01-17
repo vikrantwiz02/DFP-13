@@ -71,11 +71,11 @@ graph TB
 
 | Aspect | Option A | Option B | **Selected** | Rationale |
 |--------|----------|----------|--------------|-----------|
-| **Stylus Mechanism** | Multi-pin head (parallel) | Single servo stylus (sequential) | **Single servo** | Lower cost, easier calibration, adequate speed for learning |
-| **Controller** | Arduino Mega | ESP32 | **ESP32** | Built-in WiFi/BLE, more memory, faster processing |
-| **Power Supply** | Battery (portable) | AC adapter | **AC adapter** | Desktop use case, consistent power, lower cost |
-| **Translation** | On-device | Cloud-based | **Hybrid** | Cloud for complex, local cache for common words |
-| **Voice Processing** | On-device (Vosk) | Cloud (Google API) | **Cloud** | Better accuracy, multiple languages, lower device cost |
+| **Stylus Mechanism** | Sequential (single dot) | Simultaneous 6-dot (parallel) | **Hex-core solenoid** | 100-200× faster, simultaneous character embossing, convergent guide block innovation |
+| **Actuation** | Servo motors | 6× 24V solenoids | **6× 24V solenoids** | Simultaneous parallel firing, consistent impact force, no moving parts between characters |
+| **Motion Control** | Single axis servo | XY stepper gantry | **NEMA-17 stepper motors** | Precise positioning (±0.1mm), smooth motion, no servo jitter |
+| **Controller** | Arduino/ESP32 | Raspberry Pi | **Raspberry Pi Zero 2W/Pi 4** | Built-in WiFi, 26 GPIO pins (sufficient for 6 solenoids + 2 steppers), real-time socket.io |
+| **Power Supply** | Single 5V adapter | Dual voltage (5V + 24V) | **24V/5A SMPS + 5V USB-C** | Solenoids require 24V, Raspberry Pi on isolated 5V, prevents EMI noise |
 
 ## 3.2 Information Flow Architecture
 
@@ -99,23 +99,24 @@ sequenceDiagram
     Device->>Motors: Move to start position
     Motors->>Device: Homing complete
     
-    loop For each dot
-        Device->>Motors: Move X/Y to position
-        Device->>Motors: Actuate stylus (servo down)
-        Device->>Motors: Release stylus (servo up)
-        Motors->>Device: Dot complete (position, index)
-        Device->>App: Progress update (dot_complete)
-        App->>User: Update progress bar
+    loop For each character (6 dots fired simultaneously)
+        Device->>Motors: Move X/Y to character position
+        Device->>Device: Encode character as 6-bit bitmask
+        Device->>Device: Fire all 6 solenoids in parallel (20ms hold)
+        Device->>Device: Retract all solenoids (10ms)
+        Motors->>Device: Character embossed (position, index)
+        Device->>App: Progress update (character_complete)
+        App->>User: Update progress bar (fast - 1 char per 30ms)
     end
     
-    Motors->>Device: All dots complete
-    Device->>App: Job complete (status, duration)
+    Motors->>Device: All characters complete
+    Device->>App: Job complete (status, duration, pages)
     App->>User: Voice/haptic feedback
     
-    Note over Motors,Device: If motor error occurs:
-    Motors-->>Device: Error (MOTOR_STALL, position)
-    Device-->>App: Job failed (error details)
-    App-->>User: Alert + recovery options
+    Note over Motors,Device: Simultaneous 6-dot embossing:
+    Note over Motors,Device: All 6 solenoids fire at same time (20N force each)
+    Note over Motors,Device: Convergent guide block guides 6 stylus rods into 7.5mm braille cell
+    Note over Motors,Device: Speed: 30-50 characters/second (vs 15-30 chars/minute sequential)
 ```
 
 ### 3.2.2 Lesson Mode Workflow
@@ -418,11 +419,12 @@ flowchart TD
 
 | Metric | Target | Rationale |
 |--------|--------|-----------|
-| **Printing Speed** | 15-30 characters/min | Adequate for lesson mode; embossers do 60-120 cps |
-| **Positioning Accuracy** | ±0.1 mm | Ensures proper braille spacing (2.5mm centers) |
-| **Dot Consistency** | 95%+ success rate | Minimal misprints for readability |
-| **Homing Time** | <10 seconds | Quick startup |
-| **App Response Time** | <500ms | Feels instant to users |
+| **Printing Speed** | 30-50 characters/second | Hex-core simultaneous 6-dot embossing; 100-200× faster than sequential |
+| **Cycle Time per Character** | 30ms (20ms fire + 10ms retract) | All 6 solenoids fire in parallel |
+| **Positioning Accuracy** | ±0.1 mm | Stepper motor microstepping (1/16), ensures proper braille spacing (2.5mm centers) |
+| **Dot Consistency** | 98%+ success rate | Simultaneous force (6×20N = 60N), improved reliability |
+| **Homing Time** | <10 seconds | Limit switch calibration on startup |
+| **App Response Time** | <500ms | Real-time socket.io progress updates via WiFi |
 
 ### 3.8.2 Reliability Targets
 
@@ -451,11 +453,14 @@ flowchart TD
 
 | Component | Technology | Justification |
 |-----------|------------|---------------|
-| **Microcontroller** | ESP32-WROOM-32 | WiFi/BLE, dual-core, 4MB flash |
-| **Motor Driver** | TMC2209 (UART) | Silent operation, stall detection |
-| **Stepper Motors** | NEMA 17 (1.8° step) | Standard, affordable, adequate torque |
-| **Stylus Actuator** | SG90 or MG995 Servo | Fast, precise, cost-effective |
-| **Power Supply** | 12V 5A SMPS | Sufficient for motors + logic |
+| **Microcontroller** | Raspberry Pi Zero 2W or Pi 4 | WiFi/BLE built-in, 26 GPIO pins, real-time socket.io server |
+| **Stepper Drivers** | A4988 + microstepping (1/16) | Smooth XY motion, ±0.1mm precision, 1.8° motors with 0.1125° microsteps |
+| **Motion Motors** | NEMA-17 (1.8° step, 42 oz-in) | XY-Cartesian gantry, 200×280mm travel, dual-rail X-axis for rigidity |
+| **Solenoid Drivers** | ULN2803 Darlington + IRFZ44N MOSFET | 6-channel parallel solenoid control, simultaneous firing, fast switching |
+| **Embossing Solenoids** | 6× 24V 20N push-pull | Simultaneous 6-dot firing (20ms hold), convergent guide block, ₹400 each |
+| **Convergent Guide Block** | SLA 3D-printed stainless steel | Tapers 6 solenoids (75mm circle) to 7.5mm braille cell, ±0.1mm tolerance |
+| **Power Supply** | 24V/5A SMPS (120W isolated) | Solenoids (14.4A peak) + stepper motors (3.4A) + 470µF ripple filter |
+| **Logic Power** | 5V USB-C (Raspberry Pi supply) | Isolated from 24V domain to prevent EMI on GPIO signals |
 
 ### 3.10.2 Software Stack
 

@@ -181,6 +181,7 @@ sequenceDiagram
     participant AI as AI Tutor
     participant D as Device
     participant M as Motors
+    participant S as Solenoids
     
     U->>A: Tap "Start Lesson: Letter A"
     A->>AI: Request lesson plan
@@ -189,18 +190,22 @@ sequenceDiagram
     A->>D: Send print command (⠁)
     D->>D: Parse job, plan path
     D->>A: Job accepted (ack)
-    D->>M: Move to position & actuate
+    D->>M: Move to character position (X/Y)
     
-    loop For each dot
-        M->>M: Move X/Y to position
-        M->>M: Actuate stylus (servo down)
-        M->>M: Release stylus (servo up)
-        M->>D: Dot complete (position, index)
-        D->>A: Progress update (dot_complete)
-        A->>U: Update progress bar
+    loop For each character (6 dots simultaneous)
+        M->>D: Position reached
+        D->>D: Encode character as 6-bit bitmask
+        D->>S: Fire solenoids in parallel (20ms hold)
+        S->>S: All 6 solenoids fire simultaneously
+        S->>S: Convergent guide block guides rods to 7.5mm braille cell
+        S->>D: Solenoid hold complete
+        D->>S: Retract all solenoids (10ms)
+        S->>D: Retraction complete
+        D->>A: Progress update (character_complete, 30ms)
+        A->>U: Update progress bar (fast refresh)
     end
     
-    M->>D: All dots complete
+    M->>D: All characters complete
     D->>A: Job complete (status, duration)
     A->>U: "Feel the letter A" + haptic feedback
     

@@ -12,11 +12,12 @@ This folder contains the **complete comprehensive report** for the AI-Powered Br
 - ✅ **Every claim backed by verified sources** (82 references + government data)
 - ✅ **India market analysis**: 8 million blind population, 1,200 schools, ₹478 crore TAM
 - ✅ **89% cost reduction**: ₹19,000 prototype vs ₹1.8 lakh cheapest alternative
-- ✅ **Corrected hardware design**: 3 servo motors + Arduino UNO (not steppers)
+- ✅ **Revolutionary Hex-Core architecture**: 6× simultaneous solenoid embossing (100-200× faster than sequential)
+- ✅ **Raspberry Pi + WiFi socket.io**: Real-time mobile app control with progress updates
 - ✅ **Government funding mapped**: BIRAC, NIDHI-PRAYAS, DST grants (₹75L-2cr available)
 
 **Report Stats:**
-- **Length:** ~40,000 words across 14 files
+- **Length:** ~40,000 words across 14+ files
 - **Diagrams:** 20+ Mermaid flowcharts, circuit diagrams, timelines
 - **References:** 82 peer-reviewed + 39 verified sources (government, industry, primary research)
 - **Estimated PDF:** 160-200 pages
@@ -30,20 +31,21 @@ This folder contains the **complete comprehensive report** for the AI-Powered Br
 1. **01_Title_Executive_Summary.md** - Executive summary with India-specific problem statement, market sizing
 2. **02_Introduction_Background.md** - Context, braille literacy crisis in India, project vision
 3. **03_Literature_Review.md** - Academic research, patents, Indian disability standards
-4. **04_System_Architecture.md** - Overall system design, data models, state machines
-5. **05_Hardware_Design_Schematics.md** - **CORRECTED: 3 servo motors + Arduino UNO**, complete BOM ₹19,000
-6. **06_Software_AI_Architecture.md** - Firmware, backend API, AI tutor, Liblouis translation
-7. **07_Mobile_App_Specification.md** - React Native app, voice control in 10+ Indian languages
+4. **04_System_Architecture.md** - Overall system design, Hex-Core simultaneous embossing, data models
+5. **05_Hardware_Design_Schematics.md** - **UPDATED: Hex-Core Solenoid Architecture**, 6 simultaneous embossers, ₹19,000 BOM
+6. **06_Software_AI_Architecture.md** - Python firmware for Raspberry Pi, SocketIO server, solenoid control
+7. **07_Mobile_App_Specification.md** - React Native app, WiFi real-time control, voice in 10+ Indian languages
 8. **08_Curriculum_Design.md** - 250-lesson curriculum, pedagogy, assessment
-9. **09_Timeline_Milestones.md** - 9-month project plan, India-specific resource allocation
+9. **09_Timeline_Milestones.md** - 9-month project plan, Hex-Core assembly steps, India-specific resources
 10. **10_Market_Analysis_Business.md** - **DETAILED**: India TAM ₹478cr, competitor pricing verified, 5-year projections in INR
 11. **11_Conclusion.md** - Feasibility assessment, recommendations, funding strategy
 12. **12_References.md** - Complete bibliography (82 academic sources)
 
 ### Supporting Documentation
 
-13. **CORRECTIONS_SUMMARY.md** - Explains shift from stepper motors to 3 servos (per your circuit)
-14. **DATA_VERIFICATION_SOURCES.md** - **CRITICAL**: All claims with proof, pricing verification, calculation methodology
+13. **MECHANISM_UPDATE_SUMMARY.md** - Detailed transition from 3-servo to Hex-Core architecture
+14. **TECHNICAL_REFERENCE.md** - Quick-lookup guide for Hex-Core specifications, GPIO pins, BOM, troubleshooting
+15. **DATA_VERIFICATION_SOURCES.md** - **CRITICAL**: All claims with proof, pricing verification, calculation methodology
 
 ---
 
@@ -163,19 +165,19 @@ This report includes **20+ Mermaid diagrams** for:
 ## Electrical Schematics
 
 **Chapter 5** contains detailed circuit design:
-- ESP32 pinout assignments (complete GPIO mapping)
-- Stepper motor driver wiring (TMC2209)
-- Servo motor control (MG996R)
-- Power distribution (12V → 5V → 3.3V)
-- BLE communication protocol
-- Text-based schematic diagrams
+- Raspberry Pi pinout assignments (26 GPIO fully mapped)
+- Stepper motor driver wiring (A4988 modules)
+- Solenoid driver circuit (ULN2803 + IRFZ44N MOSFET)
+- Power distribution (isolated 24V for solenoids, 5V USB-C for Pi)
+- WiFi socket.io real-time control protocol
+- Text-based schematic diagrams with current calculations
 
-**For PCB design:** Use the pinout tables to create KiCad or Eagle schematics.
+**For PCB design:** Use the pinout tables in TECHNICAL_REFERENCE.md to create KiCad or Eagle schematics.
 
 ## Bill of Materials (BOM)
 
-**Complete BOM in Chapter 5, Section 4.9:**
-- All components with part numbers
+**Complete BOM in Chapter 5, Section 5.5:**
+- All 8 component categories with part numbers
 - Estimated costs (per unit and total)
 - Supplier recommendations (Amazon, Aliexpress, McMaster-Carr)
 - **Prototype cost: ~$284**

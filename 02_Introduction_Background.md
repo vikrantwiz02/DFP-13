@@ -31,14 +31,16 @@ Traditional braille embossers are expensive, bulky, purely mechanical devices wi
 
 ### Proposed Solution
 
-We propose an **Arduino-based XY Braille Plotter** that replaces the traditional pen with a precision braille stylus actuator (servo motor) to create raised tactile dots on 140-160 GSM paper mounted on a slate backing. The system integrates:
+We propose a **Hex-Core Solenoid Convergent Embossing System** that uses 6 simultaneous electro-magnetic solenoids arranged in a circular "Crown" configuration with a proprietary convergent guide block to deliver complete braille characters in a single impact. The system features:
 
 **Hardware Features:**
-- Low-cost XY plotting mechanism using Servo motors with Arduino
-- Servo-actuated braille stylus for precise dot embossing
-- Support for 140-160 GSM paper (standard braille thickness)
-- Integrated microphone and speaker for voice interaction
-- Bluetooth/Wi-Fi connectivity for app control
+- **Hex-Core Solenoid Array**: 6× 24V push-pull solenoids (20N force each) for simultaneous 6-dot embossing
+- **Convergent Guide Block**: Proprietary SLA 3D-printed design that tapers 6 solenoids from 75mm circle to 7.5mm standard braille cell
+- **XY-Cartesian Gantry**: NEMA-17 stepper motors with GT2 belts for precision positioning (±0.1mm accuracy)
+- **Raspberry Pi Controller**: WiFi-enabled microcomputer with 26 GPIO pins for solenoid firing patterns and motion control
+- **Support for 140-160 GSM paper** (standard braille embossing paper)
+- **Integrated microphone and speaker** for voice interaction
+- **WiFi connectivity** for real-time app control and progress updates via socket.io
 
 **Software Features:**
 - **AI-powered language translation**: Any language → braille script using Liblouis + Gemini
