@@ -39,14 +39,14 @@ We propose a **Hex-Core Solenoid Convergent Embossing System** that uses 6 simul
 - **XY-Cartesian Gantry**: NEMA-17 stepper motors with GT2 belts for precision positioning (±0.1mm accuracy)
 - **Raspberry Pi Controller**: WiFi-enabled microcomputer with 26 GPIO pins for solenoid firing patterns and motion control
 - **Support for 140-160 GSM paper** (standard braille embossing paper)
-- **Integrated microphone and speaker** for voice interaction
 - **WiFi connectivity** for real-time app control and progress updates via socket.io
 
 **Software Features:**
 - **AI-powered language translation**: Any language → braille script using Liblouis + Gemini
 - **Image-to-tactile conversion**: Photos/diagrams → raised dot representations
-- **Interactive AI tutor**: Personalized lessons from basics to advanced
-- **Multi-modal control**: Voice commands + React Native mobile app
+- **Interactive AI tutor**: Personalized lessons with voice interaction through mobile app
+- **Voice-controlled learning**: Microphone & speaker via smartphone (hands-free operation)
+- **Multi-modal control**: Voice commands + React Native mobile app for iOS/Android
 - **Progress tracking & analytics**: Comprehensive learner evaluation system
 - **Lesson library**: Chapter-wise, level-based structured curriculum
 

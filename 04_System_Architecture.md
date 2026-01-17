@@ -10,51 +10,38 @@ The system consists of four major subsystems that work together to deliver an in
 graph TB
     subgraph "User Interaction Layer"
         A[Mobile App - React Native]
-        B[Voice Interface]
-        C[Physical Controls]
+        B[Voice Input/Output via Phone Mic & Speaker]
     end
     
     subgraph "Cloud Services Layer"
         D[AI Tutor Engine]
         E[Translation Service]
         F[Image Processing]
-        G[User Analytics DB]
-        H[Lesson Content DB]
     end
     
     subgraph "Device Controller Layer"
         I[Raspberry Pi Main Controller]
-        J[Motion Controller]
-        K[Solenoid Driver]
-        L[Audio Controller]
+        J[Motion Control]
+        K[Solenoid Control]
     end
     
     subgraph "Hardware Layer"
-        M[X-Axis Stepper Motor]
-        N[Y-Axis Stepper Motor]
-        O[Hex-Core Solenoid Array - 6x 24V]
-        P[Limit Switches]
-        Q[Mic & Speaker]
-        R[Paper Detection]
+        M[X & Y Stepper Motors]
+        N[Hex-Core Solenoid Array - 6× 24V]
+        O[Limit Switches & Sensors]
     end
     
-    A -->|WiFi| I
-    B -->|Audio Stream| L
-    D -->|Lesson Commands| A
+    A <-->|WiFi Socket.io| I
+    B <-->|Voice| A
+    D -->|Lesson Content| A
     E -->|Braille Data| A
     F -->|Tactile Map| A
     A -->|Print Jobs| I
-    I -->|Step/Dir Signals| J
-    I -->|Solenoid Bitmask| K
-    I -->|Audio I/O| L
+    I -->|Motor Control| J
+    I -->|Solenoid Firing| K
     J --> M
-    J --> N
-    K --> O
-    P -->|Status| I
-    Q <-->|Audio| L
-    R -->|Detect| I
-    G -->|Store Progress| A
-    H -->|Retrieve Lessons| D
+    K --> N
+    O -->|Status| I
 ```
 
 ### 3.1.2 Design Philosophy

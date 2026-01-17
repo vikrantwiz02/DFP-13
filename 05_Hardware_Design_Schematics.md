@@ -195,7 +195,7 @@ The X-axis uses **dual 8mm stainless steel linear rods** to:
 | Spec | Value | Notes |
 |------|-------|-------|
 | **CPU** | ARM Cortex-A53 (Zero 2W) or A72 (Pi 4) | Dual-core @ 1GHz (2W), Quad @ 1.5GHz (4) |
-| **RAM** | 512MB (Zero 2W) or 4GB (Pi 4) | Sufficient for motion control + audio |
+| **RAM** | 512MB (Zero 2W) or 4GB (Pi 4) | Sufficient for motion control + WiFi |
 | **GPIO** | 26 pins (all models) | Digital I/O for motors, solenoids, sensors |
 | **PWM** | Hardware PWM on 2 pins, software PWM all pins | Not needed for solenoids (digital on/off) |
 | **Serial** | UART, SPI, I2C | Communication protocols |
@@ -218,8 +218,8 @@ The X-axis uses **dual 8mm stainless steel linear rods** to:
 **For Hex-Core design:** Raspberry Pi superior because:
 1. **Solenoid sequencing** complex (6 independent channels, multiple patterns)
 2. **Motion calculations** need real-time responsiveness
-3. **Audio processing** requires CPU horsepower
-4. **WiFi/Bluetooth** built-in, no module overhead
+3. **WiFi communication** built-in, critical for real-time control
+4. **GPIO expansion** 26 pins sufficient for complete system
 
 ### 5.3.2 Solenoid Drivers - 6-Channel MOSFET Array
 
@@ -465,12 +465,6 @@ LIMIT SWITCHES & SENSORS
 13  │ 13   │ X-Limit Switch        │ Microswitch (NO, pulled HIGH)
 22  │ 14   │ Y-Limit Switch        │ Microswitch (NO, pulled HIGH)
 7   │ 4    │ Paper Sensor (optional)│ TCRT5000 OUT (via divider)
-
-AUDIO (Future)
-─────────────────────────
-35  │ 19   │ I2S Clock             │ USB audio adapter / HAT
-37  │ 26   │ I2S Data              │ (via I2C bridge)
-39  │ GND  │ Ground (Audio)        │ Shield/Ground
 
 RESERVED PINS
 ─────────────────────────
