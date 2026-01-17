@@ -72,53 +72,268 @@ graph TB
 
 ### 5.2.2 Firmware State Machine
 
-```mermaid
-stateDiagram-v2
-    [*] --> IDLE
-    
-    IDLE --> HOMING: Power On / Reset
-    IDLE --> IDLE: Sleep (watchdog timer)
-    
-    HOMING --> READY: Homing Complete<br/>(X & Y limit switches)
-    HOMING --> ERROR: Homing Failed<br/>(Motor stall or timeout)
-    
-    READY --> PRINTING: Print Job Received
-    READY --> LESSON: Lesson Mode Start
-    READY --> IDLE: Shutdown
-    
-    PRINTING --> PRINTING: Fire solenoids +<br/>Move motors
-    PRINTING --> READY: Job Complete<br/>(All chars sent)
-    PRINTING --> ERROR: Hardware Fault<br/>(Motor/solenoid fail)
-    
-    LESSON --> PRINTING: Print Exercise<br/>(Character emboss)
-    LESSON --> LESSON: Next Lesson Step
-    LESSON --> READY: Session Complete
-    LESSON --> ERROR: Print Failed
-    
-    ERROR --> HOMING: Auto-Recovery<br/>(Retry homing)
-    ERROR --> READY: Manual Recovery<br/>(Fault cleared)
-    ERROR --> IDLE: Fatal Error<br/>(Critical failure)
+**Visual State Flow Diagram (ASCII):**
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│              RASPBERRY PI FIRMWARE STATE MACHINE                         │
+│                    (Socket.io WiFi Communication)                        │
+└─────────────────────────────────────────────────────────────────────────┘
+
+                    ┌──────────────────┐
+                    │    [ IDLE ]      │  Boot complete, waiting
+                    │   (No job)       │  GPIO initialized
+                    └──────────────────┘
+                           │
+                   [Reset / Power ON]
+                           │
+                           ▼
+                    ┌──────────────────┐
+                    │   [ HOMING ]     │  Seeking origin position
+                    │  (Initializing)  │  - Move X toward limit
+                    └──────────────────┘  - Move Y toward limit
+                           │ │
+           X limit hit ◄─━━┫ ┃━━─► Motor stall
+           Y limit hit ◄─━━┫ ┃   / Timeout
+                           │ │
+                           ▼ ▼
+                    ┌──────────────────┐
+                    │   [ READY ]      │  Waiting for commands
+                    │   (Idle/Waiting) │  - No print job
+                    └──────────────────┘  - No lesson active
+                           │ │
+         ┌─────────────────┤ ├─────────────┐
+         │                 │ │             │
+    Print Job          Lesson Mode      Shutdown
+         │                 │             │
+         ▼                 ▼             ▼
+    ┌──────────────┐ ┌──────────────┐ [IDLE]
+    │  [ PRINTING ]│ │  [ LESSON ]  │
+    │   (Active)   │ │  (Teaching)  │
+    │ Firing solenoids │ Printing + Voice
+    │ Moving XY motors │
+    └──────────────┘ └──────────────┘
+         │ │                │ │
+         │ └────┬───────────┘ │
+         │      │             │
+      Job  Character    Lesson Done
+      Done embossed           │
+         │      │             │
+         └──────┴─────────────┘
+                │
+                ▼
+        ┌──────────────────┐
+        │    [ READY ]     │  Return to waiting
+        └──────────────────┘
+
+                    ERROR PATH
+    ┌──────────────────────────────────┐
+    │  Any State + Hardware Fault       │
+    │  (Motor stall / Solenoid fail)    │
+    │               │                  │
+    │               ▼                  │
+    │        ┌──────────────┐           │
+    │        │  [ ERROR ]   │           │
+    │        │ (Fault State)│           │
+    │        └──────────────┘           │
+    │               │                  │
+    │      ┌────────┴────────┐          │
+    │      │                 │          │
+    │   Auto-recover     Manual         │
+    │   (Re-home)        Clear          │
+    │      │                 │          │
+    │      ▼                 ▼          │
+    │  [HOMING] ──Success──► [READY]   │
+    │      │                           │
+    │   Failure                         │
+    │      │                           │
+    │      └──────► [IDLE]             │
+    │         (Fatal error)             │
+    └──────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════
+
+DETAILED STATE DESCRIPTIONS:
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ STATE: IDLE (Boot Complete)                                             │
+├─────────────────────────────────────────────────────────────────────────┤
+│ What firmware does:                                                     │
+│   ✓ GPIO pins initialized                                              │
+│   ✓ Socket.io server listening on port 5000                           │
+│   ✓ Watchdog timer running                                            │
+│   ✓ Waiting for homing command                                        │
+│                                                                         │
+│ What device does: Nothing (low power)                                  │
+│ What app sees: "Device connected (waiting for homing)"                │
+│ Next state: HOMING                                                     │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ STATE: HOMING (Calibration)                                             │
+├─────────────────────────────────────────────────────────────────────────┤
+│ Sequence:                                                               │
+│   1. Motor X moves left (negative direction)                           │
+│   2. Waits for X limit switch to close                                │
+│   3. Records X=0 position                                             │
+│   4. Motor Y moves forward (positive direction)                       │
+│   5. Waits for Y limit switch to close                                │
+│   6. Records Y=0 position                                             │
+│                                                                         │
+│ Success condition: Both limit switches pressed                         │
+│ Failure condition: Motor stalls or timeout (10 sec)                   │
+│ What app sees: "Initializing..." (progress 0% → 100%)                │
+│ Next state: READY (success) or ERROR (fail)                           │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ STATE: READY (Idle / Waiting for Commands)                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│ Firmware listens for:                                                  │
+│   • /api/print - Receive print job (braille dot pattern)              │
+│   • /api/lesson - Start lesson mode                                   │
+│   • /api/home - Start homing sequence                                 │
+│   • /api/status - Return device status                                │
+│                                                                         │
+│ Device position: At origin (X=0, Y=0)                                │
+│ Motors: Powered but not moving                                        │
+│ What app sees: "Device ready" (green checkmark)                       │
+│ Next state: PRINTING, LESSON, HOMING, or ERROR                      │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ STATE: PRINTING (Actively Embossing)                                    │
+├─────────────────────────────────────────────────────────────────────────┤
+│ For each character in print job:                                       │
+│                                                                         │
+│   1. Receive 6-bit braille pattern from app                           │
+│      Example: 101100 = dots 1,3,4 active (letter 'm')                │
+│                                                                         │
+│   2. Motor control: Move to XY position                                │
+│      X += 6.0mm (next character position)                              │
+│      Y += 2.5mm (next line, if needed)                                │
+│                                                                         │
+│   3. Solenoid firing:                                                  │
+│      - Set GPIO pins [1,1,0,1,0,0] for solenoids 1-6                 │
+│      - Hold for 20ms (impact force on paper)                          │
+│      - Release for 10ms (retraction)                                  │
+│                                                                         │
+│   4. Send ACK back to app:                                            │
+│      { "type": "PROGRESS", "char_index": 5, "percent": 15 }         │
+│                                                                         │
+│ Speed: 30-50 characters/second (30ms per character)                  │
+│ What app sees: Progress bar updating in real-time                     │
+│ Next state: PRINTING (loop) → READY (job done) or ERROR (fault)     │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ STATE: LESSON (Interactive Teaching Mode)                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│ Firmware workflow:                                                      │
+│                                                                         │
+│   1. Receive lesson step from app (e.g., "Print letter A")            │
+│   2. Transition to PRINTING state (emboss letter)                     │
+│   3. Return to LESSON state (wait for next step)                      │
+│   4. App provides voice feedback & questions via TTS                  │
+│   5. User responds via voice (processed by app)                       │
+│   6. Continue to next lesson step                                     │
+│                                                                         │
+│ What device does: Prints on demand (one letter at a time)             │
+│ What app does: Handles all voice and timing                           │
+│ What user experiences: Interactive tactile + audio lesson              │
+│ Next state: PRINTING (for exercise) → LESSON (next step) → READY    │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ STATE: ERROR (Hardware Fault)                                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│ Triggered by:                                                           │
+│   • Solenoid won't fire (GPIO pin stuck)                              │
+│   • Motor won't move (stalled at current position)                    │
+│   • Limit switch not reached during homing                            │
+│   • Paper jam detected (sensor triggered)                             │
+│                                                                         │
+│ Auto-recovery attempt:                                                 │
+│   1. Log error to system (timestamp, error_code, GPIO state)          │
+│   2. Send ERROR message to app with details                           │
+│   3. Attempt auto-homing (reset position)                             │
+│                                                                         │
+│ If auto-homing succeeds: Return to READY                              │
+│ If auto-homing fails: Return to IDLE (fatal, user must power-cycle)   │
+│                                                                         │
+│ What app shows: "Hardware Error: Solenoid 3 failed"                   │
+│ User options: Retry, Cancel, or Power off                             │
+│ Next state: HOMING (auto-recovery) → READY/IDLE                      │
+└─────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════
+
+TYPICAL OPERATION SEQUENCE:
+
+Power-Up:
+  Device boots → [ IDLE ] → App requests homing → [ HOMING ] 
+    → Find X limit ✓ → Find Y limit ✓ → [ READY ]
+
+Print Job:
+  User selects text in app → App sends job → [ PRINTING ]
+    → Char 1: Move to (6,0) → Fire solenoids → Send ACK
+    → Char 2: Move to (12,0) → Fire solenoids → Send ACK
+    → ... (repeat 32 times) ...
+    → [ READY ]
+
+Lesson:
+  User starts lesson → [ LESSON ] → App requests "Print A"
+    → [ PRINTING ] → Emboss one letter
+    → [ LESSON ] → Wait for voice response (processed by app)
+    → Next lesson step → [ PRINTING ] → Continue
+
+Error Recovery:
+  During printing, solenoid 3 fails → [ ERROR ]
+    → Log fault (solenoid_id=3, timestamp=...)
+    → Send ERROR ack to app (with error_code & recovery options)
+    → Auto-attempt home [ HOMING ]
+    → Success → [ READY ] (user can retry)
+    → Failure → [ IDLE ] (user must power-cycle)
 ```
 
-**Firmware Control Flow:**
+**Firmware Control Flow (Python Pseudocode):**
 
 ```
 STARTUP SEQUENCE:
-  IDLE → HOMING: GPIO init → Seek X limit → Seek Y limit → READY
+  ① GPIO.setmode(GPIO.BCM)
+  ② GPIO.setup([all pins], direction)
+  ③ State = IDLE
+  ④ Listen on Socket.io port 5000
+  ⑤ Await commands
+
+HOMING SEQUENCE:
+  ① State = HOMING
+  ② Move X motor left until limit pressed
+  ③ Move Y motor forward until limit pressed
+  ④ State = READY
+  ⑤ Send "Homing complete" to app
 
 PRINTING SEQUENCE:
-  PRINTING → For each character:
-    1. Receive braille dot pattern from app
-    2. Convert to 6-bit solenoid bitmask
-    3. Move motors to XY position
-    4. Fire solenoids for 20ms
-    5. Retract for 10ms
-    6. Send PROGRESS ack to app
-  → READY when done
+  ① State = PRINTING
+  ② For each character:
+     a. Parse braille pattern (6-bit: dot 1,2,3,4,5,6)
+     b. Move motors to calculated XY position
+     c. Fire solenoid bitmask (GPIO pins HIGH)
+     d. Sleep 20ms (hold impact)
+     e. Release solenoid (GPIO pins LOW)
+     f. Sleep 10ms (retraction)
+     g. Send PROGRESS ack to app
+  ③ State = READY
+  ④ Send COMPLETE ack to app
 
-ERROR RECOVERY:
-  ERROR → HOMING: Attempt auto-recovery (reset position)
-  → READY (success) or IDLE (fatal)
+ERROR HANDLING:
+  ① Detect fault (solenoid/motor/sensor)
+  ② State = ERROR
+  ③ Log event to device memory
+  ④ Send ERROR ack to app
+  ⑤ Attempt auto-home [ HOMING ]
+  ⑥ If success: State = READY
+  ⑦ If failure: State = IDLE (requires power-cycle)
 ```
 
 ### 5.2.3 Core Firmware Code Structure (Python)

@@ -462,54 +462,156 @@ sequenceDiagram
 
 ### 3.4.1 Device State Machine
 
-```mermaid
-stateDiagram-v2
-    [*] --> IDLE
-    
-    IDLE --> HOMING: Power On / Reset
-    IDLE --> IDLE: Timeout (Sleep)
-    
-    HOMING --> READY: Homing Complete<br/>(Limit switches hit)
-    HOMING --> ERROR: Homing Failed<br/>(Motor stall)
-    
-    READY --> PRINTING: Job Received<br/>(Print job queued)
-    READY --> LESSON: Lesson Start<br/>(Lesson mode selected)
-    READY --> IDLE: Shutdown Command
-    
-    PRINTING --> PRINTING: Next Character<br/>(Solenoid fire + motor move)
-    PRINTING --> READY: Job Complete<br/>(All chars printed)
-    PRINTING --> ERROR: Hardware Fault<br/>(Solenoid/motor fail)
-    
-    LESSON --> PRINTING: Exercise Step<br/>(Print letter)
-    LESSON --> LESSON: Next Lesson<br/>(Continue session)
-    LESSON --> READY: Lesson Complete<br/>(Session finished)
-    LESSON --> ERROR: Print Failed
-    
-    ERROR --> HOMING: Auto-Recovery<br/>(Reset position)
-    ERROR --> READY: Manual Recovery<br/>(User cleared error)
-    ERROR --> IDLE: Fatal Error<br/>(Device disabled)
+**Visual State Flow Diagram:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     BRAILLE PLOTTER DEVICE STATE MACHINE                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                    ┌──────────────────────┐
+                    │       [ IDLE ]       │  Powered off / Waiting
+                    │   (Offline)          │  🔴 No LED / Sleep mode
+                    └──────────────────────┘
+                           ▲      │
+                           │      │ Power ON
+                           │      │ Reset button
+                           │      ▼
+                    ┌──────────────────────┐
+                    │     [ HOMING ]       │  Calibration in progress
+                    │   (Initializing)     │  🟡 Yellow blinking LED
+                    └──────────────────────┘
+                           │      │
+              Limit hit ◄─━┫      ┃━─► Motor stall
+                 (X,Y)     │      │    (Timeout)
+                           ▼      ▼
+                    ┌──────────┐ ┌────────────────┐
+                    │ [ READY ]│ │  [ ERROR ]     │
+                    │  (Ready) │ │  (Fault)       │
+                    │ 🟢 Green │ │  🔴 Red blink  │
+                    └──────────┘ └────────────────┘
+                           │ │          ▲ ▲
+                ┌──────────┤ ├──────────┤ │
+                │          │ │          │ │
+         Print │   Lesson │ │          │ │
+          Job  │   Mode   │ │       Auto│ Manual
+                │          │ │    Recover│ Recover
+                │          │ │          │ │
+                ▼          ▼ │          │ │
+        ┌──────────────┐    │          │ │
+        │ [ PRINTING ] │────┘          │ │
+        │   (Active)   │  Job Complete │ │
+        │ 🟢 Blink Green│◄─────────────┤ │
+        │ (30-50 ch/s) │               │ │
+        └──────────────┘               │ │
+                ▲ │                    │ │
+        Char   │ │ Hardware fault      │ │
+        emboss │ │ (motor/solenoid)    │ │
+                │ └────────────────────┤ │
+                │                      ▼ ▼
+                │          ┌──────────────────────┐
+                │          │   Auto-Home Retry    │
+                │          └──────────────────────┘
+                │                      │
+                │                      ├──► Success ──► READY
+                │                      └──► Failure ──► IDLE (fatal)
+                │
+        ┌───────┴───────┐
+        │               │
+        ▼               ▼
+    ┌──────────────┐ ┌──────────┐
+    │  [ LESSON ]  │ │ [ READY ]│
+    │  (Teaching)  │ │ (Stopped)│
+    │ 🔵 Blue LED  │ └──────────┘
+    └──────────────┘       ▲
+        │ │ │              │
+        │ │ │ Lesson Done  │
+        │ │ └──────────────┘
+        │ │
+        │ Next Lesson
+        │ Step
+        │
+        └─► [ PRINTING ] (Print exercise)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+POWER-UP SEQUENCE:
+  
+  User Press Power → [ IDLE ] → GPIO Init → [ HOMING ] → Seek X Limit ─┐
+                                                   ▲                      │
+                                                   │                      │
+                                        Hit both ──┴── Seek Y Limit      │
+                                        limits           │                │
+                                                         ▼                │
+                                                    [ READY ] ◄──────────┘
+                                              System initialized OK
+
+═══════════════════════════════════════════════════════════════════════════════
+
+NORMAL OPERATION (PRINT MODE):
+
+  [ READY ] ─ App sends print job ─► [ PRINTING ] ─ Emboss chars ─► [ READY ]
+                                              │
+                                              │ Hardware fails
+                                              ▼
+                                        [ ERROR ]
+                                              │
+                                    Auto-recover (home)
+                                              │
+                                              ├──► Success ──► [ READY ]
+                                              └──► Failure ──► [ IDLE ]
+
+═══════════════════════════════════════════════════════════════════════════════
+
+ERROR RECOVERY PATH:
+
+  [ PRINTING ] ─ Solenoid 3 fails ─► [ ERROR ] ─ Auto-home ─► [ HOMING ]
+                                              │                   │
+                                              │                   ├──► Found limits ──► [ READY ]
+                                              │                   │
+                                              │                   └──► Stalled ──► [ IDLE ]
+                                              │
+                                              └─ Manual clear ──► [ READY ]
 ```
 
 **State Descriptions:**
 
-| State | What Happens | Exits To |
-|-------|--------------|----------|
-| **IDLE** | Device powered off or waiting | HOMING (on power), SHUTDOWN |
-| **HOMING** | Calibration mode, seeking origin position via limit switches | READY (success), ERROR (fail) |
-| **READY** | System initialized and ready to receive commands | PRINTING, LESSON, IDLE |
-| **PRINTING** | Actively embossing characters (30-50 chars/sec) | READY (complete), ERROR (fault) |
-| **LESSON** | Interactive lesson session with step-by-step printing | PRINTING, READY (done), ERROR |
-| **ERROR** | Hardware fault detected (solenoid fail, motor stall, paper jam) | HOMING (auto-recover), READY (manual), IDLE (fatal) |
+| State | What Happens | LED Status | Exits To |
+|-------|--------------|-----------|----------|
+| **IDLE** | Device powered off or fatal error | None / Off | HOMING (power on), SHUTDOWN |
+| **HOMING** | Finding origin via limit switches | 🟡 Yellow Blink | READY (success), ERROR (fail) |
+| **READY** | Waiting for commands | 🟢 Solid Green | PRINTING, LESSON, IDLE |
+| **PRINTING** | Embossing characters (30-50/sec) | 🟢 Blink Green | READY, ERROR |
+| **LESSON** | Interactive lesson mode | 🔵 Solid Blue | PRINTING, READY, ERROR |
+| **ERROR** | Hardware fault detected | 🔴 Blink Red | HOMING (auto), READY (manual), IDLE (fatal) |
 
 **Transitions Explained:**
 
-- **IDLE → HOMING:** User powers on device or presses reset
-- **HOMING → READY:** Successfully hit X and Y limit switches, origin confirmed
-- **READY → PRINTING:** App sends print job with braille dot pattern
-- **PRINTING → READY:** Last character embossed, job complete
-- **PRINTING → ERROR:** Solenoid/motor fails mid-job (e.g., solenoid 3 won't fire)
-- **ERROR → HOMING:** Device auto-attempts to recover by re-homing
-- **READY → IDLE:** User initiates shutdown or extended timeout
+```
+IDLE ──[Power ON]──────► HOMING ──[Limits hit]──► READY
+  ▲                                    │
+  │                          [Motor stall]
+  │                                    ▼
+  │                                [ ERROR ]
+  │                                    │
+  └────[Fatal error / Shutdown]────────┘
+
+READY ──[Print Job]──┐    READY ──[Lesson]──┐
+                     ▼                       ▼
+                 PRINTING ───────────► LESSON
+                     │ │                  │ │
+                     │ └──[Continue]──────┘ │
+              [Job Complete]           [Next step]
+                     │                      │
+                     └──────► READY ◄───────┘
+
+ERROR ──[Auto-recover]──► HOMING ──[Success]──► READY
+   │                            │
+   │                      [Timeout/Fail]
+   │                            ▼
+   └────[Manual clear]────► READY or IDLE
+```
+
 
 ### 3.4.1a Device Status at Each State
 
