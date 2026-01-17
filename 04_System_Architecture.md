@@ -23,29 +23,29 @@ graph TB
     end
     
     subgraph "Device Controller Layer"
-        I[Arduino/ESP32 Main Controller]
+        I[Raspberry Pi Main Controller]
         J[Motion Controller]
-        K[Stylus Controller]
+        K[Solenoid Driver]
         L[Audio Controller]
     end
     
     subgraph "Hardware Layer"
         M[X-Axis Stepper Motor]
         N[Y-Axis Stepper Motor]
-        O[Servo Motor - Stylus]
+        O[Hex-Core Solenoid Array - 6x 24V]
         P[Limit Switches]
         Q[Mic & Speaker]
         R[Paper Detection]
     end
     
-    A -->|BLE/WiFi| I
+    A -->|WiFi| I
     B -->|Audio Stream| L
     D -->|Lesson Commands| A
     E -->|Braille Data| A
     F -->|Tactile Map| A
     A -->|Print Jobs| I
-    I -->|Control Signals| J
-    I -->|Actuation Signal| K
+    I -->|Step/Dir Signals| J
+    I -->|Solenoid Bitmask| K
     I -->|Audio I/O| L
     J --> M
     J --> N

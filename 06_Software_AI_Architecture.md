@@ -1,21 +1,21 @@
-# Chapter 5: Software & AI Architecture
+# Chapter 6: Software & AI Architecture
 
-## 5.1 Software System Overview
+## 6.1 Software System Overview
 
 The software stack consists of three major components working in concert:
 
-1. **Device Firmware** (ESP32) - Low-level motor control, sensor handling
+1. **Device Firmware** (Raspberry Pi) - Real-time motion control, solenoid sequencing, sensor handling
 2. **Cloud Backend** - AI tutor, translation services, analytics
 3. **Mobile Application** (React Native) - User interface, voice control
 
-### 5.1.1 Technology Stack
+### 6.1.1 Technology Stack
 
 ```mermaid
 graph TB
     subgraph "Mobile Layer"
         A[React Native App]
         B[Expo Framework]
-        C[React Native BLE Manager]
+        C[WiFi Socket.io]
         D[React Native Voice]
     end
     
@@ -30,16 +30,16 @@ graph TB
     end
     
     subgraph "Device Layer"
-        L[ESP32 Firmware - C++]
-        M[FreeRTOS Tasks]
-        N[AccelStepper Library]
-        O[ESP32Servo Library]
-        P[BLE GATT Server]
+        L[Raspberry Pi Firmware - Python]
+        M[Threading/Multiprocessing]
+        N[Stepper Motor Control]
+        O[Solenoid Sequencing]
+        P[WiFi Socket.io Server]
     end
     
     A --> C
     A --> D
-    C <-->|BLE| P
+    C <-->|WiFi Socket.io| P
     A <-->|HTTPS| E
     E --> F
     E --> G
@@ -53,22 +53,22 @@ graph TB
     L --> P
 ```
 
-## 5.2 Device Firmware Architecture
+## 5.2 Device Firmware Architecture (Raspberry Pi)
 
 ### 5.2.1 Firmware Components
 
 **Core Modules:**
-1. **Motion Controller** - Stepper motor path planning and execution
-2. **Stylus Controller** - Servo actuation with timing
-3. **Communication Handler** - BLE/WiFi command parsing
-4. **Sensor Manager** - Limit switches, paper detection
+1. **Motion Controller** - Stepper motor step/dir generation with acceleration profiles
+2. **Solenoid Controller** - Simultaneous 6-solenoid firing based on character bitmask
+3. **Communication Handler** - WiFi socket.io, REST API endpoints for remote control
+4. **Sensor Manager** - Limit switches, paper presence detection
 5. **State Machine** - Device modes and error handling
 
 **Development Environment:**
-- **IDE:** Arduino IDE 2.x or PlatformIO
-- **Framework:** Arduino Core for ESP32
-- **Language:** C/C++
-- **Build System:** Arduino/PlatformIO build
+- **Language:** Python 3.8+ (RPi native, easier than C++ for motion logic)
+- **GPIO Library:** RPi.GPIO or gpiozero (higher-level abstraction)
+- **Real-Time:** Threading for concurrent stepper/solenoid control
+- **Framework:** Flask + SocketIO for network communication
 
 ### 5.2.2 Firmware State Machine
 
@@ -76,218 +76,368 @@ graph TB
 stateDiagram-v2
     [*] --> BOOT
     BOOT --> INIT: Hardware Init
-    INIT --> CONNECTING: BLE Start
+    INIT --> CONNECTING: WiFi Start
     CONNECTING --> IDLE: Connected
     IDLE --> HOMING: Homing Cmd
     HOMING --> READY: Homed
     READY --> PRINTING: Print Job Received
     READY --> LESSON: Lesson Mode Start
-    PRINTING --> PRINTING: Dots Remaining
+    PRINTING --> PRINTING: Characters Remaining
     PRINTING --> READY: Job Complete
     LESSON --> PRINT_EXERCISE: Print Step
     PRINT_EXERCISE --> LESSON: Print Done
     LESSON --> READY: Lesson Complete
     READY --> IDLE: Sleep Timeout
     
-    PRINTING --> ERROR: Fault
+    PRINTING --> ERROR: Fault (Motor stall, etc)
     LESSON --> ERROR: Fault
     ERROR --> IDLE: Reset
     IDLE --> [*]: Shutdown
 ```
 
-### 5.2.3 Core Firmware Code Structure
+### 5.2.3 Core Firmware Code Structure (Python)
 
-**main.cpp (pseudocode):**
-```cpp
-#include <Arduino.h>
-#include <BLEDevice.h>
-#include <AccelStepper.h>
-#include <ESP32Servo.h>
+**main.py (pseudocode):**
+```python
+import RPi.GPIO as GPIO
+import time
+import threading
+from gpiozero import Motor, AngularServo
+from flask import Flask, request
+from flask_socketio import SocketIO, emit
 
-// Pin definitions
-#define X_STEP_PIN 26
-#define X_DIR_PIN 27
-#define Y_STEP_PIN 14
-#define Y_DIR_PIN 12
-#define EN_PIN 25
-#define SERVO_PIN 32
-#define X_LIMIT_PIN 34
-#define Y_LIMIT_PIN 35
-#define PAPER_SENSOR_PIN 36
+# ═══════════════════════════════════════════════════════
+# GPIO PIN DEFINITIONS
+# ═══════════════════════════════════════════════════════
 
-// Constants
-#define STEPS_PER_MM_X 80
-#define STEPS_PER_MM_Y 80
-#define DOT_SPACING_MM 2.5
-#define DOT_DOWN_ANGLE 50
-#define DOT_UP_ANGLE 0
+# Stepper Motors
+X_STEP_PIN = 17
+X_DIR_PIN = 22
+Y_STEP_PIN = 18
+Y_DIR_PIN = 23
 
-// Global objects
-AccelStepper stepperX(AccelStepper::DRIVER, X_STEP_PIN, X_DIR_PIN);
-AccelStepper stepperY(AccelStepper::DRIVER, Y_STEP_PIN, Y_DIR_PIN);
-Servo stylusServo;
+# Solenoid Drivers (ULN2803 inputs)
+SOLENOID_PINS = [24, 25, 12, 16, 20, 21]  # Pins for solenoids 1-6
 
-// BLE
-BLEServer *pServer = nullptr;
-BLECharacteristic *pTxCharacteristic;
-bool deviceConnected = false;
+# Limit Switches
+X_LIMIT_PIN = 13
+Y_LIMIT_PIN = 14
 
-// State
-enum DeviceState { IDLE, HOMING, READY, PRINTING, ERROR };
-DeviceState currentState = IDLE;
+# Paper Sensor
+PAPER_SENSOR_PIN = 4
 
-void setup() {
-  Serial.begin(115200);
-  
-  // Pin modes
-  pinMode(EN_PIN, OUTPUT);
-  pinMode(X_LIMIT_PIN, INPUT_PULLUP);
-  pinMode(Y_LIMIT_PIN, INPUT_PULLUP);
-  
-  // Stepper setup
-  stepperX.setMaxSpeed(2000);
-  stepperX.setAcceleration(1000);
-  stepperY.setMaxSpeed(2000);
-  stepperY.setAcceleration(1000);
-  
-  // Servo setup
-  stylusServo.attach(SERVO_PIN);
-  stylusServo.write(DOT_UP_ANGLE);
-  
-  // BLE setup
-  initBLE();
-  
-  // Homing
-  currentState = HOMING;
-  homingSequence();
-  currentState = READY;
-}
+# ═══════════════════════════════════════════════════════
+# CONFIGURATION CONSTANTS
+# ═══════════════════════════════════════════════════════
 
-void loop() {
-  // BLE event handling
-  if (deviceConnected) {
-    handleBLECommands();
-  }
-  
-  // State-specific logic
-  switch (currentState) {
-    case PRINTING:
-      executePrintJob();
-      break;
-    case READY:
-      // Idle, wait for commands
-      break;
-    case ERROR:
-      handleError();
-      break;
-  }
-  
-  // Always run steppers
-  stepperX.run();
-  stepperY.run();
-  
-  delay(1); // Small delay for stability
-}
+STEPS_PER_MM = 1000 / 8  # 125 steps per mm (8mm GT2 belt)
+DOT_SPACING_MM = 2.5
+CHAR_SPACING_MM = 6.0
+MAX_SPEED = 500  # steps/sec
+ACCELERATION = 300  # steps/sec²
+HOMING_SPEED = 100  # steps/sec (slower for accuracy)
 
-void homingSequence() {
-  digitalWrite(EN_PIN, LOW); // Enable motors
-  
-  // Home X
-  while (digitalRead(X_LIMIT_PIN) == HIGH) {
-    stepperX.move(-1);
-    stepperX.run();
-  }
-  stepperX.setCurrentPosition(0);
-  
-  // Home Y
-  while (digitalRead(Y_LIMIT_PIN) == HIGH) {
-    stepperY.move(-1);
-    stepperY.run();
-  }
-  stepperY.setCurrentPosition(0);
-  
-  // Move to safe position
-  moveAbsolute(5, 5);
-  
-  Serial.println("Homing complete");
-}
+# Solenoid timings
+SOLENOID_FIRE_MS = 20  # How long solenoid stays energized
+SOLENOID_RETRACT_MS = 10  # Retraction delay
 
-void moveAbsolute(float x_mm, float y_mm) {
-  long x_steps = x_mm * STEPS_PER_MM_X;
-  long y_steps = y_mm * STEPS_PER_MM_Y;
-  
-  stepperX.moveTo(x_steps);
-  stepperY.moveTo(y_steps);
-  
-  while (stepperX.distanceToGo() != 0 || stepperY.distanceToGo() != 0) {
-    stepperX.run();
-    stepperY.run();
-  }
-}
+# ═══════════════════════════════════════════════════════
+# STATE MANAGEMENT
+# ═══════════════════════════════════════════════════════
 
-void embossDot() {
-  stylusServo.write(DOT_DOWN_ANGLE);
-  delay(50); // Hold time
-  stylusServo.write(DOT_UP_ANGLE);
-  delay(30); // Retract time
-}
+class BraillePlotterState:
+    BOOT = "BOOT"
+    IDLE = "IDLE"
+    HOMING = "HOMING"
+    READY = "READY"
+    PRINTING = "PRINTING"
+    ERROR = "ERROR"
 
-void executePrintJob() {
-  // Iterate through dot pattern from print job queue
-  // For each dot: moveAbsolute(x, y), embossDot()
-  // Update progress, send BLE notifications
-  
-  currentState = READY; // When done
-}
+class MotionController:
+    """Manages stepper motor motion and positioning"""
+    
+    def __init__(self):
+        GPIO.setmode(GPIO.BCM)
+        
+        # Setup stepper pins
+        GPIO.setup(X_STEP_PIN, GPIO.OUT)
+        GPIO.setup(X_DIR_PIN, GPIO.OUT)
+        GPIO.setup(Y_STEP_PIN, GPIO.OUT)
+        GPIO.setup(Y_DIR_PIN, GPIO.OUT)
+        
+        # Setup limit switches (input with pull-up)
+        GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(Y_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        
+        # Current position (mm)
+        self.x_pos = 0.0
+        self.y_pos = 0.0
+        
+        # Velocity profile
+        self.current_speed = 0
+        self.target_speed = MAX_SPEED
+        
+    def move_absolute(self, x_mm, y_mm, callback=None):
+        """Move gantry to absolute position with acceleration profile"""
+        x_target_steps = int(x_mm * STEPS_PER_MM)
+        y_target_steps = int(y_mm * STEPS_PER_MM)
+        
+        x_current_steps = int(self.x_pos * STEPS_PER_MM)
+        y_current_steps = int(self.y_pos * STEPS_PER_MM)
+        
+        x_distance = x_target_steps - x_current_steps
+        y_distance = y_target_steps - y_current_steps
+        
+        # Move both axes simultaneously
+        threading.Thread(
+            target=self._step_axis,
+            args=(X_STEP_PIN, X_DIR_PIN, x_distance, "X")
+        ).start()
+        
+        threading.Thread(
+            target=self._step_axis,
+            args=(Y_STEP_PIN, Y_DIR_PIN, y_distance, "Y")
+        ).start()
+        
+        if callback:
+            callback()
+    
+    def _step_axis(self, step_pin, dir_pin, distance, axis):
+        """Generate step/dir pulses for a single axis"""
+        if distance < 0:
+            GPIO.output(dir_pin, GPIO.LOW)  # Negative direction
+            distance = abs(distance)
+        else:
+            GPIO.output(dir_pin, GPIO.HIGH)  # Positive direction
+        
+        for i in range(distance):
+            # Simple constant-speed stepping (can add acceleration profile)
+            GPIO.output(step_pin, GPIO.HIGH)
+            time.sleep(0.001)  # 1ms pulse width
+            GPIO.output(step_pin, GPIO.LOW)
+            time.sleep(1.0 / MAX_SPEED)  # Interval between steps
+    
+    def home(self):
+        """Home both axes using limit switches"""
+        print("Homing X-axis...")
+        while GPIO.input(X_LIMIT_PIN) == GPIO.HIGH:
+            GPIO.output(X_DIR_PIN, GPIO.LOW)  # Move left
+            GPIO.output(X_STEP_PIN, GPIO.HIGH)
+            time.sleep(0.001)
+            GPIO.output(X_STEP_PIN, GPIO.LOW)
+            time.sleep(1.0 / HOMING_SPEED)
+        
+        self.x_pos = 0.0
+        time.sleep(0.5)  # Debounce
+        
+        print("Homing Y-axis...")
+        while GPIO.input(Y_LIMIT_PIN) == GPIO.HIGH:
+            GPIO.output(Y_DIR_PIN, GPIO.LOW)  # Move forward
+            GPIO.output(Y_STEP_PIN, GPIO.HIGH)
+            time.sleep(0.001)
+            GPIO.output(Y_STEP_PIN, GPIO.LOW)
+            time.sleep(1.0 / HOMING_SPEED)
+        
+        self.y_pos = 0.0
+        
+        # Move to safe starting position (5mm from origin)
+        self.move_absolute(5, 5)
+        print("Homing complete at (5, 5)")
 
-void initBLE() {
-  BLEDevice::init("BraillePlotter");
-  pServer = BLEDevice::createServer();
-  // Create services, characteristics
-  // (Full BLE code omitted for brevity)
-}
+class SolenoidController:
+    """Manages 6-solenoid embossing array"""
+    
+    def __init__(self):
+        GPIO.setmode(GPIO.BCM)
+        for pin in SOLENOID_PINS:
+            GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, GPIO.LOW)  # Start all off
+    
+    def fire_character(self, bitmask):
+        """Fire solenoids based on 6-bit bitmask
+        
+        Bitmask layout (braille dots 1-6):
+        Bit 0 = Solenoid 1 (dot 1)
+        Bit 1 = Solenoid 2 (dot 2)
+        Bit 2 = Solenoid 3 (dot 3)
+        Bit 3 = Solenoid 4 (dot 4)
+        Bit 4 = Solenoid 5 (dot 5)
+        Bit 5 = Solenoid 6 (dot 6)
+        
+        Example: Character 'A' (dot 1 only) = 0b000001
+        """
+        
+        # Fire active solenoids
+        for i in range(6):
+            if bitmask & (1 << i):
+                GPIO.output(SOLENOID_PINS[i], GPIO.HIGH)
+        
+        # Hold time (solenoid energized)
+        time.sleep(SOLENOID_FIRE_MS / 1000.0)
+        
+        # Retract all solenoids
+        for i in range(6):
+            GPIO.output(SOLENOID_PINS[i], GPIO.LOW)
+        
+        # Retraction delay (allows plunger to fully retract)
+        time.sleep(SOLENOID_RETRACT_MS / 1000.0)
 
-void handleBLECommands() {
-  // Parse incoming BLE commands
-  // Execute based on command type
-}
+class BraillePlotter:
+    """Main controller integrating motion + embossing"""
+    
+    def __init__(self):
+        self.motion = MotionController()
+        self.solenoid = SolenoidController()
+        self.state = BraillePlotterState.BOOT
+        
+        # Initialize Flask for network control
+        self.app = Flask(__name__)
+        self.socketio = SocketIO(self.app, cors_allowed_origins="*")
+        
+        # Setup routes
+        self.setup_routes()
+    
+    def setup_routes(self):
+        @self.app.route('/api/home', methods=['POST'])
+        def api_home():
+            self.state = BraillePlotterState.HOMING
+            self.motion.home()
+            self.state = BraillePlotterState.READY
+            return {"status": "homed"}
+        
+        @self.app.route('/api/print', methods=['POST'])
+        def api_print():
+            data = request.json
+            job_id = data.get('job_id')
+            dots = data.get('dots')  # List of [x, y, bitmask] tuples
+            
+            self.state = BraillePlotterState.PRINTING
+            self.print_job(job_id, dots)
+            self.state = BraillePlotterState.READY
+            return {"status": "complete"}
+        
+        @self.socketio.on('connect')
+        def handle_connect():
+            print("Client connected")
+            self.socketio.emit('status', {'state': self.state})
+    
+    def print_job(self, job_id, dots):
+        """Execute a complete print job"""
+        total_dots = len(dots)
+        
+        for idx, (x_mm, y_mm, bitmask) in enumerate(dots):
+            # Move to position
+            self.motion.move_absolute(x_mm, y_mm)
+            
+            # Small delay for motion completion
+            time.sleep(0.05)
+            
+            # Fire solenoids for this character
+            self.solenoid.fire_character(bitmask)
+            
+            # Send progress update
+            self.socketio.emit('progress', {
+                'job_id': job_id,
+                'dot_index': idx,
+                'total_dots': total_dots,
+                'percent': int(100 * idx / total_dots),
+                'position': {'x': x_mm, 'y': y_mm}
+            })
+        
+        # Job complete
+        self.socketio.emit('job_complete', {
+            'job_id': job_id,
+            'total_dots': total_dots,
+            'duration_ms': total_dots * 30  # Approx 30ms per dot
+        })
+    
+    def start(self):
+        """Initialize and start the plotter"""
+        print("═══════════════════════════════════════════════")
+        print("  Braille Buddy Plotter - Hex-Core Control")
+        print("═══════════════════════════════════════════════")
+        
+        self.state = BraillePlotterState.READY
+        print(f"[{self.state}] Ready to receive commands")
+        
+        # Start web server
+        self.socketio.run(self.app, host='0.0.0.0', port=5000, debug=False)
 
-void handleError() {
-  // Log error, notify app, enter safe state
-}
+# ═══════════════════════════════════════════════════════
+# ENTRY POINT
+# ═══════════════════════════════════════════════════════
+
+if __name__ == '__main__':
+    plotter = BraillePlotter()
+    try:
+        plotter.start()
+    except KeyboardInterrupt:
+        print("\nShutdown initiated...")
+        GPIO.cleanup()
 ```
 
-### 5.2.4 BLE GATT Profile
+### 5.2.4 Real-Time Solenoid Firing Logic
 
-**Service UUID:** `0000ffe0-0000-1000-8000-00805f9b34fb` (Custom)
+**Braille Bitmask Encoding:**
 
-**Characteristics:**
+```
+Standard Braille Cell (6-dot):
 
-| Characteristic | UUID | Properties | Description |
-|----------------|------|------------|-------------|
-| Command RX | `0000ffe1-...` | Write | Receive commands from app |
-| Status TX | `0000ffe2-...` | Read, Notify | Send status updates to app |
-| Progress TX | `0000ffe3-...` | Notify | Real-time print progress (%) |
+Dot layout in cell:       Binary representation:
+┌───┬───┐                Bit 0 = Dot 1 (top-left)
+│ 1 │ 4 │                Bit 1 = Dot 2 (middle-left)
+├───┼───┤                Bit 2 = Dot 3 (bottom-left)
+│ 2 │ 5 │                Bit 3 = Dot 4 (top-right)
+├───┼───┤                Bit 4 = Dot 5 (middle-right)
+│ 3 │ 6 │                Bit 5 = Dot 6 (bottom-right)
+└───┴───┘
 
-**Command Format (JSON over BLE):**
-```json
-{
-  "cmd": "print | home | pause | resume | cancel | set_param",
-  "data": { ... }
-}
+Examples:
+Character 'A' (only dot 1):      0b000001 = 0x01
+Character 'B' (dots 1, 2, 4):    0b011001 = 0x19
+Character 'M' (dots 1, 3, 4):    0b011101 = 0x1D
+Character space (no dots):        0b000000 = 0x00
 ```
 
-**Example Commands:**
-```json
-// Start print job
-{"cmd": "print", "data": {"job_id": "123", "dots": [[0,0], [2.5,0]]}}
+**Solenoid Firing Sequence:**
 
-// Homing
-{"cmd": "home"}
-
-// Set parameter
-{"cmd": "set_param", "data": {"dot_depth": 0.7}}
+```python
+def fire_pattern(bitmask, duration_ms=20):
+    """
+    Simultaneous fire pattern for 6 solenoids
+    
+    Sequence:
+    0ms:  Set all GPIO HIGH where bitmask bit = 1
+    5ms:  Solenoids reach full extension
+    10ms: Styli rods impact paper (0.15-0.20mm indent)
+    15ms: Full embossing complete
+    20ms: Set all GPIO LOW (retract phase begins)
+    25ms: Solenoids fully retracted
+    30ms: Ready for next character
+    
+    Total cycle: 30ms per dot = 33 characters/second
+    """
+    
+    start_time = time.time()
+    
+    # Fire phase
+    for i in range(6):
+        if bitmask & (1 << i):
+            GPIO.output(SOLENOID_PINS[i], GPIO.HIGH)
+    
+    # Hold for specified duration
+    while (time.time() - start_time) < (duration_ms / 1000.0):
+        pass  # Busy wait for precision timing
+    
+    # Retract phase
+    for i in range(6):
+        GPIO.output(SOLENOID_PINS[i], GPIO.LOW)
+    
+    # Allow plunger to fully retract
+    time.sleep(0.010)
 ```
+
+---
 
 ## 5.3 Translation Pipeline
 
