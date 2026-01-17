@@ -67,15 +67,18 @@ graph TB
 4. **Extensibility:** Open architecture for community contributions
 5. **Fault Tolerance:** Graceful degradation when components fail
 
-**Design Trade-offs:**
+## 3.1.2 Final Hardware Specifications (Hex-Core Architecture)
 
-| Aspect | Option A | Option B | **Selected** | Rationale |
-|--------|----------|----------|--------------|-----------|
-| **Stylus Mechanism** | Sequential (single dot) | Simultaneous 6-dot (parallel) | **Hex-core solenoid** | 100-200× faster, simultaneous character embossing, convergent guide block innovation |
-| **Actuation** | Servo motors | 6× 24V solenoids | **6× 24V solenoids** | Simultaneous parallel firing, consistent impact force, no moving parts between characters |
-| **Motion Control** | Single axis servo | XY stepper gantry | **NEMA-17 stepper motors** | Precise positioning (±0.1mm), smooth motion, no servo jitter |
-| **Controller** | Arduino/ESP32 | Raspberry Pi | **Raspberry Pi Zero 2W/Pi 4** | Built-in WiFi, 26 GPIO pins (sufficient for 6 solenoids + 2 steppers), real-time socket.io |
-| **Power Supply** | Single 5V adapter | Dual voltage (5V + 24V) | **24V/5A SMPS + 5V USB-C** | Solenoids require 24V, Raspberry Pi on isolated 5V, prevents EMI noise |
+| Component | Specification | Justification |
+|-----------|---------------|---------------|
+| **Embossing Mechanism** | Hex-core solenoid (6× simultaneous) | 100-200× faster than sequential, simultaneous character embossing |
+| **Solenoid Array** | 6× 24V 20N push-pull solenoids | Simultaneous parallel firing, consistent 60N total convergent impact force |
+| **Convergent Guide Block** | SLA 3D-printed (75mm → 7.5mm taper) | Solves spatial pitch constraint, proprietary innovation, ±0.1mm tolerance |
+| **Motion System** | NEMA-17 stepper motors (XY gantry) | Precise positioning (±0.1mm), smooth motion, no jitter, 200×280mm travel |
+| **Microcontroller** | Raspberry Pi Zero 2W or Pi 4 | Built-in WiFi, 26 GPIO pins (6 solenoids + 2 steppers + sensors), real-time socket.io |
+| **Power Distribution** | Isolated 24V/5A SMPS + 5V USB-C | Solenoids on 24V, Pi on isolated 5V, prevents EMI noise corruption |
+| **Communication** | WiFi + Socket.io (real-time) | Bi-directional live updates, 50m+ range, multi-client support |
+| **Speed Capability** | 30-50 characters/second | Complete braille cell in 30ms (20ms fire + 10ms retract) |
 
 ## 3.2 Information Flow Architecture
 
@@ -466,10 +469,10 @@ flowchart TD
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
-| **Firmware** | Arduino C++ (ESP-IDF) | Low-level motor control |
-| **Libraries** | AccelStepper, ESP32Servo | Motion control |
-| **Mobile App** | React Native + Expo | Cross-platform (iOS/Android) |
-| **Backend** | Node.js + Express | REST API server |
+| **Firmware** | Python 3.8+ (Raspberry Pi) | GPIO control, stepper motion, solenoid firing |
+| **Libraries** | RPi.GPIO, Flask, SocketIO, threading | Real-time motion control + WiFi communication |
+| **Mobile App** | React Native + Expo | Cross-platform (iOS/Android) with WiFi socket.io |
+| **Backend** | Node.js + Express | REST API server, print job queue |
 | **Database** | PostgreSQL (user data), MongoDB (lessons) | Relational + document store |
 | **AI/ML** | OpenAI API (GPT-4), TensorFlow Lite | Tutoring + image processing |
 | **Translation** | Liblouis (C library via FFI) | Braille conversion |

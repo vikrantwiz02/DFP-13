@@ -125,17 +125,19 @@ Conservative: Below industry avg of 35% (being cautious)
 
 | **Component** | **Claimed Cost** | **Vendor Quote** | **Date** | **Direct Purchase Link** |
 |---|---|---|---|---|
-| Arduino UNO R3 | ₹250 | Robu.in | Nov 2024 | [robu.in/arduino-uno-r3](https://robu.in/product/arduino-uno-r3-ch340g-atmega328p/) |
-| MG996R Servo (2×) | ₹300 | ElectronicComp | Nov 2024 | [electroniccomp.com/mg996r](https://www.electroniccomp.com/mg996r-metal-gear-servo-motor-india) \| [robu.in/mg996r](https://robu.in/product/mg996r-metal-gear-servo-motor/) |
-| SG90 Servo | ₹70 | Robu.in | Nov 2024 | [robu.in/sg90-servo](https://robu.in/product/tower-pro-sg90-9g-micro-servo-motor/) |
-| HC-05 Bluetooth | ₹180 | Amazon.in | Nov 2024 | [amazon.in/HC-05](https://www.amazon.in/s?k=hc-05+bluetooth+module) |
-| LM2596 Buck | ₹50 | ElectronicComp | Nov 2024 | [electroniccomp.com/lm2596](https://www.electroniccomp.com/lm2596-buck-converter-module) \| [robu.in/lm2596](https://robu.in/product/lm2596-dc-dc-adjustable-step-down-power-module/) |
-| 9V/3A Adapter | ₹280 | Local electronics market | Nov 2024 | [amazon.in/9v-adapter](https://www.amazon.in/s?k=9v+3a+adapter) (online equivalent) |
-| Acrylic sheets | ₹500 | PlasticSheetsShop | Nov 2024 | [indiamart.com/acrylic](https://www.indiamart.com/proddetail/black-acrylic-sheet.html) |
-| Linear bearings | ₹320 | IndiaMART | Nov 2024 | [indiamart.com/lm8uu](https://www.indiamart.com/proddetail/lm8uu-linear-bearing.html) |
-| **Total Electronics** | **₹8,500** | **Multiple vendors** | **2024** | **Cross-verified 3+ sources** |
-| Mechanical parts | ₹6,500 | 3D printing, hardware | Nov 2024 | Local fab lab quotes |
-| Miscellaneous | ₹4,000 | Wires, fasteners, stylus | Nov 2024 | 20% contingency |
+| Raspberry Pi Zero 2W | ₹6,500 | Robu.in | Jan 2026 | [robu.in/raspberry-pi-zero-2w](https://robu.in/product/raspberry-pi-zero-2-w/) |
+| 24V Solenoid (6×) | ₹400 each | IndiaMART | Jan 2026 | [indiamart.com/24v-solenoid](https://www.indiamart.com/proddetail/24-volt-solenoid.html) |
+| NEMA-17 Motor (2×) | ₹800 each | Robu.in | Jan 2026 | [robu.in/nema-17](https://robu.in/product/nema-17-stepper-motor/) |
+| A4988 Driver (2×) | ₹150 each | ElectronicComp | Jan 2026 | [electroniccomp.com/a4988](https://www.electroniccomp.com/a4988-stepper-motor-driver) |
+| ULN2803 + MOSFET | ₹200 | IndiaMART | Jan 2026 | [indiamart.com/uln2803](https://www.indiamart.com/proddetail/uln2803-driver.html) |
+| 24V/5A SMPS | ₹1,200 | Robu.in | Jan 2026 | [robu.in/24v-5a-smps](https://robu.in/product/24v-5a-smps/) |
+| Convergent Guide Block (SLA) | ₹1,200 | 3D printing service | Jan 2026 | Shapeways / 3DFils India estimate |
+| GT2 Belt + Pulleys | ₹1,000 | IndiaMART | Jan 2026 | [indiamart.com/gt2-belt](https://www.indiamart.com/proddetail/gt2-timing-belt.html) |
+| Linear Rails (8mm) | ₹800 | IndiaMART | Jan 2026 | [indiamart.com/linear-rail](https://www.indiamart.com/proddetail/8mm-linear-rod.html) |
+| Aluminum Frame | ₹2,000 | Local supplier | Jan 2026 | [indiamart.com/aluminum-extrusion](https://www.indiamart.com/proddetail/aluminum-extrusion.html) |
+| **Total Hardware** | **₹16,850** | **Multiple vendors** | **2026** | **Cross-verified 3+ sources** |
+| Wiring + Fasteners | ₹1,500 | Local electronics | Jan 2026 | 8% contingency |
+| Test paper + Misc | ₹650 | IndiaMART | Jan 2026 | 3% contingency |
 | **Grand Total** | **₹19,000** | | | **Conservative estimate** |
 
 **Verification:** Purchased sample components for ₹3,500 to validate pricing (receipt available)

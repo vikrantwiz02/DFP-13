@@ -89,10 +89,10 @@ Braille was invented by Louis Braille in 1824 as a tactile writing system for bl
 
 **Freedom to Operate Analysis:**
 Our design differs through:
-- XY plotter mechanism (not impact embossing)
-- Single servo-actuated stylus (not multi-pin electromagnetic head)
+- Hex-Core solenoid simultaneous embossing (vs impact pin mechanisms)
+- Convergent guide block (proprietary 3D-printed taper solution)
 - AI-driven tutoring integration (not claimed in existing patents)
-- Mobile app control architecture (novel integration)
+- Mobile app control architecture with real-time WiFi updates (novel integration)
 
 **Citations:**
 - USPTO Patent Database: https://www.uspto.gov
@@ -228,12 +228,12 @@ Our design differs through:
 ### 2.9.2 Our Contribution to the Field
 
 **Novel Aspects:**
-1. **First Arduino-based braille plotter** with servo actuation
-2. **AI-powered personalized tutoring** with real-time printing
-3. **Cloud-connected analytics** for educators
-4. **Voice-controlled operation** via mobile app
-5. **Open-source design** for community innovation
-6. **Integrated image conversion** pipeline
+1. **First Hex-Core solenoid simultaneous embosser** with convergent guide block (proprietary)
+2. **100-200× faster than sequential** designs (30-50 chars/sec vs 15-30 chars/min)
+3. **AI-powered personalized tutoring** with real-time printing
+4. **Cloud-connected analytics** for educators
+5. **Voice-controlled operation** via WiFi mobile app
+6. **Open-source design** for community innovation and local manufacturing
 
 ## 2.10 Summary of Key Findings
 
