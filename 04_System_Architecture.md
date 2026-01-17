@@ -84,16 +84,25 @@ sequenceDiagram
     Cloud->>App: Return braille dot pattern
     App->>Device: Send print job via WiFi Socket.io
     Device->>Device: Parse job, validate, plan path
+    Device->>Device: Log: Job received & queued
     
     alt Validation Success
+        Device->>Device: Log: Validation passed
         Device->>App: ACK (job_id, status="accepted")
+        App->>App: Log: Job accepted
+        App->>Device: Confirm (job_id, status="ack_received")
+        Device->>Device: Log: App confirmed ACK
     else Validation Error
+        Device->>Device: Log: Validation failed (error_code)
         Device->>App: NAK (error_code, error_msg)
+        App->>App: Log: Job rejected
+        App->>Device: Confirm (job_id, status="nak_received")
         App->>User: "Error: Invalid job format"
     end
     
     Device->>Motors: Move to start position
     Motors->>Device: Homing complete
+    Device->>Device: Log: Homing complete
     
     loop For each character (6 dots fired simultaneously)
         Device->>Motors: Move X/Y to character position
@@ -103,9 +112,15 @@ sequenceDiagram
         Motors->>Device: Character embossed (position, index)
         
         alt Character Success
-            Device->>App: Progress update (char_index, status="embossed")
+            Device->>Device: Log: Char embossed (index, time)
+            Device->>App: PROGRESS (char_index, status="embossed")
+            App->>App: Log: Progress update received
+            App->>Device: Confirm (job_id, char_index, status="progress_ack")
         else Character Error (solenoid/motor failure)
+            Device->>Device: Log: Error at char (error_code, solenoid_id)
             Device->>App: ERROR (error_code, failed_char, recovery_action)
+            App->>App: Log: Error received from device
+            App->>Device: Confirm (job_id, char_index, status="error_ack")
             App->>User: "Hardware error - Resume or Cancel?"
         end
         
@@ -113,10 +128,18 @@ sequenceDiagram
     end
     
     alt All Characters Complete
+        Device->>Device: Log: Job completed (total_chars, duration)
         Device->>App: COMPLETE (job_id, total_chars, duration_ms, status="success")
+        App->>App: Log: Job completion received
+        App->>Device: Confirm (job_id, status="complete_ack")
+        Device->>Device: Log: Completion confirmed by App
         App->>User: "Job completed! 32 characters printed"
     else Job Interrupted/Error
+        Device->>Device: Log: Job aborted (error_reason, chars_completed)
         Device->>App: ABORT (job_id, chars_completed, error_reason)
+        App->>App: Log: Job aborted
+        App->>Device: Confirm (job_id, status="abort_ack")
+        Device->>Device: Log: Abort confirmed by App
         App->>User: "Job interrupted at character 15"
     end
     
@@ -310,6 +333,99 @@ sequenceDiagram
   "failed_at_char_index": 8,
   "recovery_action": "RETRY_AVAILABLE",
   "details": "Check solenoid 3 connection, voltage 24V stable"
+}
+```
+
+### 3.3.3a System-Level Confirmation Messages (Device ← App)
+
+**ACK Confirmation - App Confirms Device Message Receipt:**
+```json
+{
+  "type": "CONFIRM",
+  "job_id": "uuid-string",
+  "timestamp": "2025-11-16T10:30:00.600Z",
+  "message_type": "ACK",
+  "status": "ack_received",
+  "app_message": "Device acknowledgement received and logged",
+  "app_version": "1.2.5"
+}
+```
+
+**NAK Confirmation - App Confirms Error Message:**
+```json
+{
+  "type": "CONFIRM",
+  "job_id": "uuid-string",
+  "timestamp": "2025-11-16T10:30:00.600Z",
+  "message_type": "NAK",
+  "status": "nak_received",
+  "app_message": "Error acknowledged by user",
+  "action_taken": "USER_CANCELLED | RETRY_REQUESTED"
+}
+```
+
+**Progress Confirmation - App Confirms Each Character Update:**
+```json
+{
+  "type": "CONFIRM",
+  "job_id": "uuid-string",
+  "timestamp": "2025-11-16T10:30:00.560Z",
+  "message_type": "PROGRESS",
+  "char_index": 1,
+  "status": "progress_ack",
+  "app_message": "Progress update received and displayed"
+}
+```
+
+**Completion Confirmation - App Confirms Job Successful:**
+```json
+{
+  "type": "CONFIRM",
+  "job_id": "uuid-string",
+  "timestamp": "2025-11-16T10:31:00.050Z",
+  "message_type": "COMPLETE",
+  "status": "complete_ack",
+  "app_message": "Job completion verified and logged"
+}
+```
+
+**Abort Confirmation - App Confirms Failure State:**
+```json
+{
+  "type": "CONFIRM",
+  "job_id": "uuid-string",
+  "timestamp": "2025-11-16T10:30:15.050Z",
+  "message_type": "ABORT",
+  "status": "abort_ack",
+  "app_message": "Abort acknowledged, user notified",
+  "recovery_option_presented": true,
+  "user_response": "RETRY | CANCEL | SAVE_FOR_LATER"
+}
+```
+
+### 3.3.3b Device System Logging Requirements
+
+**Device Internal Log Entry (for every acknowledgement):**
+```json
+{
+  "log_id": "log-uuid-string",
+  "timestamp": "2025-11-16T10:30:00.500Z",
+  "job_id": "job-uuid-string",
+  "event_type": "JOB_ACCEPTED | JOB_REJECTED | CHAR_EMBOSSED | JOB_COMPLETE | JOB_FAILED | APP_ACK_RECEIVED | APP_NAK_RECEIVED | APP_PROGRESS_ACK | APP_COMPLETE_ACK | APP_ABORT_ACK",
+  "details": {
+    "message_type": "ACK | NAK | PROGRESS | COMPLETE | ABORT | CONFIRM",
+    "status": "sent | received_confirmed",
+    "char_index": 1,
+    "error_code": null,
+    "solenoid_status": [true, true, true, true, true, true],
+    "motor_position": {"x": 2.5, "y": 0.0},
+    "app_response_time_ms": 45
+  },
+  "device_state": {
+    "memory_free_kb": 256,
+    "temperature_c": 48,
+    "voltage_24v": 24.1
+  }
 }
 ```
 
