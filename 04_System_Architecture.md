@@ -464,31 +464,63 @@ sequenceDiagram
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Idle
-    Idle --> Homing: Power On / Reset
-    Homing --> Ready: Homing Complete
-    Ready --> Printing: Receive Print Job
-    Ready --> Lesson: Start Lesson Mode
-    Printing --> Ready: Job Complete
-    Printing --> Error: Fault Detected
-    Lesson --> Printing: Print Exercise
-    Lesson --> Listening: Wait for Voice Input
-    Listening --> Lesson: Process Response
-    Lesson --> Ready: Lesson Complete
-    Error --> Idle: Error Cleared
-    Error --> Homing: Reset Command
-    Ready --> Idle: Timeout / Sleep
+    [*] --> IDLE
+    
+    IDLE --> HOMING: Power On / Reset
+    IDLE --> IDLE: Timeout (Sleep)
+    
+    HOMING --> READY: Homing Complete<br/>(Limit switches hit)
+    HOMING --> ERROR: Homing Failed<br/>(Motor stall)
+    
+    READY --> PRINTING: Job Received<br/>(Print job queued)
+    READY --> LESSON: Lesson Start<br/>(Lesson mode selected)
+    READY --> IDLE: Shutdown Command
+    
+    PRINTING --> PRINTING: Next Character<br/>(Solenoid fire + motor move)
+    PRINTING --> READY: Job Complete<br/>(All chars printed)
+    PRINTING --> ERROR: Hardware Fault<br/>(Solenoid/motor fail)
+    
+    LESSON --> PRINTING: Exercise Step<br/>(Print letter)
+    LESSON --> LESSON: Next Lesson<br/>(Continue session)
+    LESSON --> READY: Lesson Complete<br/>(Session finished)
+    LESSON --> ERROR: Print Failed
+    
+    ERROR --> HOMING: Auto-Recovery<br/>(Reset position)
+    ERROR --> READY: Manual Recovery<br/>(User cleared error)
+    ERROR --> IDLE: Fatal Error<br/>(Device disabled)
 ```
 
 **State Descriptions:**
 
-- **Idle:** Low-power state, waiting for user interaction
-- **Homing:** Calibration sequence, moves to origin using limit switches
-- **Ready:** System ready to accept commands
-- **Printing:** Actively moving motors and actuating stylus
-- **Lesson:** Interactive lesson mode with AI tutor
-- **Listening:** Capturing and processing voice input
-- **Error:** Fault state (paper jam, motor stall, limit switch error)
+| State | What Happens | Exits To |
+|-------|--------------|----------|
+| **IDLE** | Device powered off or waiting | HOMING (on power), SHUTDOWN |
+| **HOMING** | Calibration mode, seeking origin position via limit switches | READY (success), ERROR (fail) |
+| **READY** | System initialized and ready to receive commands | PRINTING, LESSON, IDLE |
+| **PRINTING** | Actively embossing characters (30-50 chars/sec) | READY (complete), ERROR (fault) |
+| **LESSON** | Interactive lesson session with step-by-step printing | PRINTING, READY (done), ERROR |
+| **ERROR** | Hardware fault detected (solenoid fail, motor stall, paper jam) | HOMING (auto-recover), READY (manual), IDLE (fatal) |
+
+**Transitions Explained:**
+
+- **IDLE → HOMING:** User powers on device or presses reset
+- **HOMING → READY:** Successfully hit X and Y limit switches, origin confirmed
+- **READY → PRINTING:** App sends print job with braille dot pattern
+- **PRINTING → READY:** Last character embossed, job complete
+- **PRINTING → ERROR:** Solenoid/motor fails mid-job (e.g., solenoid 3 won't fire)
+- **ERROR → HOMING:** Device auto-attempts to recover by re-homing
+- **READY → IDLE:** User initiates shutdown or extended timeout
+
+### 3.4.1a Device Status at Each State
+
+| State | LED Status | Device Status | User Notification |
+|-------|-----------|---------------|-------------------|
+| IDLE | Off | Powered off | "Device ready to connect" |
+| HOMING | Blinking Yellow | Calibrating | "Initializing..." |
+| READY | Solid Green | Ready | "Device ready for print job" |
+| PRINTING | Blinking Green | Working | "Printing... 5/32 characters" |
+| LESSON | Solid Blue | Lesson active | "Lesson in progress" |
+| ERROR | Solid Red | Fault | "Hardware error: Solenoid 3" |
 
 ### 3.4.2 Operating Modes
 

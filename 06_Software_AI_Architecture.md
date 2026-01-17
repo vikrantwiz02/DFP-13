@@ -74,25 +74,51 @@ graph TB
 
 ```mermaid
 stateDiagram-v2
-    [*] --> BOOT
-    BOOT --> INIT: Hardware Init
-    INIT --> CONNECTING: WiFi Start
-    CONNECTING --> IDLE: Connected
-    IDLE --> HOMING: Homing Cmd
-    HOMING --> READY: Homed
+    [*] --> IDLE
+    
+    IDLE --> HOMING: Power On / Reset
+    IDLE --> IDLE: Sleep (watchdog timer)
+    
+    HOMING --> READY: Homing Complete<br/>(X & Y limit switches)
+    HOMING --> ERROR: Homing Failed<br/>(Motor stall or timeout)
+    
     READY --> PRINTING: Print Job Received
     READY --> LESSON: Lesson Mode Start
-    PRINTING --> PRINTING: Characters Remaining
-    PRINTING --> READY: Job Complete
-    LESSON --> PRINT_EXERCISE: Print Step
-    PRINT_EXERCISE --> LESSON: Print Done
-    LESSON --> READY: Lesson Complete
-    READY --> IDLE: Sleep Timeout
+    READY --> IDLE: Shutdown
     
-    PRINTING --> ERROR: Fault (Motor stall, etc)
-    LESSON --> ERROR: Fault
-    ERROR --> IDLE: Reset
-    IDLE --> [*]: Shutdown
+    PRINTING --> PRINTING: Fire solenoids +<br/>Move motors
+    PRINTING --> READY: Job Complete<br/>(All chars sent)
+    PRINTING --> ERROR: Hardware Fault<br/>(Motor/solenoid fail)
+    
+    LESSON --> PRINTING: Print Exercise<br/>(Character emboss)
+    LESSON --> LESSON: Next Lesson Step
+    LESSON --> READY: Session Complete
+    LESSON --> ERROR: Print Failed
+    
+    ERROR --> HOMING: Auto-Recovery<br/>(Retry homing)
+    ERROR --> READY: Manual Recovery<br/>(Fault cleared)
+    ERROR --> IDLE: Fatal Error<br/>(Critical failure)
+```
+
+**Firmware Control Flow:**
+
+```
+STARTUP SEQUENCE:
+  IDLE → HOMING: GPIO init → Seek X limit → Seek Y limit → READY
+
+PRINTING SEQUENCE:
+  PRINTING → For each character:
+    1. Receive braille dot pattern from app
+    2. Convert to 6-bit solenoid bitmask
+    3. Move motors to XY position
+    4. Fire solenoids for 20ms
+    5. Retract for 10ms
+    6. Send PROGRESS ack to app
+  → READY when done
+
+ERROR RECOVERY:
+  ERROR → HOMING: Attempt auto-recovery (reset position)
+  → READY (success) or IDLE (fatal)
 ```
 
 ### 5.2.3 Core Firmware Code Structure (Python)
